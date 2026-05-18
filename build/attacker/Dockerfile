@@ -7,11 +7,14 @@ RUN apk add --no-cache \
       lftp \
       mariadb-client \
       netcat-openbsd \
+      nfs-utils \
       openldap-clients \
       openssh-client \
+      python3 \
       redis \
       strongswan \
       postgresql-client \
-      sshpass
+      sshpass \
+      util-linux
 
 CMD ["sleep", "infinity"]
