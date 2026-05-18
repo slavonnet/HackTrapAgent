@@ -5,6 +5,7 @@ RUN apt-get update \
       socat \
       openssl \
       ca-certificates \
+      iproute2 \
       bash \
     && rm -rf /var/lib/apt/lists/*
 
