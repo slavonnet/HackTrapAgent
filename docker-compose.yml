@@ -20,6 +20,25 @@ services:
       timeout: 3s
       retries: 10
 
+  telnetd:
+    profiles:
+      - telnetd
+    build:
+      context: .
+      dockerfile: build/telnetd/Dockerfile
+    environment:
+      HACKTRAP_USER: ${TELNETD_RUNTIME_USER:-trap}
+    ports:
+      - "${TELNETD_PUBLIC_PORT:-2323}:23"
+    volumes:
+      - telnetd_logs:/var/log/telnet
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f in.telnetd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   ftp:
     profiles:
       - ftp
@@ -185,12 +204,13 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ssh_logs:/var/log/ssh
+      - telnetd_logs:/var/log/telnet
       - ftp_logs:/var/log/ftp
       - ntp_logs:/var/log/ntp
       - imap_logs:/var/log/imap
@@ -278,6 +298,7 @@ services:
 
 volumes:
   ssh_logs:
+  telnetd_logs:
   ftp_logs:
   ntp_logs:
   imap_logs:

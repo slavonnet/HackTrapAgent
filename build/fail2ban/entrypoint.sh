@@ -55,6 +55,11 @@ if [[ ",${services_raw}," == *",ssh,"* ]]; then
   touch /var/log/ssh/auth.log
 fi
 
+if [[ ",${services_raw}," == *",telnetd,"* ]]; then
+  mkdir -p /var/log/telnet
+  touch /var/log/telnet/auth.log
+fi
+
 if [[ ",${services_raw}," == *",ftp,"* ]]; then
   mkdir -p /var/log/ftp
   touch /var/log/ftp/vsftpd.log
