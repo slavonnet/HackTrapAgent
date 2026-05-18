@@ -13,8 +13,18 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/telnetd/test_fail2ban_scope.sh` — validates Telnet + fail2ban:
+  - IP ban after repeated failed logins
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/ftp/test_fail2ban_scope.sh` — validates FTP + fail2ban:
   - IP ban after repeated failed logins
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/ntp/test_fail2ban_scope.sh` — validates NTP + fail2ban:
+  - IP ban after repeated suspicious NTP mode 6/7 request probes
+- `tests/nfs/test_fail2ban_scope.sh` — validates NFS + fail2ban:
+  - IP ban after repeated valid NFSv4 RPC probe requests (`Program 100003`, function `0`/`1`)
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 - `tests/imap/test_fail2ban_scope.sh` — validates IMAP + fail2ban:
@@ -45,6 +55,12 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/redis/test_fail2ban_scope.sh` — validates Redis + fail2ban:
+  - IP ban after repeated failed ACL/password authentication attempts
+- `tests/elasticsearch/test_fail2ban_scope.sh` — validates Elasticsearch + fail2ban:
+  - IP ban after repeated failed HTTP Basic authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/bgp/test_fail2ban_scope.sh` — validates BGP + fail2ban:
   - IP ban after repeated unconfigured peer connection attempts
   - firewall rule exists inside the fail2ban container scope
@@ -63,6 +79,14 @@ Tests are split by service.
   - random trap community is required
   - SNMPv3 trap authentication is enforced
   - IP ban after repeated unauthorized trap attempts
+- `tests/radius/test_fail2ban_scope.sh` — validates RADIUS + fail2ban:
+  - IP ban after repeated failed real RADIUS PAP authentication attempts
+- `tests/ad/test_fail2ban_scope.sh` — validates AD (LDAP) + fail2ban:
+  - IP ban after repeated failed LDAP bind attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/rabbitmq/test_fail2ban_scope.sh` — validates RabbitMQ + fail2ban:
+  - IP ban after repeated failed AMQP authentication attempts
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 
@@ -70,7 +94,10 @@ Tests are split by service.
 
 ```bash
 ./tests/ssh/test_fail2ban_scope.sh
+./tests/telnetd/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
+./tests/ntp/test_fail2ban_scope.sh
+./tests/nfs/test_fail2ban_scope.sh
 ./tests/imap/test_fail2ban_scope.sh
 ./tests/pop3/test_fail2ban_scope.sh
 ./tests/smtp/test_fail2ban_scope.sh
@@ -78,16 +105,21 @@ Tests are split by service.
 ./tests/ike2/test_fail2ban_scope.sh
 ./tests/postgresql/test_fail2ban_scope.sh
 ./tests/mysql/test_fail2ban_scope.sh
+./tests/redis/test_fail2ban_scope.sh
+./tests/elasticsearch/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
 ./tests/snmp/test_fail2ban_scope.sh
 ./tests/snmptrap/test_fail2ban_scope.sh
+./tests/radius/test_fail2ban_scope.sh
+./tests/ad/test_fail2ban_scope.sh
+./tests/rabbitmq/test_fail2ban_scope.sh
 ```
 
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp snmp snmptrap
+./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

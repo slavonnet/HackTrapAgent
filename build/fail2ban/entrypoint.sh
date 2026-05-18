@@ -18,19 +18,21 @@ for service in "${services[@]}"; do
   service="$(echo "$service" | xargs)"
   [[ -z "$service" ]] && continue
 
+  source_filter_dir="/opt/hacktrap/fail2ban/${service}/filter.d"
+  if [[ -d "$source_filter_dir" ]]; then
+    mkdir -p /etc/fail2ban/filter.d
+    for filter_file in "$source_filter_dir"/*; do
+      [[ -f "$filter_file" ]] || continue
+      cp -f "$filter_file" "/etc/fail2ban/filter.d/$(basename "$filter_file")"
+    done
+  fi
+
   source_jail="/opt/hacktrap/fail2ban/${service}/jail.local"
   target_jail="/etc/fail2ban/jail.d/${service}.local"
   if [[ -f "$source_jail" ]]; then
     cp -f "$source_jail" "$target_jail"
   else
     echo "WARN: no fail2ban jail for service '${service}' at ${source_jail}"
-  fi
-
-  source_filter_dir="/opt/hacktrap/fail2ban/${service}/filter.d"
-  if [[ -d "$source_filter_dir" ]]; then
-    for filter_file in "${source_filter_dir}"/*.conf; do
-      cp -f "$filter_file" /etc/fail2ban/filter.d/
-    done
   fi
 
   source_filter="/opt/hacktrap/fail2ban/${service}/filter.conf"
@@ -46,9 +48,24 @@ if [[ ",${services_raw}," == *",ssh,"* ]]; then
   touch /var/log/ssh/auth.log
 fi
 
+if [[ ",${services_raw}," == *",telnetd,"* ]]; then
+  mkdir -p /var/log/telnet
+  touch /var/log/telnet/auth.log
+fi
+
 if [[ ",${services_raw}," == *",ftp,"* ]]; then
   mkdir -p /var/log/ftp
   touch /var/log/ftp/vsftpd.log
+fi
+
+if [[ ",${services_raw}," == *",ntp,"* ]]; then
+  mkdir -p /var/log/ntp
+  touch /var/log/ntp/ntp.log
+fi
+
+if [[ ",${services_raw}," == *",nfs,"* ]]; then
+  mkdir -p /var/log/nfs
+  touch /var/log/nfs/ganesha.log
 fi
 
 if [[ ",${services_raw}," == *",postgresql,"* ]]; then
@@ -59,6 +76,17 @@ fi
 if [[ ",${services_raw}," == *",mysql,"* ]]; then
   mkdir -p /var/log/mysql
   touch /var/log/mysql/error.log
+fi
+
+if [[ ",${services_raw}," == *",elasticsearch,"* ]]; then
+  mkdir -p /var/log/elasticsearch
+  touch /var/log/elasticsearch/elasticsearch.log
+fi
+
+if [[ ",${services_raw}," == *",redis,"* ]]; then
+  mkdir -p /var/log/redis
+  touch /var/log/redis/redis.log
+  touch /var/log/redis/redis-auth.log
 fi
 
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
@@ -86,6 +114,11 @@ if [[ ",${services_raw}," == *",smtp,"* ]]; then
   touch /var/log/smtp/mail.log
 fi
 
+if [[ ",${services_raw}," == *",rabbitmq,"* ]]; then
+  mkdir -p /var/log/rabbitmq
+  touch /var/log/rabbitmq/rabbit.log
+fi
+
 if [[ ",${services_raw}," == *",bgp,"* ]]; then
   mkdir -p /var/log/bgp
   touch /var/log/bgp/bgp.log
@@ -104,6 +137,21 @@ fi
 if [[ ",${services_raw}," == *",snmptrap,"* ]]; then
   mkdir -p /var/log/snmptrap
   touch /var/log/snmptrap/snmptrapd.log
+fi
+
+if [[ ",${services_raw}," == *",rdp,"* ]]; then
+  mkdir -p /var/log/rdp
+  touch /var/log/rdp/xrdp-sesman.log
+fi
+
+if [[ ",${services_raw}," == *",ad,"* ]]; then
+  mkdir -p /var/log/ad
+  touch /var/log/ad/slapd.log
+fi
+
+if [[ ",${services_raw}," == *",radius,"* ]]; then
+  mkdir -p /var/log/radius
+  touch /var/log/radius/radius.log
 fi
 
 exec fail2ban-server -f -x -v
