@@ -37,11 +37,6 @@ echo "Generated random SNMP community and SNMPv3 credentials."
 touch /var/log/snmp/snmpd.log
 chmod 0644 /var/log/snmp/snmpd.log
 
-cat > /var/lib/snmp/snmpd.conf <<EOF_SNMP_USER
-createUser ${user_name} SHA "${v3_auth_password}" AES "${v3_priv_password}"
-EOF_SNMP_USER
-chmod 600 /var/lib/snmp/snmpd.conf
-
 cat > /etc/snmp/snmpd.conf <<EOF_SNMP_MAIN
 agentaddress udp:161
 sysLocation Unknown
@@ -49,12 +44,28 @@ sysContact root
 sysName hacktrap-snmp
 master agentx
 
+createUser ${user_name} SHA "${v3_auth_password}" AES "${v3_priv_password}"
 view readonly included .1 80
 rocommunity ${snmp_community} default -V readonly
 rouser ${user_name} authPriv -V readonly
 authtrapenable 1
 EOF_SNMP_MAIN
 
-rsyslogd
+cat > /etc/snmp/snmp.conf <<EOF_SNMP_CLIENT
+mibs :
+EOF_SNMP_CLIENT
 
-exec /usr/sbin/snmpd -f -p /run/snmpd.pid -c /etc/snmp/snmpd.conf
+last_peer_ip=""
+/usr/sbin/snmpd -f -C -Lo -p /run/snmpd.pid -c /etc/snmp/snmpd.conf 2>&1 | while IFS= read -r line; do
+  timestamp="$(date "+%Y-%m-%d %H:%M:%S")"
+  printf "%s snmpd: %s\n" "$timestamp" "$line" >> /var/log/snmp/snmpd.log
+
+  if [[ "$line" =~ Connection\ from\ UDP:\ \[([0-9A-Fa-f:.]+)\]:[0-9]+-\>\[[0-9A-Fa-f:.]+\]:[0-9]+ ]]; then
+    last_peer_ip="${BASH_REMATCH[1]}"
+    continue
+  fi
+
+  if [[ "$line" == Authentication\ failed* ]] && [[ -n "$last_peer_ip" ]]; then
+    printf "%s snmpd-auth: SNMP_AUTH_FAILED from %s user=%s\n" "$timestamp" "$last_peer_ip" "$user_name" >> /var/log/snmp/snmpd.log
+  fi
+done

@@ -7,7 +7,7 @@ The SNMP trap service provides an authentication-gated trap receiver endpoint th
 ## Runtime model
 
 - The container runs upstream `snmptrapd` on UDP port `162`.
-- Trap ingestion is allowed only for the generated runtime community (v1/v2c) and generated runtime SNMPv3 credentials.
+- Trap packets are inspected for SNMP security context (`community` for v1/v2c and user context for v3), and non-matching credentials are logged as failed authorization events.
 - Unauthorized trap attempts are logged to `/var/log/snmptrap/snmptrapd.log`.
 - This log file is mounted through a shared volume and consumed by fail2ban.
 

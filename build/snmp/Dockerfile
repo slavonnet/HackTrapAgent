@@ -4,7 +4,6 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
       snmpd \
       snmp \
-      rsyslog \
       procps \
       ca-certificates \
       openssl \
@@ -14,7 +13,6 @@ RUN apt-get update \
 RUN mkdir -p /var/log/snmp /opt/hacktrap/etc/snmp /run/hacktrap /var/lib/snmp
 
 COPY etc/snmp/ /opt/hacktrap/etc/snmp/
-COPY etc/snmp/rsyslog-snmpd.conf /etc/rsyslog.d/00-snmpd.conf
 COPY build/snmp/entrypoint.sh /usr/local/bin/snmp-entrypoint.sh
 
 RUN chmod +x /usr/local/bin/snmp-entrypoint.sh

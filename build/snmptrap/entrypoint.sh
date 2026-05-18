@@ -38,13 +38,44 @@ touch /var/log/snmptrap/snmptrapd.log
 chmod 0644 /var/log/snmptrap/snmptrapd.log
 
 cat > /etc/snmp/snmptrapd.conf <<EOF_SNMPTRAP_MAIN
-disableAuthorization no
-authCommunity log,execute,net ${trap_community}
+doNotLogTraps no
 createUser ${user_name} SHA "${v3_auth_password}" AES "${v3_priv_password}"
-authUser log,execute,net ${user_name}
+authcommunity log,execute,net ${trap_community}
+authcommunity log,execute,net public
+authcommunity log,execute,net private
+authuser log,execute,net ${user_name}
+authtrapenable 1
 EOF_SNMPTRAP_MAIN
 chmod 600 /etc/snmp/snmptrapd.conf
 
-rsyslogd
+cat > /etc/snmp/snmp.conf <<EOF_SNMPTRAP_CLIENT
+mibs :
+EOF_SNMPTRAP_CLIENT
 
-exec /usr/sbin/snmptrapd -f -p /run/snmptrapd.pid -c /etc/snmp/snmptrapd.conf
+last_peer_ip=""
+/usr/sbin/snmptrapd -f -C -Lo -On -F "src=%b|sec=%P|vars=%v\n" -p /run/snmptrapd.pid -c /etc/snmp/snmptrapd.conf 2>&1 | while IFS= read -r line; do
+  timestamp="$(date "+%Y-%m-%d %H:%M:%S")"
+  printf "%s snmptrapd: %s\n" "$timestamp" "$line" >> /var/log/snmptrap/snmptrapd.log
+
+  if [[ "$line" =~ src=UDP:\ \[([0-9A-Fa-f:.]+)\]:[0-9]+-\>\[[0-9A-Fa-f:.]+\]:[0-9]+\|sec=([^|]+)\| ]]; then
+    last_peer_ip="${BASH_REMATCH[1]}"
+    security_info="${BASH_REMATCH[2]}"
+    is_authorized=0
+
+    if [[ "$security_info" == *"$trap_community"* ]]; then
+      is_authorized=1
+    fi
+
+    if [[ "$security_info" == *"$user_name"* ]]; then
+      is_authorized=1
+    fi
+
+    if [[ "$line" =~ ([Aa]uthentication\ failed|[Uu]nknown\ user|[Uu]nknown\ engine|[Nn]ot\ in\ time\ window|[Ww]rong\ digest|[Dd]ecryption\ error) ]]; then
+      is_authorized=0
+    fi
+
+    if [[ "$is_authorized" -eq 0 ]]; then
+      printf "%s snmptrapd-auth: SNMPTRAP_AUTH_FAILED from %s sec=%s\n" "$timestamp" "$last_peer_ip" "$security_info" >> /var/log/snmptrap/snmptrapd.log
+    fi
+  fi
+done
