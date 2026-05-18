@@ -55,6 +55,11 @@ if [[ ",${services_raw}," == *",ssh,"* ]]; then
   touch /var/log/ssh/auth.log
 fi
 
+if [[ ",${services_raw}," == *",telnetd,"* ]]; then
+  mkdir -p /var/log/telnet
+  touch /var/log/telnet/auth.log
+fi
+
 if [[ ",${services_raw}," == *",ftp,"* ]]; then
   mkdir -p /var/log/ftp
   touch /var/log/ftp/vsftpd.log
@@ -78,6 +83,17 @@ fi
 if [[ ",${services_raw}," == *",mysql,"* ]]; then
   mkdir -p /var/log/mysql
   touch /var/log/mysql/error.log
+fi
+
+if [[ ",${services_raw}," == *",elasticsearch,"* ]]; then
+  mkdir -p /var/log/elasticsearch
+  touch /var/log/elasticsearch/elasticsearch.log
+fi
+
+if [[ ",${services_raw}," == *",redis,"* ]]; then
+  mkdir -p /var/log/redis
+  touch /var/log/redis/redis.log
+  touch /var/log/redis/redis-auth.log
 fi
 
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
@@ -113,6 +129,11 @@ fi
 if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   mkdir -p /var/log/openvpn
   touch /var/log/openvpn/openvpn.log
+fi
+
+if [[ ",${services_raw}," == *",ad,"* ]]; then
+  mkdir -p /var/log/ad
+  touch /var/log/ad/slapd.log
 fi
 
 exec fail2ban-server -f -x -v
