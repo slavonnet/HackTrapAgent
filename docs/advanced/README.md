@@ -141,3 +141,31 @@ Use `config/services.env` as a single source of truth:
 
 - `ENABLED_SERVICES` — comma-separated enabled honeypot services.
 - `<SERVICE>_PUBLIC_PORT` — host port for each service.
+
+## 5-minute service resource benchmark
+
+Use the benchmark script to run all enabled services for 5 minutes, collect runtime metrics, and automatically stop the stack.
+
+```bash
+./scripts/benchmark_services.sh --duration-seconds 300
+```
+
+The script:
+
+- starts `fail2ban` and all services from `ENABLED_SERVICES`,
+- samples container stats every second,
+- writes a report table and CSV to `reports/benchmarks/`,
+- stops containers with `docker compose down -v --remove-orphans`.
+
+Generated markdown table columns:
+
+- `Port`
+- `Service (docs)` (links to `docs/services/<service>.md`)
+- `Image size`
+- `Peak memory`
+- `CPU time (core-seconds)`
+
+`CPU time (core-seconds)` is computed as an integral of sampled CPU usage:
+`sum(CPU% / 100 * sample_interval_seconds)`.
+
+This report helps identify expensive services before tuning service-specific configuration files in `etc/<service>/...` (for example database durability/background settings).
