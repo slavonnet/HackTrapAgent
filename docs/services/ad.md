@@ -10,6 +10,7 @@ The AD service is used as an additional fail2ban event source for LDAP bind brut
 - LDAP auth failures are written to `/var/log/ad/slapd.log` via rsyslog.
 - This file is mounted via a shared volume and read by fail2ban.
 - Anonymous bind is disabled to force explicit credential guessing attempts.
+- `fail2ban/ad/filter.d/slapd.conf` extends upstream `slapd` matching to cover OpenLDAP `RESULT ... err=49 qtime=... etime=...` lines.
 
 ## Credentials policy
 
