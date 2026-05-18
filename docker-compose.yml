@@ -161,6 +161,44 @@ services:
       timeout: 3s
       retries: 10
 
+  redis:
+    profiles:
+      - redis
+    build:
+      context: .
+      dockerfile: build/redis/Dockerfile
+    environment:
+      HACKTRAP_USER: ${REDIS_RUNTIME_USER:-trap}
+    ports:
+      - "${REDIS_PUBLIC_PORT:-6379}:6379"
+    volumes:
+      - redis_logs:/var/log/redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p 6379 --no-auth-warning PING | grep -Eq 'PONG|NOAUTH'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  elasticsearch:
+    profiles:
+      - elasticsearch
+    build:
+      context: .
+      dockerfile: build/elasticsearch/Dockerfile
+    environment:
+      HACKTRAP_USER: ${ELASTICSEARCH_RUNTIME_USER:-trap}
+    ports:
+      - "${ELASTICSEARCH_PUBLIC_PORT:-9200}:9200"
+    volumes:
+      - elasticsearch_logs:/var/log/elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 9200), 2); s.close()\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -199,12 +237,31 @@ services:
       timeout: 3s
       retries: 10
 
+  ad:
+    profiles:
+      - ad
+    build:
+      context: .
+      dockerfile: build/ad/Dockerfile
+    environment:
+      HACKTRAP_USER: ${AD_RUNTIME_USER:-trap}
+    ports:
+      - "${AD_PUBLIC_PORT:-2389}:389"
+    volumes:
+      - ad_logs:/var/log/ad
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pidof slapd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -220,8 +277,11 @@ services:
       - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
+      - redis_logs:/var/log/redis
+      - elasticsearch_logs:/var/log/elasticsearch
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - ad_logs:/var/log/ad
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -308,5 +368,8 @@ volumes:
   ike2_logs:
   postgresql_logs:
   mysql_logs:
+  redis_logs:
+  elasticsearch_logs:
   bgp_logs:
   openvpn_logs:
+  ad_logs:

@@ -80,6 +80,17 @@ if [[ ",${services_raw}," == *",mysql,"* ]]; then
   touch /var/log/mysql/error.log
 fi
 
+if [[ ",${services_raw}," == *",elasticsearch,"* ]]; then
+  mkdir -p /var/log/elasticsearch
+  touch /var/log/elasticsearch/elasticsearch.log
+fi
+
+if [[ ",${services_raw}," == *",redis,"* ]]; then
+  mkdir -p /var/log/redis
+  touch /var/log/redis/redis.log
+  touch /var/log/redis/redis-auth.log
+fi
+
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
   mkdir -p /var/log/l2tp
   touch /var/log/l2tp/charon.log
@@ -113,6 +124,11 @@ fi
 if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   mkdir -p /var/log/openvpn
   touch /var/log/openvpn/openvpn.log
+fi
+
+if [[ ",${services_raw}," == *",ad,"* ]]; then
+  mkdir -p /var/log/ad
+  touch /var/log/ad/slapd.log
 fi
 
 exec fail2ban-server -f -x -v

@@ -51,12 +51,22 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/redis/test_fail2ban_scope.sh` — validates Redis + fail2ban:
+  - IP ban after repeated failed ACL/password authentication attempts
+- `tests/elasticsearch/test_fail2ban_scope.sh` — validates Elasticsearch + fail2ban:
+  - IP ban after repeated failed HTTP Basic authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/bgp/test_fail2ban_scope.sh` — validates BGP + fail2ban:
   - IP ban after repeated unconfigured peer connection attempts
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 - `tests/openvpn/test_fail2ban_scope.sh` — validates OpenVPN + fail2ban:
   - IP ban after repeated failed UDP probes
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/ad/test_fail2ban_scope.sh` — validates AD (LDAP) + fail2ban:
+  - IP ban after repeated failed LDAP bind attempts
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 
@@ -74,14 +84,17 @@ Tests are split by service.
 ./tests/ike2/test_fail2ban_scope.sh
 ./tests/postgresql/test_fail2ban_scope.sh
 ./tests/mysql/test_fail2ban_scope.sh
+./tests/redis/test_fail2ban_scope.sh
+./tests/elasticsearch/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
+./tests/ad/test_fail2ban_scope.sh
 ```
 
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh telnetd ftp ntp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp
+./tests/run_service_tests.sh ssh telnetd ftp ntp postgresql mysql redis elasticsearch bgp l2tp ike2 openvpn imap pop3 smtp ad
 ```
 
 `run_service_tests.sh` runs service tests in parallel.
