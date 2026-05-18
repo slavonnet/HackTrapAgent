@@ -7,6 +7,8 @@ RUN apk add --no-cache \
       mariadb-client \
       netcat-openbsd \
       openssh-client \
+      py3-pymongo \
+      python3 \
       strongswan \
       postgresql-client \
       sshpass

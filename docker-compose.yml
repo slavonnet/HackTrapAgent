@@ -142,6 +142,25 @@ services:
       timeout: 3s
       retries: 10
 
+  mongodb:
+    profiles:
+      - mongodb
+    build:
+      context: .
+      dockerfile: build/mongodb/Dockerfile
+    environment:
+      HACKTRAP_USER: ${MONGODB_RUNTIME_USER:-trap}
+    ports:
+      - "${MONGODB_PUBLIC_PORT:-27017}:27017"
+    volumes:
+      - mongodb_logs:/var/log/mongodb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x mongod >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -185,7 +204,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,mongodb,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -200,6 +219,7 @@ services:
       - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
+      - mongodb_logs:/var/log/mongodb
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
@@ -287,5 +307,6 @@ volumes:
   ike2_logs:
   postgresql_logs:
   mysql_logs:
+  mongodb_logs:
   bgp_logs:
   openvpn_logs:

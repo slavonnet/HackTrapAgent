@@ -75,6 +75,11 @@ if [[ ",${services_raw}," == *",mysql,"* ]]; then
   touch /var/log/mysql/error.log
 fi
 
+if [[ ",${services_raw}," == *",mongodb,"* ]]; then
+  mkdir -p /var/log/mongodb
+  touch /var/log/mongodb/mongodb.log
+fi
+
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
   mkdir -p /var/log/l2tp
   touch /var/log/l2tp/charon.log
