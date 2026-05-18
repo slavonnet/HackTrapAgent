@@ -5,8 +5,10 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 ## Current capabilities
 
 - Starts an SSH honeypot (`localhost:2222`).
+- Starts a Telnet honeypot (`localhost:2323`).
 - Starts an FTP honeypot (`localhost:2121`).
 - Starts an NTP honeypot (`localhost:2123/udp`).
+- Starts an NFS honeypot (`localhost:2049`).
 - Starts an IMAP honeypot (`localhost:2143`).
 - Starts a POP3 honeypot (`localhost:2110`).
 - Starts an SMTP honeypot (`localhost:2525`).
@@ -15,8 +17,16 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts a PostgreSQL honeypot (`localhost:5432`).
 - Starts a MySQL honeypot (`localhost:3306`).
 - Starts a MongoDB honeypot (`localhost:27017`).
+- Starts a Redis honeypot (`localhost:6379`).
+- Starts an Elasticsearch honeypot (`localhost:9200`).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
 - Starts an OpenVPN honeypot (`localhost:1194/udp`).
+- Starts an SNMP honeypot (`localhost:2161/udp`) with random runtime community and SNMPv3 credentials.
+- Starts an SNMP trap honeypot (`localhost:2162/udp`) with random runtime community and SNMPv3 credentials.
+- Starts an RDP honeypot (`localhost:3389`).
+- Starts a RabbitMQ honeypot (`localhost:5672`, management API at `localhost:15672`).
+- Starts a RADIUS honeypot (`localhost:1812/udp`).
+- Starts an Active Directory-compatible LDAP honeypot (`localhost:2389`).
 - `fail2ban` monitors failed auth attempts and records attacker IPs.
 - Temporary local bans are applied only inside the fail2ban container scope (host firewall is untouched).
 - Runtime service defaults come from one source: `config/services.env`.
@@ -31,7 +41,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh ftp ntp postgresql mysql mongodb bgp l2tp ike2 imap pop3 smtp openvpn
+docker compose logs -f fail2ban ssh telnetd ftp ntp nfs postgresql mysql mongodb redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn snmp snmptrap rdp radius ad rabbitmq
 ```
 
 Stop:
@@ -54,8 +64,10 @@ Stop:
 - Development and local testing: `docs/development/README.md`
 - Advanced configuration: `docs/advanced/README.md`
 - SSH service implementation: `docs/services/ssh.md`
+- Telnet service implementation: `docs/services/telnetd.md`
 - FTP service implementation: `docs/services/ftp.md`
 - NTP service implementation: `docs/services/ntp.md`
+- NFS service implementation: `docs/services/nfs.md`
 - IMAP service implementation: `docs/services/imap.md`
 - POP3 service implementation: `docs/services/pop3.md`
 - SMTP service implementation: `docs/services/smtp.md`
@@ -64,8 +76,16 @@ Stop:
 - PostgreSQL service implementation: `docs/services/postgresql.md`
 - MySQL service implementation: `docs/services/mysql.md`
 - MongoDB service implementation: `docs/services/mongodb.md`
+- Redis service implementation: `docs/services/redis.md`
+- Elasticsearch service implementation: `docs/services/elasticsearch.md`
 - BGP service implementation: `docs/services/bgp.md`
 - OpenVPN service implementation: `docs/services/openvpn.md`
+- SNMP service implementation: `docs/services/snmp.md`
+- SNMP trap service implementation: `docs/services/snmptrap.md`
+- RDP service implementation: `docs/services/rdp.md`
+- RabbitMQ service implementation: `docs/services/rabbitmq.md`
+- RADIUS service implementation: `docs/services/radius.md`
+- AD service implementation: `docs/services/ad.md`
 - Roadmap: `docs/ROADMAP.md`
 
 ## License

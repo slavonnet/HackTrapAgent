@@ -27,21 +27,27 @@ For each service, provide:
 Priority candidates:
 
 - [x] `ftp`
+- [x] `telnetd`
 - [x] `ntp`
 - [x] `smtp`
 - [x] `imap`
 - [x] `pop3`
 - [x] `bgp`
+- [x] `radius`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
-- [ ] `snmp`
+- [x] `snmp`
+- [x] `snmptrap`
 - [x] `mysql`
 - [x] `mongodb`
+- [x] `redis`
 - [x] `postgresql`
+- [x] `elasticsearch`
 - [x] `l2tp`
 - [x] `ipsec` (IKEv2)
 - [x] `openvpn`
+- [x] `rdp`
 
 ## Phase 4 — Production hardening
 

@@ -20,6 +20,25 @@ services:
       timeout: 3s
       retries: 10
 
+  telnetd:
+    profiles:
+      - telnetd
+    build:
+      context: .
+      dockerfile: build/telnetd/Dockerfile
+    environment:
+      HACKTRAP_USER: ${TELNETD_RUNTIME_USER:-trap}
+    ports:
+      - "${TELNETD_PUBLIC_PORT:-2323}:23"
+    volumes:
+      - telnetd_logs:/var/log/telnet
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "bash -lc ': >/dev/tcp/127.0.0.1/23'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   ftp:
     profiles:
       - ftp
@@ -55,6 +74,26 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pgrep -x ntpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  nfs:
+    profiles:
+      - nfs
+    build:
+      context: .
+      dockerfile: build/nfs/Dockerfile
+    environment:
+      NFS_ALLOWED_CLIENTS: ${NFS_ALLOWED_CLIENTS:-127.0.0.1/32}
+      NFS_LOG_LEVEL: ${NFS_LOG_LEVEL:-DEBUG}
+    ports:
+      - "${NFS_PUBLIC_PORT:-2049}:2049"
+    volumes:
+      - nfs_logs:/var/log/nfs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f ganesha.nfsd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -161,6 +200,44 @@ services:
       timeout: 3s
       retries: 10
 
+  redis:
+    profiles:
+      - redis
+    build:
+      context: .
+      dockerfile: build/redis/Dockerfile
+    environment:
+      HACKTRAP_USER: ${REDIS_RUNTIME_USER:-trap}
+    ports:
+      - "${REDIS_PUBLIC_PORT:-6379}:6379"
+    volumes:
+      - redis_logs:/var/log/redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p 6379 --no-auth-warning PING | grep -Eq 'PONG|NOAUTH'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  elasticsearch:
+    profiles:
+      - elasticsearch
+    build:
+      context: .
+      dockerfile: build/elasticsearch/Dockerfile
+    environment:
+      HACKTRAP_USER: ${ELASTICSEARCH_RUNTIME_USER:-trap}
+    ports:
+      - "${ELASTICSEARCH_PUBLIC_PORT:-9200}:9200"
+    volumes:
+      - elasticsearch_logs:/var/log/elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 9200), 2); s.close()\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -199,19 +276,137 @@ services:
       timeout: 3s
       retries: 10
 
+  snmp:
+    profiles:
+      - snmp
+    build:
+      context: .
+      dockerfile: build/snmp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMP_PUBLIC_PORT:-2161}:161/udp"
+    volumes:
+      - snmp_logs:/var/log/snmp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rdp:
+    profiles:
+      - rdp
+    build:
+      context: .
+      dockerfile: build/rdp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RDP_RUNTIME_USER:-trap}
+    ports:
+      - "${RDP_PUBLIC_PORT:-3389}:3389"
+    volumes:
+      - rdp_logs:/var/log/rdp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x xrdp >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  snmptrap:
+    profiles:
+      - snmptrap
+    build:
+      context: .
+      dockerfile: build/snmptrap/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMPTRAP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMPTRAP_PUBLIC_PORT:-2162}:162/udp"
+    volumes:
+      - snmptrap_logs:/var/log/snmptrap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmptrapd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    profiles:
+      - rabbitmq
+    build:
+      context: .
+      dockerfile: build/rabbitmq/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RABBITMQ_RUNTIME_USER:-trap}
+      RABBITMQ_LOGS: /var/log/rabbitmq/rabbit.log
+    ports:
+      - "${RABBITMQ_PUBLIC_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PUBLIC_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_logs:/var/log/rabbitmq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  radius:
+    profiles:
+      - radius
+    build:
+      context: .
+      dockerfile: build/radius/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RADIUS_RUNTIME_USER:-trap}
+    ports:
+      - "${RADIUS_PUBLIC_PORT:-1812}:1812/udp"
+    volumes:
+      - radius_logs:/var/log/radius
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x freeradius >/dev/null || pgrep -x radiusd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ad:
+    profiles:
+      - ad
+    build:
+      context: .
+      dockerfile: build/ad/Dockerfile
+    environment:
+      HACKTRAP_USER: ${AD_RUNTIME_USER:-trap}
+    ports:
+      - "${AD_PUBLIC_PORT:-2389}:389"
+    volumes:
+      - ad_logs:/var/log/ad
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pidof slapd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,mongodb,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,mongodb,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ssh_logs:/var/log/ssh
+      - telnetd_logs:/var/log/telnet
       - ftp_logs:/var/log/ftp
       - ntp_logs:/var/log/ntp
+      - nfs_logs:/var/log/nfs
       - imap_logs:/var/log/imap
       - pop3_logs:/var/log/pop3
       - smtp_logs:/var/log/smtp
@@ -220,8 +415,16 @@ services:
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
       - mongodb_logs:/var/log/mongodb
+      - redis_logs:/var/log/redis
+      - elasticsearch_logs:/var/log/elasticsearch
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - snmp_logs:/var/log/snmp
+      - snmptrap_logs:/var/log/snmptrap
+      - rdp_logs:/var/log/rdp
+      - rabbitmq_logs:/var/log/rabbitmq
+      - radius_logs:/var/log/radius
+      - ad_logs:/var/log/ad
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -298,8 +501,10 @@ services:
 
 volumes:
   ssh_logs:
+  telnetd_logs:
   ftp_logs:
   ntp_logs:
+  nfs_logs:
   imap_logs:
   pop3_logs:
   smtp_logs:
@@ -308,5 +513,13 @@ volumes:
   postgresql_logs:
   mysql_logs:
   mongodb_logs:
+  redis_logs:
+  elasticsearch_logs:
   bgp_logs:
   openvpn_logs:
+  snmp_logs:
+  snmptrap_logs:
+  rdp_logs:
+  rabbitmq_logs:
+  radius_logs:
+  ad_logs:
