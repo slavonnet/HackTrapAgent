@@ -114,6 +114,14 @@ def format_bytes(size_bytes: float) -> str:
     return f"{value:.2f} TiB"
 
 
+def format_gib(size_bytes: float) -> str:
+    return f"{(float(size_bytes) / (1024**3)):.2f} GiB"
+
+
+def format_gb(size_bytes: float) -> str:
+    return f"{(float(size_bytes) / (1000**3)):.2f} GB"
+
+
 def parse_compose_ports(compose_config: Dict[str, object], services: Iterable[str]) -> Dict[str, str]:
     result: Dict[str, str] = {}
     service_map = compose_config.get("services", {})
@@ -199,6 +207,7 @@ def main() -> int:
     ]
 
     startup_services = ["fail2ban", *services]
+    benchmark_services = startup_services
     up_cmd = [*compose_prefix, "up", "-d"]
     if args.build:
         up_cmd.append("--build")
@@ -211,12 +220,12 @@ def main() -> int:
         print("Resolving compose configuration...")
         compose_config_json = run([*compose_prefix, "config", "--format", "json", *startup_services]).stdout
         compose_config = json.loads(compose_config_json)
-        ports_by_service = parse_compose_ports(compose_config, services)
+        ports_by_service = parse_compose_ports(compose_config, benchmark_services)
 
         metrics_by_service: Dict[str, ServiceMetrics] = {}
         container_to_service: Dict[str, str] = {}
         container_ids: List[str] = []
-        for service in services:
+        for service in benchmark_services:
             container_id = run([*compose_prefix, "ps", "-q", service]).stdout.strip()
             if not container_id:
                 raise RuntimeError(f"Container for service '{service}' is not running.")
@@ -231,6 +240,9 @@ def main() -> int:
 
         next_tick = time.monotonic()
         end_at = time.monotonic() + args.duration_seconds
+        group_peak_memory_bytes = 0.0
+        group_peak_memory_seen = False
+        group_memory_accounting_available = True
         while time.monotonic() < end_at:
             next_tick += args.sample_interval_seconds
             try:
@@ -251,6 +263,7 @@ def main() -> int:
                     "skipping this sample."
                 )
                 stats_output = ""
+            sample_memory_by_service: Dict[str, float] = {}
             for raw_line in stats_output.splitlines():
                 line = raw_line.strip()
                 if not line:
@@ -275,8 +288,17 @@ def main() -> int:
                 metrics.cpu_core_seconds += (cpu_percent / 100.0) * args.sample_interval_seconds
                 if mem_limit_bytes > 0:
                     metrics.memory_accounting_available = True
+                    sample_memory_by_service[service] = mem_used_bytes
                 if metrics.memory_accounting_available and mem_used_bytes > metrics.peak_memory_bytes:
                     metrics.peak_memory_bytes = mem_used_bytes
+                if mem_limit_bytes <= 0:
+                    group_memory_accounting_available = False
+
+            if group_memory_accounting_available and len(sample_memory_by_service) == len(benchmark_services):
+                sample_group_memory_bytes = sum(sample_memory_by_service.values())
+                group_peak_memory_seen = True
+                if sample_group_memory_bytes > group_peak_memory_bytes:
+                    group_peak_memory_bytes = sample_group_memory_bytes
 
             sleep_for = max(0.0, next_tick - time.monotonic())
             if sleep_for > 0:
@@ -301,7 +323,9 @@ def main() -> int:
 
         csv_lines = ["service,ports,image_size_bytes,peak_memory_bytes,cpu_core_seconds"]
         missing_memory_accounting = False
-        for service in services:
+        total_image_size_bytes = 0
+        total_cpu_core_seconds = 0.0
+        for service in benchmark_services:
             metrics = metrics_by_service[service]
             ports = ports_by_service.get(service, "-")
             if metrics.memory_accounting_available:
@@ -317,6 +341,8 @@ def main() -> int:
                 f"{peak_memory_display} | "
                 f"{metrics.cpu_core_seconds:.2f} |"
             )
+            total_image_size_bytes += metrics.image_size_bytes
+            total_cpu_core_seconds += metrics.cpu_core_seconds
             csv_lines.append(
                 f"{service},\"{ports}\",{metrics.image_size_bytes},{peak_memory_csv},{metrics.cpu_core_seconds:.6f}"
             )
@@ -324,6 +350,22 @@ def main() -> int:
         if missing_memory_accounting:
             lines.insert(6, "> Note: Peak memory is marked `n/a` when Docker memory accounting is unavailable on the host.")
             lines.insert(7, "")
+
+        if group_memory_accounting_available and group_peak_memory_seen:
+            group_peak_memory_display = f"{format_gb(group_peak_memory_bytes)} ({format_gib(group_peak_memory_bytes)})"
+        else:
+            group_peak_memory_display = "n/a"
+
+        lines.extend(
+            [
+                "",
+                "**TOTAL**",
+                "",
+                f"- Total image size: {format_gb(total_image_size_bytes)} ({format_gib(total_image_size_bytes)})",
+                f"- Total CPU time (core-seconds): {total_cpu_core_seconds:.2f}",
+                f"- Group peak memory: {group_peak_memory_display}",
+            ]
+        )
 
         output_file.parent.mkdir(parents=True, exist_ok=True)
         output_file.write_text("\n".join(lines) + "\n", encoding="utf-8")

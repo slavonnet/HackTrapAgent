@@ -175,6 +175,14 @@ Generated markdown table columns:
 - `Peak memory`
 - `CPU time (core-seconds)`
 
+The report also includes:
+
+- `fail2ban` row (without public port, shown as `-`),
+- `TOTAL` block under the table:
+  - total image size in GB and GiB,
+  - total CPU time in core-seconds,
+  - peak memory for the whole container group (GB and GiB).
+
 `CPU time (core-seconds)` is computed as an integral of sampled CPU usage:
 `sum(CPU% / 100 * sample_interval_seconds)`.
 
