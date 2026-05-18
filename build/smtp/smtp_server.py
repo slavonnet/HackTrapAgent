@@ -28,7 +28,7 @@ class SmtpHandler(socketserver.StreamRequestHandler):
 
     def _log_failure(self, user: str) -> None:
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        line = f"{ts} SMTP_AUTH_FAILED user=<{user}> rip={self.client_address[0]}\n"
+        line = f"{ts} SMTP_AUTH_FAILED user={user} rip={self.client_address[0]}\n"
         with open(self.server.log_file, "a", encoding="utf-8") as handle:  # type: ignore[attr-defined]
             handle.write(line)
 
