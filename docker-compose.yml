@@ -39,6 +39,25 @@ services:
       timeout: 3s
       retries: 10
 
+  postgresql:
+    profiles:
+      - postgresql
+    build:
+      context: .
+      dockerfile: build/postgresql/Dockerfile
+    environment:
+      HACKTRAP_USER: ${POSTGRESQL_RUNTIME_USER:-trap}
+    ports:
+      - "${POSTGRESQL_PUBLIC_PORT:-5432}:5432"
+    volumes:
+      - postgresql_logs:/var/log/postgresql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "runuser -u postgres -- pg_isready -h /var/run/postgresql -U postgres >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   mysql:
     profiles:
       - mysql
@@ -101,13 +120,14 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,mysql,bgp,openvpn}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,postgresql,mysql,bgp,openvpn}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
+      - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
@@ -129,6 +149,7 @@ services:
 volumes:
   ssh_logs:
   ftp_logs:
+  postgresql_logs:
   mysql_logs:
   bgp_logs:
   openvpn_logs:

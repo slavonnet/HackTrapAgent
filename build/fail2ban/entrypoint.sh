@@ -43,6 +43,11 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",postgresql,"* ]]; then
+  mkdir -p /var/log/postgresql
+  touch /var/log/postgresql/postgresql.log
+fi
+
 if [[ ",${services_raw}," == *",bgp,"* ]]; then
   mkdir -p /var/log/bgp
   touch /var/log/bgp/bgp.log
