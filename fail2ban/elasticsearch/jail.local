@@ -1,0 +1,5 @@
+[elasticsearch-auth]
+enabled = true
+port = 9200
+logpath = /var/log/elasticsearch/elasticsearch.log
+backend = polling
