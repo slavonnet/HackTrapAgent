@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "clickhouse-client --host 127.0.0.1 --port 9000 --user default --password \"\$(awk -F= '/^CLICKHOUSE_DEFAULT_PASSWORD=/{print \$2}' /run/hacktrap/clickhouse_credentials.env)\" --query \"SELECT 1\" >/dev/null"
+wait_for_exec_success "$service_name" "clickhouse-client --host 127.0.0.1 --port 9000 --user \"\$(awk -F= '/^CLICKHOUSE_SERVICE_USER=/{print \$2}' /run/hacktrap/clickhouse_credentials.env)\" --password \"\$(awk -F= '/^CLICKHOUSE_SERVICE_PASSWORD=/{print \$2}' /run/hacktrap/clickhouse_credentials.env)\" --query \"SELECT 1\" >/dev/null"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"

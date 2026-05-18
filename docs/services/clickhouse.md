@@ -16,10 +16,8 @@ The ClickHouse service provides a realistic SQL analytics endpoint that emits fa
 ## Credentials policy
 
 - No static password is stored in the repository.
-- New random passwords are generated on every container start for:
-  - `default` user
-  - runtime service user from `etc/clickhouse/users.conf`
-- Anonymous/no-password default access is explicitly removed at startup.
+- A new random password is generated on every container start for the runtime service user from `etc/clickhouse/users.conf`.
+- The `default` user is restricted to loopback addresses only (`127.0.0.1` and `::1`) to prevent anonymous remote access.
 - Current runtime credentials are written to `/run/hacktrap/clickhouse_credentials.env` inside the container.
 
 ## fail2ban filter choice

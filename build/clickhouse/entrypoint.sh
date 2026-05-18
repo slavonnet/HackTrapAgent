@@ -23,38 +23,31 @@ if [[ ! "$user_name" =~ ^[A-Za-z0-9_]+$ ]]; then
   exit 1
 fi
 
-default_password="$(openssl rand -hex 24)"
 service_password="$(openssl rand -hex 24)"
-default_password_sha256="$(printf "%s" "$default_password" | sha256sum | awk '{print $1}')"
 service_password_sha256="$(printf "%s" "$service_password" | sha256sum | awk '{print $1}')"
 
-mkdir -p /run/hacktrap /var/log/clickhouse-server /etc/clickhouse-server/users.d /etc/clickhouse-server/config.d
-touch "$log_file" "$err_log_file"
-chown -R clickhouse:clickhouse /run/hacktrap /var/log/clickhouse-server /etc/clickhouse-server/users.d /etc/clickhouse-server/config.d
-chmod 0644 "$log_file" "$err_log_file"
-
 if [[ "$user_name" == "default" ]]; then
-  service_password="$default_password"
-  service_password_sha256="$default_password_sha256"
+  echo "The default ClickHouse user is reserved for local-only access. Use a different runtime user."
+  exit 1
 fi
+
+mkdir -p /run/hacktrap /var/log/clickhouse-server /etc/clickhouse-server/users.d /etc/clickhouse-server/config.d /var/lib/clickhouse/preprocessed_configs
+touch "$log_file" "$err_log_file"
+chown -R clickhouse:clickhouse /run/hacktrap /var/log/clickhouse-server /etc/clickhouse-server/users.d /etc/clickhouse-server/config.d /var/lib/clickhouse
+chmod 0644 "$log_file" "$err_log_file"
 
 cat > "$users_config_path" <<EOF
 <clickhouse>
   <users>
     <default>
-      <password_sha256_hex>${default_password_sha256}</password_sha256_hex>
-      <no_password remove="remove" />
       <networks>
-        <ip>::/0</ip>
+        <ip>127.0.0.1</ip>
+        <ip>::1</ip>
       </networks>
       <profile>default</profile>
       <quota>default</quota>
-      <access_management>1</access_management>
+      <access_management>0</access_management>
     </default>
-EOF
-
-if [[ "$user_name" != "default" ]]; then
-  cat >> "$users_config_path" <<EOF
     <${user_name}>
       <password_sha256_hex>${service_password_sha256}</password_sha256_hex>
       <networks>
@@ -64,10 +57,6 @@ if [[ "$user_name" != "default" ]]; then
       <quota>default</quota>
       <access_management>0</access_management>
     </${user_name}>
-EOF
-fi
-
-cat >> "$users_config_path" <<'EOF'
   </users>
 </clickhouse>
 EOF
@@ -91,8 +80,6 @@ cat > "$logging_config_path" <<EOF
 EOF
 
 {
-  printf "CLICKHOUSE_DEFAULT_USER=default\n"
-  printf "CLICKHOUSE_DEFAULT_PASSWORD=%s\n" "$default_password"
   printf "CLICKHOUSE_SERVICE_USER=%s\n" "$user_name"
   printf "CLICKHOUSE_SERVICE_PASSWORD=%s\n" "$service_password"
 } > "$credentials_file"
@@ -101,4 +88,7 @@ chown clickhouse:clickhouse "$users_config_path" "$logging_config_path" "$creden
 echo "Generated random ClickHouse passwords for runtime users."
 
 export CLICKHOUSE_SKIP_USER_SETUP=1
+if [[ "$(id -u)" -eq 0 ]]; then
+  exec runuser -u clickhouse -- /entrypoint.sh "$@"
+fi
 exec /entrypoint.sh "$@"
