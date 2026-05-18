@@ -17,7 +17,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 179), 2); s.close()\""
+wait_for_exec_success "$service_name" "ss -ltn sport = :179 | grep -q ':179'"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"

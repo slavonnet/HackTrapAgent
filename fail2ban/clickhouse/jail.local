@@ -1,0 +1,6 @@
+[clickhouse-auth]
+enabled = true
+filter = clickhouse
+port = 8123,9000
+logpath = /var/log/clickhouse-server/clickhouse-server.log
+backend = polling

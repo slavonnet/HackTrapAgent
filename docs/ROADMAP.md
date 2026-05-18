@@ -38,14 +38,17 @@ Priority candidates:
 - [x] `iax` (IAX2 in Asterisk)
 - [x] `asterisk` (PJSIP + IAX2 + AMI + ARI)
 - [ ] `dns`
-- [ ] `snmp`
+- [x] `snmp`
+- [x] `snmptrap`
 - [x] `mysql`
+- [x] `mongodb`
 - [x] `redis`
 - [x] `postgresql`
 - [x] `elasticsearch`
 - [x] `l2tp`
 - [x] `ipsec` (IKEv2)
 - [x] `openvpn`
+- [x] `rdp`
 
 ## Phase 4 — Production hardening
 
