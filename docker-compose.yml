@@ -59,6 +59,25 @@ services:
       timeout: 3s
       retries: 10
 
+  openvpn:
+    profiles:
+      - openvpn
+    build:
+      context: .
+      dockerfile: build/openvpn/Dockerfile
+    environment:
+      HACKTRAP_USER: ${OPENVPN_RUNTIME_USER:-trap}
+    ports:
+      - "${OPENVPN_PUBLIC_PORT:-1194}:1194/udp"
+    volumes:
+      - openvpn_logs:/var/log/openvpn
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ss -lun | grep -q ':1194'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
@@ -72,6 +91,7 @@ services:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
       - ntp_logs:/var/log/ntp
+      - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -91,3 +111,4 @@ volumes:
   ssh_logs:
   ftp_logs:
   ntp_logs:
+  openvpn_logs:

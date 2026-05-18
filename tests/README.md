@@ -19,6 +19,8 @@ Tests are split by service.
   - matching rule is absent on the host
 - `tests/ntp/test_fail2ban_scope.sh` — validates NTP + fail2ban:
   - IP ban after repeated malformed UDP probes
+- `tests/openvpn/test_fail2ban_scope.sh` — validates OpenVPN + fail2ban:
+  - IP ban after repeated failed UDP probes
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 
@@ -28,12 +30,13 @@ Tests are split by service.
 ./tests/ssh/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
 ./tests/ntp/test_fail2ban_scope.sh
+./tests/openvpn/test_fail2ban_scope.sh
 ```
 
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp ntp
+./tests/run_service_tests.sh ssh ftp ntp openvpn
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

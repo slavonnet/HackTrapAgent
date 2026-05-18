@@ -37,7 +37,7 @@ Priority candidates:
 - [ ] `postgresql`
 - [ ] `l2tp`
 - [ ] `ipsec`
-- [ ] `openvpn`
+- [x] `openvpn`
 
 ## Phase 4 — Production hardening
 
