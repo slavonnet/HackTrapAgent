@@ -5,6 +5,7 @@ RUN apk add --no-cache \
       iproute2 \
       lftp \
       openssh-client \
+      postgresql-client \
       sshpass
 
 CMD ["sleep", "infinity"]

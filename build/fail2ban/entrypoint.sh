@@ -32,4 +32,9 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",postgresql,"* ]]; then
+  mkdir -p /var/log/postgresql
+  touch /var/log/postgresql/postgresql.log
+fi
+
 exec fail2ban-server -f -x -v
