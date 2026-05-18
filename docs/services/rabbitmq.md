@@ -11,6 +11,9 @@ The RabbitMQ service provides an AMQP honeypot endpoint that emits fail2ban even
 - Failed authentication attempts are logged to `/var/log/rabbitmq/rabbit.log`.
 - The log file is mounted via a shared volume and consumed by fail2ban.
 - fail2ban monitors AMQP authentication errors from RabbitMQ connection logs.
+- By default, management and metrics plugins are disabled at startup (`RABBITMQ_ENABLE_MANAGEMENT=false`) to reduce CPU overhead.
+- Low-CPU Erlang scheduler flags are applied by default via `RABBITMQ_LOW_CPU_ERL_ARGS`.
+- In low-overhead mode, mnesia state is moved to `/dev/shm/rabbitmq/mnesia` (`RABBITMQ_UNSAFE_RAM_STORAGE=true`) to avoid disk durability costs.
 
 ## Credentials policy
 
@@ -30,3 +33,11 @@ The RabbitMQ service provides an AMQP honeypot endpoint that emits fail2ban even
 - Service defaults: `config/services.env`
 - Test: `tests/rabbitmq/test_fail2ban_scope.sh`
 - fail2ban jail: `fail2ban/rabbitmq/jail.local`
+
+## Performance-oriented toggles
+
+- `RABBITMQ_ENABLE_MANAGEMENT`: enables/disables the management UI/plugin set.
+  - `false` (default): lower CPU footprint.
+  - `true`: enables management endpoint (`15672`) for diagnostics.
+- `RABBITMQ_UNSAFE_RAM_STORAGE`: when enabled (default), places mnesia state on tmpfs (`/dev/shm`) for faster and less durable operation.
+- `RABBITMQ_LOW_CPU_ERL_ARGS`: low-overhead Erlang runtime flags used when `RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS` is not explicitly set.
