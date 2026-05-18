@@ -1,0 +1,50 @@
+name: hacktrapagent
+
+services:
+  ssh:
+    profiles:
+      - ssh
+    build:
+      context: .
+      dockerfile: build/ssh/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SSH_RUNTIME_USER:-trap}
+    ports:
+      - "${SSH_PUBLIC_PORT:-2222}:22"
+    volumes:
+      - ssh_logs:/var/log/ssh
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x sshd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  fail2ban:
+    build:
+      context: .
+      dockerfile: build/fail2ban/Dockerfile
+    environment:
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh}
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ssh_logs:/var/log/ssh
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  attacker:
+    build:
+      context: .
+      dockerfile: build/attacker/Dockerfile
+    command: ["sleep", "infinity"]
+    profiles:
+      - test
+
+volumes:
+  ssh_logs:
