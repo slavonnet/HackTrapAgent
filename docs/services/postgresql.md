@@ -8,6 +8,7 @@ The PostgreSQL service is used as an additional fail2ban event source for passwo
 
 - The container runs PostgreSQL with TCP access on port `5432`.
 - Authentication failures are logged to `/var/log/postgresql/postgresql.log`.
+- SQL write actions (for example `INSERT`, `UPDATE`, `DELETE`) are logged to the same file.
 - This file is mounted via a shared volume and read by fail2ban.
 - Password authentication over TCP is enabled to capture realistic failed login traffic.
 
@@ -25,3 +26,8 @@ The PostgreSQL service is used as an additional fail2ban event source for passwo
 - Test: `tests/postgresql/test_fail2ban_scope.sh`
 - fail2ban jail: `fail2ban/postgresql/jail.local`
 - fail2ban filter: `fail2ban/postgresql/filter.conf`
+
+## fail2ban filter choice
+
+- The Debian `fail2ban` package used in this project does not ship a maintained `filter.d/postgresql.conf`.
+- For this reason, the project keeps a dedicated service-local PostgreSQL filter under `fail2ban/postgresql/filter.conf`.

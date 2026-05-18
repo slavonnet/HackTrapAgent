@@ -4,6 +4,7 @@ RUN apk add --no-cache \
       bash \
       iproute2 \
       lftp \
+      mariadb-client \
       netcat-openbsd \
       openssh-client \
       postgresql-client \

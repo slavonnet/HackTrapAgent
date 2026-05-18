@@ -1,0 +1,4 @@
+[mysqld-auth]
+enabled = true
+port = 3306
+logpath = /var/log/mysql/error.log

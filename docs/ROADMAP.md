@@ -33,7 +33,7 @@ Priority candidates:
 - [ ] `dns`
 - [ ] `snmp`
 - [ ] `imap`
-- [ ] `mysql`
+- [x] `mysql`
 - [x] `postgresql`
 - [ ] `l2tp`
 - [ ] `ipsec`
