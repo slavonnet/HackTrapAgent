@@ -168,4 +168,12 @@ Generated markdown table columns:
 `CPU time (core-seconds)` is computed as an integral of sampled CPU usage:
 `sum(CPU% / 100 * sample_interval_seconds)`.
 
+Useful optional flags:
+
+- `--sample-interval-seconds` (default: `1.0`)
+- `--stats-timeout-seconds` (default: `5.0`) to prevent stuck `docker stats` calls
+- `--output-file` and `--output-csv` to store results in custom paths
+
+If Docker memory accounting is unavailable on the host, `Peak memory` is reported as `n/a`.
+
 This report helps identify expensive services before tuning service-specific configuration files in `etc/<service>/...` (for example database durability/background settings).

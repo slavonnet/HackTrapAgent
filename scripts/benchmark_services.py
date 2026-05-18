@@ -36,14 +36,22 @@ class ServiceMetrics:
     image_size_bytes: int = 0
     peak_memory_bytes: float = 0.0
     cpu_core_seconds: float = 0.0
+    memory_accounting_available: bool = False
 
 
-def run(cmd: List[str], *, capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run(
+    cmd: List[str],
+    *,
+    capture_output: bool = True,
+    check: bool = True,
+    timeout: float | None = None,
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         cmd,
         check=check,
         capture_output=capture_output,
         text=True,
+        timeout=timeout,
     )
 
 
@@ -138,6 +146,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run a 5-minute benchmark for enabled services.")
     parser.add_argument("--duration-seconds", type=int, default=300, help="Benchmark duration in seconds.")
     parser.add_argument("--sample-interval-seconds", type=float, default=1.0, help="Sampling interval in seconds.")
+    parser.add_argument(
+        "--stats-timeout-seconds",
+        type=float,
+        default=5.0,
+        help="Per-sample timeout for docker stats calls.",
+    )
     parser.add_argument("--build", action="store_true", help="Build images before benchmark start.")
     parser.add_argument("--output-file", default="", help="Output markdown report path.")
     parser.add_argument("--output-csv", default="", help="Optional output CSV report path.")
@@ -147,6 +161,8 @@ def main() -> int:
         raise RuntimeError("--duration-seconds must be greater than 0.")
     if args.sample_interval_seconds <= 0:
         raise RuntimeError("--sample-interval-seconds must be greater than 0.")
+    if args.stats_timeout_seconds <= 0:
+        raise RuntimeError("--stats-timeout-seconds must be greater than 0.")
 
     project_root = Path(__file__).resolve().parent.parent
     config_file = Path(os.environ.get("CONFIG_FILE", project_root / "config/services.env"))
@@ -181,39 +197,48 @@ def main() -> int:
 
     try:
         print("Resolving compose configuration...")
-        compose_config_json = run([*compose_prefix, "config", "--format", "json"]).stdout
+        compose_config_json = run([*compose_prefix, "config", "--format", "json", *startup_services]).stdout
         compose_config = json.loads(compose_config_json)
         ports_by_service = parse_compose_ports(compose_config, services)
 
         metrics_by_service: Dict[str, ServiceMetrics] = {}
         container_to_service: Dict[str, str] = {}
+        container_ids: List[str] = []
         for service in services:
             container_id = run([*compose_prefix, "ps", "-q", service]).stdout.strip()
             if not container_id:
                 raise RuntimeError(f"Container for service '{service}' is not running.")
             metrics_by_service[service] = ServiceMetrics(service=service, container_id=container_id)
             container_to_service[container_id] = service
-
-        container_ids = list(container_to_service.keys())
-        total_samples = max(1, int(args.duration_seconds / args.sample_interval_seconds))
+            container_to_service[container_id[:12]] = service
+            container_ids.append(container_id)
         print(
             f"Collecting stats for {len(container_ids)} containers "
             f"for {args.duration_seconds}s with interval {args.sample_interval_seconds}s..."
         )
 
         next_tick = time.monotonic()
-        for _ in range(total_samples):
+        end_at = time.monotonic() + args.duration_seconds
+        while time.monotonic() < end_at:
             next_tick += args.sample_interval_seconds
-            stats_output = run(
-                [
-                    *docker_cmd,
-                    "stats",
-                    "--no-stream",
-                    "--format",
-                    "{{.ID}}|{{.CPUPerc}}|{{.MemUsage}}",
-                    *container_ids,
-                ]
-            ).stdout
+            try:
+                stats_output = run(
+                    [
+                        *docker_cmd,
+                        "stats",
+                        "--no-stream",
+                        "--format",
+                        "{{.ID}}|{{.CPUPerc}}|{{.MemUsage}}",
+                        *container_ids,
+                    ],
+                    timeout=args.stats_timeout_seconds,
+                ).stdout
+            except subprocess.TimeoutExpired:
+                print(
+                    f"WARNING: docker stats sample timed out after {args.stats_timeout_seconds}s; "
+                    "skipping this sample."
+                )
+                stats_output = ""
             for raw_line in stats_output.splitlines():
                 line = raw_line.strip()
                 if not line:
@@ -226,12 +251,19 @@ def main() -> int:
                 if service is None:
                     continue
                 cpu_percent = float(cpu_perc_raw.strip().replace("%", "").replace(",", ".") or "0")
-                mem_used_raw = mem_usage_raw.split("/", 1)[0].strip()
+                if "/" in mem_usage_raw:
+                    mem_used_raw, mem_limit_raw = [part.strip() for part in mem_usage_raw.split("/", 1)]
+                else:
+                    mem_used_raw = mem_usage_raw.strip()
+                    mem_limit_raw = "0B"
                 mem_used_bytes = parse_size_to_bytes(mem_used_raw)
+                mem_limit_bytes = parse_size_to_bytes(mem_limit_raw)
 
                 metrics = metrics_by_service[service]
                 metrics.cpu_core_seconds += (cpu_percent / 100.0) * args.sample_interval_seconds
-                if mem_used_bytes > metrics.peak_memory_bytes:
+                if mem_limit_bytes > 0:
+                    metrics.memory_accounting_available = True
+                if metrics.memory_accounting_available and mem_used_bytes > metrics.peak_memory_bytes:
                     metrics.peak_memory_bytes = mem_used_bytes
 
             sleep_for = max(0.0, next_tick - time.monotonic())
@@ -256,18 +288,30 @@ def main() -> int:
         ]
 
         csv_lines = ["service,ports,image_size_bytes,peak_memory_bytes,cpu_core_seconds"]
+        missing_memory_accounting = False
         for service in services:
             metrics = metrics_by_service[service]
             ports = ports_by_service.get(service, "-")
+            if metrics.memory_accounting_available:
+                peak_memory_display = format_bytes(metrics.peak_memory_bytes)
+                peak_memory_csv = str(int(metrics.peak_memory_bytes))
+            else:
+                peak_memory_display = "n/a"
+                peak_memory_csv = ""
+                missing_memory_accounting = True
             lines.append(
                 f"| {ports} | {service_doc_link(project_root, service)} | "
                 f"{format_bytes(metrics.image_size_bytes)} | "
-                f"{format_bytes(metrics.peak_memory_bytes)} | "
+                f"{peak_memory_display} | "
                 f"{metrics.cpu_core_seconds:.2f} |"
             )
             csv_lines.append(
-                f"{service},\"{ports}\",{metrics.image_size_bytes},{int(metrics.peak_memory_bytes)},{metrics.cpu_core_seconds:.6f}"
+                f"{service},\"{ports}\",{metrics.image_size_bytes},{peak_memory_csv},{metrics.cpu_core_seconds:.6f}"
             )
+
+        if missing_memory_accounting:
+            lines.insert(6, "> Note: Peak memory is marked `n/a` when Docker memory accounting is unavailable on the host.")
+            lines.insert(7, "")
 
         output_file.parent.mkdir(parents=True, exist_ok=True)
         output_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -277,7 +321,9 @@ def main() -> int:
         print(f"Benchmark CSV report: {output_csv}")
     finally:
         print("Stopping benchmark stack...")
-        run([*compose_prefix, "--profile", "test", "down", "-v", "--remove-orphans"], capture_output=False, check=False)
+        run([*compose_prefix, "stop", *startup_services], capture_output=False, check=False)
+        run([*compose_prefix, "rm", "-fsv", *startup_services], capture_output=False, check=False)
+        run([*compose_prefix, "down", "-v", "--remove-orphans"], capture_output=False, check=False)
 
     return 0
 
