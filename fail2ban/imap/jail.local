@@ -1,5 +1,4 @@
-[hacktrap-imap]
+[dovecot]
 enabled = true
 port = 143
-filter = hacktrap-imap
-logpath = /var/log/imap/imap-auth.log
+logpath = /var/log/imap/dovecot.log

@@ -39,6 +39,25 @@ services:
       timeout: 3s
       retries: 10
 
+  mysql:
+    profiles:
+      - mysql
+    build:
+      context: .
+      dockerfile: build/mysql/Dockerfile
+    environment:
+      HACKTRAP_USER: ${MYSQL_RUNTIME_USER:-trap}
+    ports:
+      - "${MYSQL_PUBLIC_PORT:-3306}:3306"
+    volumes:
+      - mysql_logs:/var/log/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x mariadbd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -82,7 +101,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,mysql,bgp,openvpn,imap,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -91,6 +110,7 @@ services:
       - ftp_logs:/var/log/ftp
       - imap_logs:/var/log/imap
       - smtp_logs:/var/log/smtp
+      - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
@@ -122,7 +142,7 @@ services:
       - imap_logs:/var/log/imap
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f imap_server.py >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -141,7 +161,7 @@ services:
       - smtp_logs:/var/log/smtp
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f smtp_server.py >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x master >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -151,5 +171,6 @@ volumes:
   ftp_logs:
   imap_logs:
   smtp_logs:
+  mysql_logs:
   bgp_logs:
   openvpn_logs:

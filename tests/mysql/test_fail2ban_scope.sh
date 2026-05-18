@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-service_name="smtp"
+service_name="mysql"
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # shellcheck source=tests/common/compose_test_lib.sh
@@ -9,7 +9,7 @@ source "${project_root}/tests/common/compose_test_lib.sh"
 
 load_service_config
 set_compose_project_name "$service_name"
-target_user="${SMTP_TEST_LOGIN_USER:-trap}"
+target_user="${MYSQL_TEST_LOGIN_USER:-root}"
 
 trap cleanup_compose EXIT
 
@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x master"
+wait_for_exec_success "$service_name" "pgrep -x mariadbd"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -29,28 +29,26 @@ if [[ -z "$attacker_ip" ]]; then
 fi
 
 compose exec -T -e TARGET_USER="$target_user" attacker sh -lc '
-  user_b64="$(printf "%s" "$TARGET_USER" | base64 | tr -d "\n")"
-  bad_pass_b64="$(printf "%s" "wrong" | base64 | tr -d "\n")"
   for i in $(seq 1 6); do
-    {
-      printf "EHLO attacker\r\n"
-      printf "AUTH LOGIN\r\n"
-      printf "%s\r\n" "$user_b64"
-      printf "%s\r\n" "$bad_pass_b64"
-      printf "QUIT\r\n"
-    } | nc -w 3 smtp 25 >/dev/null 2>&1 || true
+    MYSQL_PWD=wrong mariadb \
+      --protocol=tcp \
+      --connect-timeout=3 \
+      --host=mysql \
+      --port=3306 \
+      --user="${TARGET_USER}" \
+      --execute="SELECT 1" >/dev/null 2>&1 || true
     sleep 1
   done
 '
 
 for _ in $(seq 1 30); do
-  if compose exec -T fail2ban fail2ban-client status postfix-auth | grep -F "$attacker_ip" >/dev/null; then
+  if compose exec -T fail2ban fail2ban-client status mysqld-auth | grep -F "$attacker_ip" >/dev/null; then
     break
   fi
   sleep 2
 done
 
-if ! compose exec -T fail2ban fail2ban-client status postfix-auth | grep -F "$attacker_ip" >/dev/null; then
+if ! compose exec -T fail2ban fail2ban-client status mysqld-auth | grep -F "$attacker_ip" >/dev/null; then
   echo "Attacker IP was not banned: $attacker_ip"
   compose logs fail2ban "$service_name"
   exit 1

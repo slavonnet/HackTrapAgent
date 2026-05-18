@@ -6,9 +6,10 @@ The SMTP service provides a mail-authentication honeypot endpoint that generates
 
 ## Runtime model
 
-- The container runs a minimal Python SMTP server on port `25`.
-- Failed authentication attempts are written to `/var/log/smtp/smtp-auth.log`.
+- The container runs upstream `postfix` SMTP daemon on port `25`.
+- Failed authentication attempts are written to `/var/log/smtp/mail.log`.
 - The log file is mounted via a shared volume and consumed by fail2ban.
+- fail2ban uses the upstream `postfix` filter in `mode=auth`.
 
 ## Credentials policy
 

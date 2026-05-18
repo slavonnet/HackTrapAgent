@@ -1,0 +1,22 @@
+compatibility_level = 3.6
+
+myhostname = smtp.hacktrap.local
+mydomain = hacktrap.local
+myorigin = $mydomain
+
+inet_interfaces = all
+inet_protocols = ipv4
+
+smtpd_banner = $myhostname ESMTP
+
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_type = cyrus
+smtpd_sasl_path = smtpd
+smtpd_sasl_local_domain =
+smtpd_sasl_security_options = noanonymous
+broken_sasl_auth_clients = yes
+
+smtpd_tls_security_level = none
+smtpd_recipient_restrictions = permit_sasl_authenticated,reject_unauth_destination
+
+maillog_file = /var/log/smtp/mail.log

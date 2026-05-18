@@ -8,6 +8,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts an FTP honeypot (`localhost:2121`).
 - Starts an IMAP honeypot (`localhost:2143`).
 - Starts an SMTP honeypot (`localhost:2525`).
+- Starts a MySQL honeypot (`localhost:3306`).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
 - Starts an OpenVPN honeypot (`localhost:1194/udp`).
 - `fail2ban` monitors failed auth attempts and records attacker IPs.
@@ -24,7 +25,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh ftp bgp imap smtp openvpn
+docker compose logs -f fail2ban ssh ftp mysql bgp imap smtp openvpn
 ```
 
 Stop:
@@ -50,6 +51,7 @@ Stop:
 - FTP service implementation: `docs/services/ftp.md`
 - IMAP service implementation: `docs/services/imap.md`
 - SMTP service implementation: `docs/services/smtp.md`
+- MySQL service implementation: `docs/services/mysql.md`
 - BGP service implementation: `docs/services/bgp.md`
 - OpenVPN service implementation: `docs/services/openvpn.md`
 - Roadmap: `docs/ROADMAP.md`

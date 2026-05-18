@@ -16,7 +16,7 @@
 2. Run service tests:
 
    ```bash
-   chmod +x tests/run_service_tests.sh tests/common/compose_test_lib.sh tests/ssh/test_fail2ban_scope.sh tests/ftp/test_fail2ban_scope.sh tests/bgp/test_fail2ban_scope.sh tests/openvpn/test_fail2ban_scope.sh tests/imap/test_fail2ban_scope.sh tests/smtp/test_fail2ban_scope.sh
+   chmod +x tests/run_service_tests.sh tests/common/compose_test_lib.sh tests/ssh/test_fail2ban_scope.sh tests/ftp/test_fail2ban_scope.sh tests/mysql/test_fail2ban_scope.sh tests/bgp/test_fail2ban_scope.sh tests/openvpn/test_fail2ban_scope.sh tests/imap/test_fail2ban_scope.sh tests/smtp/test_fail2ban_scope.sh
    ./tests/run_service_tests.sh
    ```
 

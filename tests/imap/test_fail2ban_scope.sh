@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -f imap_server.py"
+wait_for_exec_success "$service_name" "pgrep -x dovecot"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -39,13 +39,13 @@ compose exec -T -e TARGET_USER="$target_user" attacker sh -lc '
 '
 
 for _ in $(seq 1 30); do
-  if compose exec -T fail2ban fail2ban-client status hacktrap-imap | grep -F "$attacker_ip" >/dev/null; then
+  if compose exec -T fail2ban fail2ban-client status dovecot | grep -F "$attacker_ip" >/dev/null; then
     break
   fi
   sleep 2
 done
 
-if ! compose exec -T fail2ban fail2ban-client status hacktrap-imap | grep -F "$attacker_ip" >/dev/null; then
+if ! compose exec -T fail2ban fail2ban-client status dovecot | grep -F "$attacker_ip" >/dev/null; then
   echo "Attacker IP was not banned: $attacker_ip"
   compose logs fail2ban "$service_name"
   exit 1

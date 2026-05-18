@@ -3,6 +3,7 @@ set -euo pipefail
 
 user_name="${HACKTRAP_USER:-trap}"
 users_file="/opt/hacktrap/etc/imap/users.conf"
+passwd_file="/run/hacktrap/dovecot.passwd"
 
 if [[ -f "$users_file" ]]; then
   while IFS=: read -r cfg_user _; do
@@ -13,21 +14,15 @@ if [[ -f "$users_file" ]]; then
   done < "$users_file"
 fi
 
-root_password="$(openssl rand -hex 24)"
-echo "root:${root_password}" | chpasswd
-
-service_password=""
-if [[ "$user_name" != "root" ]]; then
-  if ! id "$user_name" >/dev/null 2>&1; then
-    useradd -m -s /bin/bash "$user_name"
-  fi
-  service_password="$(openssl rand -hex 24)"
-  echo "${user_name}:${service_password}" | chpasswd
+if [[ ! "$user_name" =~ ^[A-Za-z0-9_]+$ ]]; then
+  echo "Invalid IMAP runtime user: '$user_name'"
+  exit 1
 fi
 
-login_password="$root_password"
+root_password="$(openssl rand -hex 24)"
+service_password=""
 if [[ "$user_name" != "root" ]]; then
-  login_password="$service_password"
+  service_password="$(openssl rand -hex 24)"
 fi
 
 mkdir -p /run/hacktrap
@@ -42,10 +37,20 @@ chmod 600 "$credentials_file"
 echo "Generated random IMAP passwords for runtime users."
 
 mkdir -p /var/log/imap
-touch /var/log/imap/imap-auth.log
-chmod 0644 /var/log/imap/imap-auth.log
+touch /var/log/imap/dovecot.log
+chmod 0644 /var/log/imap/dovecot.log
 
-export IMAP_RUNTIME_USER="$user_name"
-export IMAP_RUNTIME_PASSWORD="$login_password"
+mkdir -p /var/mail/root/Maildir
+chown -R 0:0 /var/mail/root || true
 
-exec python3 /usr/local/bin/imap_server.py --host 0.0.0.0 --port 143 --log-file /var/log/imap/imap-auth.log
+{
+  printf "root:{PLAIN}%s:0:0::/var/mail/root::\n" "$root_password"
+  if [[ "$user_name" != "root" ]]; then
+    mkdir -p "/var/mail/${user_name}/Maildir"
+    chown -R 5000:5000 "/var/mail/${user_name}" || true
+    printf "%s:{PLAIN}%s:5000:5000::/var/mail/%s::\n" "$user_name" "$service_password" "$user_name"
+  fi
+} > "$passwd_file"
+chmod 600 "$passwd_file"
+
+exec /usr/sbin/dovecot -F -c /etc/dovecot/dovecot.conf

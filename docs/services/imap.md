@@ -6,9 +6,10 @@ The IMAP service provides a mail-authentication honeypot endpoint that generates
 
 ## Runtime model
 
-- The container runs a minimal Python IMAP server on port `143`.
-- Failed authentication attempts are written to `/var/log/imap/imap-auth.log`.
+- The container runs upstream `dovecot-imapd` on port `143`.
+- Failed authentication attempts are written to `/var/log/imap/dovecot.log`.
 - The log file is mounted via a shared volume and consumed by fail2ban.
+- fail2ban uses the upstream `dovecot` filter (no project-specific parser).
 
 ## Credentials policy
 

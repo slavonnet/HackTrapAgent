@@ -1,5 +1,5 @@
-[hacktrap-smtp]
+[postfix-auth]
 enabled = true
 port = 25
-filter = hacktrap-smtp
-logpath = /var/log/smtp/smtp-auth.log
+filter = postfix[mode=auth]
+logpath = /var/log/smtp/mail.log

@@ -53,12 +53,12 @@ fi
 
 if [[ ",${services_raw}," == *",imap,"* ]]; then
   mkdir -p /var/log/imap
-  touch /var/log/imap/imap-auth.log
+  touch /var/log/imap/dovecot.log
 fi
 
 if [[ ",${services_raw}," == *",smtp,"* ]]; then
   mkdir -p /var/log/smtp
-  touch /var/log/smtp/smtp-auth.log
+  touch /var/log/smtp/mail.log
 fi
 
 if [[ ",${services_raw}," == *",bgp,"* ]]; then
@@ -69,6 +69,11 @@ fi
 if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   mkdir -p /var/log/openvpn
   touch /var/log/openvpn/openvpn.log
+fi
+
+if [[ ",${services_raw}," == *",mysql,"* ]]; then
+  mkdir -p /var/log/mysql
+  touch /var/log/mysql/error.log
 fi
 
 exec fail2ban-server -f -x -v

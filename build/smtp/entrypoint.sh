@@ -13,21 +13,15 @@ if [[ -f "$users_file" ]]; then
   done < "$users_file"
 fi
 
-root_password="$(openssl rand -hex 24)"
-echo "root:${root_password}" | chpasswd
-
-service_password=""
-if [[ "$user_name" != "root" ]]; then
-  if ! id "$user_name" >/dev/null 2>&1; then
-    useradd -m -s /bin/bash "$user_name"
-  fi
-  service_password="$(openssl rand -hex 24)"
-  echo "${user_name}:${service_password}" | chpasswd
+if [[ ! "$user_name" =~ ^[A-Za-z0-9_]+$ ]]; then
+  echo "Invalid SMTP runtime user: '$user_name'"
+  exit 1
 fi
 
-login_password="$root_password"
+root_password="$(openssl rand -hex 24)"
+service_password=""
 if [[ "$user_name" != "root" ]]; then
-  login_password="$service_password"
+  service_password="$(openssl rand -hex 24)"
 fi
 
 mkdir -p /run/hacktrap
@@ -42,10 +36,14 @@ chmod 600 "$credentials_file"
 echo "Generated random SMTP passwords for runtime users."
 
 mkdir -p /var/log/smtp
-touch /var/log/smtp/smtp-auth.log
-chmod 0644 /var/log/smtp/smtp-auth.log
+touch /var/log/smtp/mail.log
+chmod 0644 /var/log/smtp/mail.log
 
-export SMTP_RUNTIME_USER="$user_name"
-export SMTP_RUNTIME_PASSWORD="$login_password"
+rm -f /etc/sasldb2
+printf '%s\n' "$root_password" | saslpasswd2 -p -c root
+if [[ "$user_name" != "root" ]]; then
+  printf '%s\n' "$service_password" | saslpasswd2 -p -c "$user_name"
+fi
+chmod 0644 /etc/sasldb2
 
-exec python3 /usr/local/bin/smtp_server.py --host 0.0.0.0 --port 25 --log-file /var/log/smtp/smtp-auth.log
+exec /usr/sbin/postfix start-fg
