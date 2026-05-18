@@ -27,6 +27,12 @@ for service in "${services[@]}"; do
       cp -f "$filter_file" /etc/fail2ban/filter.d/
     done
   fi
+
+  source_filter="/opt/hacktrap/fail2ban/${service}/filter.conf"
+  target_filter="/etc/fail2ban/filter.d/${service}.conf"
+  if [[ -f "$source_filter" ]]; then
+    cp -f "$source_filter" "$target_filter"
+  fi
 done
 
 touch /var/log/fail2ban/fail2ban.log
@@ -48,6 +54,11 @@ fi
 if [[ ",${services_raw}," == *",smtp,"* ]]; then
   mkdir -p /var/log/smtp
   touch /var/log/smtp/smtp-auth.log
+fi
+
+if [[ ",${services_raw}," == *",openvpn,"* ]]; then
+  mkdir -p /var/log/openvpn
+  touch /var/log/openvpn/openvpn.log
 fi
 
 exec fail2ban-server -f -x -v
