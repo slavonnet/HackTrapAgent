@@ -1,0 +1,5 @@
+[postfix-auth]
+enabled = true
+port = 25
+filter = postfix[mode=auth]
+logpath = /var/log/smtp/mail.log

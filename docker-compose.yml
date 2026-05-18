@@ -165,13 +165,16 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,postgresql,mysql,bgp,openvpn}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
+      - imap_logs:/var/log/imap
+      - pop3_logs:/var/log/pop3
+      - smtp_logs:/var/log/smtp
       - l2tp_logs:/var/log/l2tp
       - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
@@ -195,9 +198,69 @@ services:
     profiles:
       - test
 
+  imap:
+    profiles:
+      - imap
+    build:
+      context: .
+      dockerfile: build/imap/Dockerfile
+    environment:
+      HACKTRAP_USER: ${IMAP_RUNTIME_USER:-trap}
+    ports:
+      - "${IMAP_PUBLIC_PORT:-2143}:143"
+    volumes:
+      - imap_logs:/var/log/imap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  pop3:
+    profiles:
+      - pop3
+    build:
+      context: .
+      dockerfile: build/pop3/Dockerfile
+    environment:
+      HACKTRAP_USER: ${POP3_RUNTIME_USER:-trap}
+    ports:
+      - "${POP3_PUBLIC_PORT:-2110}:110"
+    volumes:
+      - pop3_logs:/var/log/pop3
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  smtp:
+    profiles:
+      - smtp
+    build:
+      context: .
+      dockerfile: build/smtp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SMTP_RUNTIME_USER:-trap}
+    ports:
+      - "${SMTP_PUBLIC_PORT:-2525}:25"
+    volumes:
+      - smtp_logs:/var/log/smtp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x master >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
   ssh_logs:
   ftp_logs:
+  imap_logs:
+  pop3_logs:
+  smtp_logs:
   l2tp_logs:
   ike2_logs:
   postgresql_logs:

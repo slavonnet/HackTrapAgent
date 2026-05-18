@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+shopt -s nullglob
 
 mkdir -p /etc/fail2ban/jail.d /etc/fail2ban/filter.d /var/log/fail2ban /var/run/fail2ban
 
@@ -27,11 +28,9 @@ for service in "${services[@]}"; do
 
   source_filter_dir="/opt/hacktrap/fail2ban/${service}/filter.d"
   if [[ -d "$source_filter_dir" ]]; then
-    shopt -s nullglob
-    for source_filter in "$source_filter_dir"/*.conf; do
-      cp -f "$source_filter" "/etc/fail2ban/filter.d/$(basename "$source_filter")"
+    for filter_file in "${source_filter_dir}"/*.conf; do
+      cp -f "$filter_file" /etc/fail2ban/filter.d/
     done
-    shopt -u nullglob
   fi
 
   source_filter="/opt/hacktrap/fail2ban/${service}/filter.conf"
@@ -70,6 +69,21 @@ fi
 if [[ ",${services_raw}," == *",ike2,"* ]]; then
   mkdir -p /var/log/ike2
   touch /var/log/ike2/charon.log
+fi
+
+if [[ ",${services_raw}," == *",imap,"* ]]; then
+  mkdir -p /var/log/imap
+  touch /var/log/imap/dovecot.log
+fi
+
+if [[ ",${services_raw}," == *",pop3,"* ]]; then
+  mkdir -p /var/log/pop3
+  touch /var/log/pop3/dovecot.log
+fi
+
+if [[ ",${services_raw}," == *",smtp,"* ]]; then
+  mkdir -p /var/log/smtp
+  touch /var/log/smtp/mail.log
 fi
 
 if [[ ",${services_raw}," == *",bgp,"* ]]; then
