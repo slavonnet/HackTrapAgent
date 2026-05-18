@@ -21,6 +21,14 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/bgp/test_fail2ban_scope.sh` — validates BGP + fail2ban:
+  - IP ban after repeated unconfigured peer connection attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/openvpn/test_fail2ban_scope.sh` — validates OpenVPN + fail2ban:
+  - IP ban after repeated failed UDP probes
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 
 ## Run one service
 
@@ -28,12 +36,14 @@ Tests are split by service.
 ./tests/ssh/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
 ./tests/postgresql/test_fail2ban_scope.sh
+./tests/bgp/test_fail2ban_scope.sh
+./tests/openvpn/test_fail2ban_scope.sh
 ```
 
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp postgresql
+./tests/run_service_tests.sh ssh ftp postgresql bgp openvpn
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

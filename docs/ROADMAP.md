@@ -27,6 +27,7 @@ For each service, provide:
 Priority candidates:
 
 - [x] `ftp`
+- [x] `bgp`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
@@ -36,7 +37,7 @@ Priority candidates:
 - [x] `postgresql`
 - [ ] `l2tp`
 - [ ] `ipsec`
-- [ ] `openvpn`
+- [x] `openvpn`
 
 ## Phase 4 — Production hardening
 

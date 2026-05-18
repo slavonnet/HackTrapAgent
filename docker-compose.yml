@@ -58,6 +58,44 @@ services:
       timeout: 3s
       retries: 10
 
+  bgp:
+    profiles:
+      - bgp
+    build:
+      context: .
+      dockerfile: build/bgp/Dockerfile
+    environment:
+      BGP_ALLOWED_PEERS: ${BGP_ALLOWED_PEERS:-}
+    ports:
+      - "${BGP_PUBLIC_PORT:-2179}:179"
+    volumes:
+      - bgp_logs:/var/log/bgp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 179), 2); s.close()\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  openvpn:
+    profiles:
+      - openvpn
+    build:
+      context: .
+      dockerfile: build/openvpn/Dockerfile
+    environment:
+      HACKTRAP_USER: ${OPENVPN_RUNTIME_USER:-trap}
+    ports:
+      - "${OPENVPN_PUBLIC_PORT:-1194}:1194/udp"
+    volumes:
+      - openvpn_logs:/var/log/openvpn
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ss -lun | grep -q ':1194'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
@@ -71,6 +109,8 @@ services:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
       - postgresql_logs:/var/log/postgresql
+      - bgp_logs:/var/log/bgp
+      - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -90,3 +130,5 @@ volumes:
   ssh_logs:
   ftp_logs:
   postgresql_logs:
+  bgp_logs:
+  openvpn_logs:
