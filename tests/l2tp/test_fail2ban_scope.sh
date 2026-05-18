@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x socat"
+wait_for_exec_success "$service_name" "pgrep -x charon && pgrep -x xl2tpd"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -29,10 +29,38 @@ if [[ -z "$attacker_ip" ]]; then
 fi
 
 compose exec -T -e TARGET_USER="$target_user" attacker bash -lc '
-  for i in $(seq 1 6); do
-    printf "L2TP_AUTH user=%s password=wrong seq=%s\n" "$TARGET_USER" "$i" > /dev/udp/l2tp/1701 || true
-    sleep 1
-  done
+set -euo pipefail
+
+cat > /etc/ipsec.conf <<EOF
+config setup
+  uniqueids=no
+
+conn l2tp-test
+  keyexchange=ikev1
+  authby=secret
+  type=transport
+  left=%defaultroute
+  leftprotoport=17/1701
+  right=l2tp
+  rightid=@l2tp.hacktrap.local
+  rightprotoport=17/1701
+  ike=aes256-sha1-modp2048,aes128-sha1-modp1024!
+  esp=aes256-sha1,aes128-sha1!
+  auto=add
+EOF
+
+cat > /etc/ipsec.secrets <<EOF
+: PSK "wrong-l2tp-psk"
+EOF
+
+ipsec restart >/dev/null 2>&1 || ipsec start >/dev/null 2>&1
+sleep 2
+
+for i in $(seq 1 6); do
+  ipsec up l2tp-test >/dev/null 2>&1 || true
+  ipsec down l2tp-test >/dev/null 2>&1 || true
+  sleep 1
+done
 '
 
 for _ in $(seq 1 30); do

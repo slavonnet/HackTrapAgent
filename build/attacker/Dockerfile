@@ -6,6 +6,7 @@ RUN apk add --no-cache \
       lftp \
       netcat-openbsd \
       openssh-client \
+      strongswan \
       sshpass
 
 CMD ["sleep", "infinity"]

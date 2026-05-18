@@ -18,11 +18,11 @@ Tests are split by service.
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 - `tests/l2tp/test_fail2ban_scope.sh` — validates L2TP + fail2ban:
-  - IP ban after repeated failed UDP auth-like probes
+  - IP ban after repeated failed real IKEv1/IPsec authentication attempts
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 - `tests/ike2/test_fail2ban_scope.sh` — validates IKEv2 + fail2ban:
-  - IP ban after repeated failed UDP auth-like probes
+  - IP ban after repeated failed real IKEv2 certificate/EAP authentication attempts
 - `tests/bgp/test_fail2ban_scope.sh` — validates BGP + fail2ban:
   - IP ban after repeated unconfigured peer connection attempts
   - firewall rule exists inside the fail2ban container scope

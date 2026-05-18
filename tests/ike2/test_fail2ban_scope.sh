@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -af 'UDP-RECVFROM:500' && pgrep -af 'UDP-RECVFROM:4500'"
+wait_for_exec_success "$service_name" "pgrep -x charon"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -29,11 +29,36 @@ if [[ -z "$attacker_ip" ]]; then
 fi
 
 compose exec -T -e TARGET_USER="$target_user" attacker bash -lc '
-  for i in $(seq 1 6); do
-    printf "IKE_SA_INIT user=%s auth=wrong seq=%s\n" "$TARGET_USER" "$i" > /dev/udp/ike2/500 || true
-    printf "NAT_T_EXCHANGE user=%s auth=wrong seq=%s\n" "$TARGET_USER" "$i" > /dev/udp/ike2/4500 || true
-    sleep 1
-  done
+set -euo pipefail
+
+cat > /etc/ipsec.conf <<EOF
+config setup
+  uniqueids=no
+
+conn ike2-test
+  keyexchange=ikev2
+  auto=add
+  leftauth=eap-mschapv2
+  eap_identity=${TARGET_USER}
+  right=ike2
+  rightid=@ike2.hacktrap.local
+  rightauth=pubkey
+  ike=aes256-sha256-modp2048,aes128-sha256-modp2048!
+  esp=aes256-sha256,aes128-sha256!
+EOF
+
+cat > /etc/ipsec.secrets <<EOF
+${TARGET_USER} : EAP "wrong-ike2-password"
+EOF
+
+ipsec restart >/dev/null 2>&1 || ipsec start >/dev/null 2>&1
+sleep 2
+
+for i in $(seq 1 6); do
+  ipsec up ike2-test >/dev/null 2>&1 || true
+  ipsec down ike2-test >/dev/null 2>&1 || true
+  sleep 1
+done
 '
 
 for _ in $(seq 1 30); do

@@ -49,11 +49,15 @@ services:
       HACKTRAP_USER: ${L2TP_RUNTIME_USER:-trap}
     ports:
       - "${L2TP_PUBLIC_PORT:-11701}:1701/udp"
+      - "${L2TP_IKE_PUBLIC_PORT:-15100}:500/udp"
+      - "${L2TP_NATT_PUBLIC_PORT:-14501}:4500/udp"
+    cap_add:
+      - NET_ADMIN
     volumes:
       - l2tp_logs:/var/log/l2tp
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -x socat >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x charon >/dev/null && pgrep -x xl2tpd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -69,11 +73,13 @@ services:
     ports:
       - "${IKE2_PUBLIC_PORT:-1500}:500/udp"
       - "${IKE2_NATT_PUBLIC_PORT:-14500}:4500/udp"
+    cap_add:
+      - NET_ADMIN
     volumes:
       - ike2_logs:/var/log/ike2
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -af 'UDP-RECVFROM:500' >/dev/null && pgrep -af 'UDP-RECVFROM:4500' >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x charon >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -144,6 +150,8 @@ services:
       context: .
       dockerfile: build/attacker/Dockerfile
     command: ["sleep", "infinity"]
+    cap_add:
+      - NET_ADMIN
     profiles:
       - test
 

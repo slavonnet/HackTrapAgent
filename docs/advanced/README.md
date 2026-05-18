@@ -9,6 +9,8 @@ Files:
 - `fail2ban/ftp/jail.local` — FTP jail settings.
 - `fail2ban/l2tp/jail.local` — L2TP jail settings.
 - `fail2ban/ike2/jail.local` — IKEv2 jail settings.
+- `fail2ban/l2tp/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.
+- `fail2ban/ike2/filter.d/strongswan_ikev2.conf` — strongSwan IKEv2 filter template.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:

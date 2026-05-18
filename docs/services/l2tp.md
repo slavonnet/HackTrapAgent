@@ -2,18 +2,19 @@
 
 ## Purpose
 
-The L2TP service acts as a UDP honeypot signal source for fail2ban.
+The L2TP service provides a real L2TP/IPsec stack and produces fail2ban signals from real strongSwan authentication failures.
 
 ## Runtime model
 
-- The container runs a lightweight UDP listener on port `1701` using `socat`.
-- Each incoming packet is logged as a failed L2TP authentication event in `/var/log/l2tp/l2tp.log`.
+- The container runs `strongSwan` for IPsec (IKEv1 transport profile for L2TP/IPsec) and `xl2tpd` for L2TP.
+- IPsec endpoints are active on `500/udp` and `4500/udp`, and L2TP is active on `1701/udp`.
+- strongSwan writes real negotiation/authentication logs to `/var/log/l2tp/charon.log`.
 - The log file is mounted via a shared volume and read by fail2ban.
 
 ## Credentials policy
 
 - No static password is stored in the repository.
-- New random passwords are generated on every container start for `root` and the service user.
+- A random runtime password is generated on every start for the service user.
 - A random runtime pre-shared key is generated on startup.
 - Current runtime credentials are written to `/run/hacktrap/l2tp_credentials.env` inside the container.
 

@@ -54,12 +54,12 @@ fi
 
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
   mkdir -p /var/log/l2tp
-  touch /var/log/l2tp/l2tp.log
+  touch /var/log/l2tp/charon.log
 fi
 
 if [[ ",${services_raw}," == *",ike2,"* ]]; then
   mkdir -p /var/log/ike2
-  touch /var/log/ike2/ike2.log
+  touch /var/log/ike2/charon.log
 fi
 
 if [[ ",${services_raw}," == *",bgp,"* ]]; then
