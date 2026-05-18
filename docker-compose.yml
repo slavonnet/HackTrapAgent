@@ -282,13 +282,16 @@ services:
       dockerfile: build/bgp/Dockerfile
     environment:
       BGP_ALLOWED_PEERS: ${BGP_ALLOWED_PEERS:-}
+      BGP_LOCAL_ASN: ${BGP_LOCAL_ASN:-65000}
+      BGP_PEER_ASN: ${BGP_PEER_ASN:-65001}
+      BGP_ROUTER_ID: ${BGP_ROUTER_ID:-198.51.100.1}
     ports:
       - "${BGP_PUBLIC_PORT:-2179}:179"
     volumes:
       - bgp_logs:/var/log/bgp
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 179), 2); s.close()\""]
+      test: ["CMD-SHELL", "ss -ltn sport = :179 | grep -q ':179'"]
       interval: 5s
       timeout: 3s
       retries: 10
