@@ -20,6 +20,8 @@ Files:
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
+- `fail2ban/mongodb/jail.local` — MongoDB jail settings.
+- `fail2ban/mongodb/filter.conf` — MongoDB JSON log failregex rules.
 - `fail2ban/radius/jail.local` — RADIUS jail settings.
 - `fail2ban/radius/filter.d/freeradius.conf` — RADIUS failregex rules.
 - `fail2ban/redis/jail.local` — Redis jail settings.
@@ -87,6 +89,12 @@ Files:
 - `etc/postgresql/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## MongoDB honeypot tuning
+
+Files:
+
+- `etc/mongodb/users.conf`
 
 ## Elasticsearch honeypot tuning
 
