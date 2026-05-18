@@ -32,4 +32,9 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",mysql,"* ]]; then
+  mkdir -p /var/log/mysql
+  touch /var/log/mysql/error.log
+fi
+
 exec fail2ban-server -f -x -v
