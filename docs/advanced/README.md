@@ -7,6 +7,10 @@ Files:
 - `fail2ban/common/fail2ban.local` — global fail2ban daemon settings.
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
+- `fail2ban/l2tp/jail.local` — L2TP jail settings.
+- `fail2ban/ike2/jail.local` — IKEv2 jail settings.
+- `fail2ban/l2tp/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.
+- `fail2ban/ike2/filter.d/strongswan_ikev2.conf` — strongSwan IKEv2 filter template.
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
