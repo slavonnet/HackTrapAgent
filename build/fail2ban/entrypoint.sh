@@ -32,4 +32,9 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",bgp,"* ]]; then
+  mkdir -p /var/log/bgp
+  touch /var/log/bgp/bgp.log
+fi
+
 exec fail2ban-server -f -x -v
