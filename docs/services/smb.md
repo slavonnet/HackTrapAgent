@@ -9,7 +9,7 @@ The SMB service provides a file-sharing honeypot endpoint that generates fail2ba
 - The container runs upstream `smbd` on TCP port `445`.
 - Samba logs are written to `/var/log/smb/log.smbd`.
 - This log file is mounted via a shared volume and consumed by fail2ban.
-- fail2ban uses the upstream `samba` filter.
+- fail2ban uses the `samba` jail with a local SMB auth-failure filter compatible with this Samba log format.
 
 ## Credentials policy
 
