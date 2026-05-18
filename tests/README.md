@@ -47,6 +47,10 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/memcached/test_fail2ban_scope.sh` — validates Memcached + fail2ban:
+  - IP ban after repeated failed `auth` attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/bgp/test_fail2ban_scope.sh` — validates BGP + fail2ban:
   - IP ban after repeated unconfigured peer connection attempts
   - firewall rule exists inside the fail2ban container scope
@@ -69,6 +73,7 @@ Tests are split by service.
 ./tests/ike2/test_fail2ban_scope.sh
 ./tests/postgresql/test_fail2ban_scope.sh
 ./tests/mysql/test_fail2ban_scope.sh
+./tests/memcached/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
 ```
@@ -76,7 +81,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp ntp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp
+./tests/run_service_tests.sh ssh ftp ntp postgresql mysql memcached bgp l2tp ike2 openvpn imap pop3 smtp
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

@@ -1,0 +1,6 @@
+[memcached-auth]
+enabled = true
+port = 11211
+filter = memcached
+logpath = /var/log/memcached/memcached.log
+backend = polling

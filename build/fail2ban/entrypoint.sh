@@ -75,6 +75,11 @@ if [[ ",${services_raw}," == *",mysql,"* ]]; then
   touch /var/log/mysql/error.log
 fi
 
+if [[ ",${services_raw}," == *",memcached,"* ]]; then
+  mkdir -p /var/log/memcached
+  touch /var/log/memcached/memcached.log
+fi
+
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
   mkdir -p /var/log/l2tp
   touch /var/log/l2tp/charon.log
