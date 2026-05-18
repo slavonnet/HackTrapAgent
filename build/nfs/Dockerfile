@@ -5,6 +5,7 @@ RUN apt-get update \
       nfs-ganesha \
       nfs-ganesha-vfs \
       rpcbind \
+      procps \
       gettext-base \
       ca-certificates \
     && rm -rf /var/lib/apt/lists/*
