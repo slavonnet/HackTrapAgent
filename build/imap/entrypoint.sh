@@ -51,6 +51,7 @@ chown -R 0:0 /var/mail/root || true
     printf "%s:{PLAIN}%s:5000:5000::/var/mail/%s::\n" "$user_name" "$service_password" "$user_name"
   fi
 } > "$passwd_file"
-chmod 600 "$passwd_file"
+chown root:dovecot "$passwd_file" || true
+chmod 0640 "$passwd_file"
 
 exec /usr/sbin/dovecot -F -c /etc/dovecot/dovecot.conf
