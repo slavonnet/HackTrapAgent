@@ -15,8 +15,10 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts a PostgreSQL honeypot (`localhost:5432`).
 - Starts a MySQL honeypot (`localhost:3306`).
 - Starts a Redis honeypot (`localhost:6379`).
+- Starts an Elasticsearch honeypot (`localhost:9200`).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
 - Starts an OpenVPN honeypot (`localhost:1194/udp`).
+- Starts an Active Directory-compatible LDAP honeypot (`localhost:2389`).
 - `fail2ban` monitors failed auth attempts and records attacker IPs.
 - Temporary local bans are applied only inside the fail2ban container scope (host firewall is untouched).
 - Runtime service defaults come from one source: `config/services.env`.
@@ -31,7 +33,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh ftp ntp postgresql mysql redis bgp l2tp ike2 imap pop3 smtp openvpn
+docker compose logs -f fail2ban ssh ftp ntp postgresql mysql redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn ad
 ```
 
 Stop:
@@ -64,8 +66,10 @@ Stop:
 - PostgreSQL service implementation: `docs/services/postgresql.md`
 - MySQL service implementation: `docs/services/mysql.md`
 - Redis service implementation: `docs/services/redis.md`
+- Elasticsearch service implementation: `docs/services/elasticsearch.md`
 - BGP service implementation: `docs/services/bgp.md`
 - OpenVPN service implementation: `docs/services/openvpn.md`
+- AD service implementation: `docs/services/ad.md`
 - Roadmap: `docs/ROADMAP.md`
 
 ## License
