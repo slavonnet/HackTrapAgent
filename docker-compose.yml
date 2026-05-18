@@ -180,12 +180,31 @@ services:
       timeout: 3s
       retries: 10
 
+  kafka:
+    profiles:
+      - kafka
+    build:
+      context: .
+      dockerfile: build/kafka/Dockerfile
+    environment:
+      HACKTRAP_USER: ${KAFKA_RUNTIME_USER:-trap}
+    ports:
+      - "${KAFKA_PUBLIC_PORT:-29092}:9092"
+    volumes:
+      - kafka_logs:/var/log/kafka
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ss -ltn | grep -q ':9092'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,kafka,l2tp,ike2,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -202,6 +221,7 @@ services:
       - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - kafka_logs:/var/log/kafka
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -289,3 +309,4 @@ volumes:
   mysql_logs:
   bgp_logs:
   openvpn_logs:
+  kafka_logs:

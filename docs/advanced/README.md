@@ -18,6 +18,8 @@ Files:
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
+- `fail2ban/kafka/jail.local` — Kafka jail settings.
+- `fail2ban/kafka/filter.conf` — Kafka failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:
@@ -70,6 +72,14 @@ Files:
 - `etc/postgresql/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## Kafka honeypot tuning
+
+Files:
+
+- `etc/kafka/users.conf`
+
+Important: container credentials are generated dynamically at startup and are never stored as static values in the repository.
 
 ## Service toggle and ports
 

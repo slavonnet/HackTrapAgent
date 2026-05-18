@@ -55,6 +55,10 @@ Tests are split by service.
   - IP ban after repeated failed UDP probes
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/kafka/test_fail2ban_scope.sh` — validates Kafka + fail2ban:
+  - IP ban after repeated failed SASL-style authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 
 ## Run one service
 
@@ -71,12 +75,13 @@ Tests are split by service.
 ./tests/mysql/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
+./tests/kafka/test_fail2ban_scope.sh
 ```
 
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp ntp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp
+./tests/run_service_tests.sh ssh ftp ntp postgresql mysql bgp openvpn kafka l2tp ike2 imap pop3 smtp
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

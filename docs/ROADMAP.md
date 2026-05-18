@@ -32,6 +32,7 @@ Priority candidates:
 - [x] `imap`
 - [x] `pop3`
 - [x] `bgp`
+- [x] `kafka`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
