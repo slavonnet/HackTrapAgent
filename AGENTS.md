@@ -91,3 +91,11 @@ All `docker` commands require `sudo` (the Cloud Agent user is not in the `docker
 11. **Prefer reuse of proven upstream components over custom implementations.**
    - If a production-proven component is already available and suitable, integrate or reference it instead of implementing a new local version from scratch.
    - Prefer integration-based reuse over code copying to reduce maintenance overhead and keep receiving upstream updates.
+
+12. **Disable anonymous access for network services whenever feasible.**
+   - For services such as DNS, SMTP, NTP, and similar protocols, disable anonymous or unauthenticated actions when configuration allows it.
+   - Prefer configurations that force an attacker to perform explicit credential or access guessing attempts instead of granting default anonymous capabilities.
+
+13. **Do not use project agents for external DDoS or attack traffic generation.**
+   - Any built-in service, script, or agent behavior that can be repurposed to generate attack traffic against third-party networks must be disabled or excluded.
+   - Testing and simulation traffic must stay scoped to local/lab targets defined for this project only.
