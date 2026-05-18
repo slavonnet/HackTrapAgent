@@ -2,4 +2,3 @@
 enabled = true
 port = 179
 logpath = /var/log/bgp/bgp.log
-failregex = ^.*BGP connection from unconfigured peer <HOST>$
