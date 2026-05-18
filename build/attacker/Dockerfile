@@ -6,7 +6,6 @@ RUN apk add --no-cache \
       lftp \
       mariadb-client \
       netcat-openbsd \
-      mariadb-client \
       openssh-client \
       sshpass
 
