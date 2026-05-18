@@ -19,10 +19,13 @@ init_host_iptables_bins
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
 wait_for_exec_success "$service_name" "asterisk -rx 'core show version' >/dev/null"
-wait_for_exec_success "$service_name" "ss -lun | grep -F ':4569 '"
-wait_for_exec_success "$service_name" "ss -lun | grep -F ':5060 '"
-wait_for_exec_success "$service_name" "ss -ltn | grep -F ':5038 '"
-wait_for_exec_success "$service_name" "ss -ltn | grep -F ':8088 '"
+wait_for_exec_success "$service_name" "asterisk -rx 'module show like chan_iax2' | grep -q 'chan_iax2.so'"
+wait_for_exec_success "$service_name" "asterisk -rx 'iax2 show peers' | grep -E '^${target_user}[[:space:]]'"
+wait_for_exec_success "$service_name" "asterisk -rx 'module show like chan_pjsip' | grep -q 'chan_pjsip.so'"
+wait_for_exec_success "$service_name" "asterisk -rx 'pjsip show transports' | grep -q '0.0.0.0:5060'"
+wait_for_exec_success "$service_name" "asterisk -rx 'manager show settings' | grep -q '0.0.0.0:5038'"
+wait_for_exec_success "$service_name" "asterisk -rx 'http show status' | grep -q '0.0.0.0:8088'"
+wait_for_exec_success "$service_name" "asterisk -rx 'http show status' | grep -q '/ari/...'"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"

@@ -30,9 +30,7 @@ mkdir -p /run/hacktrap /etc/asterisk /var/log/asterisk /var/run/asterisk
 chmod 600 "$credentials_file"
 echo "Generated random Asterisk runtime password."
 
-cp -f /opt/hacktrap/etc/asterisk/asterisk.conf /etc/asterisk/asterisk.conf
 cp -f /opt/hacktrap/etc/asterisk/logger.conf /etc/asterisk/logger.conf
-cp -f /opt/hacktrap/etc/asterisk/modules.conf /etc/asterisk/modules.conf
 cp -f /opt/hacktrap/etc/asterisk/extensions.conf /etc/asterisk/extensions.conf
 
 for templated_conf in pjsip iax manager http ari; do
@@ -44,7 +42,6 @@ for templated_conf in pjsip iax manager http ari; do
 done
 
 touch /var/log/asterisk/messages /var/log/asterisk/security
-chown -R asterisk:asterisk /etc/asterisk /var/log/asterisk /var/run/asterisk /run/hacktrap
 chmod 0644 /var/log/asterisk/messages /var/log/asterisk/security
 
-exec /usr/sbin/asterisk -f -U asterisk -G asterisk -vvv
+exec /usr/sbin/asterisk -f -vvv
