@@ -13,6 +13,10 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/telnetd/test_fail2ban_scope.sh` — validates Telnet + fail2ban:
+  - IP ban after repeated failed logins
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/ftp/test_fail2ban_scope.sh` — validates FTP + fail2ban:
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
@@ -70,6 +74,7 @@ Tests are split by service.
 
 ```bash
 ./tests/ssh/test_fail2ban_scope.sh
+./tests/telnetd/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
 ./tests/ntp/test_fail2ban_scope.sh
 ./tests/imap/test_fail2ban_scope.sh
@@ -89,7 +94,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp ntp postgresql mysql redis elasticsearch bgp l2tp ike2 openvpn imap pop3 smtp ad
+./tests/run_service_tests.sh ssh telnetd ftp ntp postgresql mysql redis elasticsearch bgp l2tp ike2 openvpn imap pop3 smtp ad
 ```
 
 `run_service_tests.sh` runs service tests in parallel.
