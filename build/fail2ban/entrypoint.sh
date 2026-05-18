@@ -65,6 +65,11 @@ if [[ ",${services_raw}," == *",ntp,"* ]]; then
   touch /var/log/ntp/ntp.log
 fi
 
+if [[ ",${services_raw}," == *",nfs,"* ]]; then
+  mkdir -p /var/log/nfs
+  touch /var/log/nfs/ganesha.log
+fi
+
 if [[ ",${services_raw}," == *",postgresql,"* ]]; then
   mkdir -p /var/log/postgresql
   touch /var/log/postgresql/postgresql.log

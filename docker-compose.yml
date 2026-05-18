@@ -59,6 +59,26 @@ services:
       timeout: 3s
       retries: 10
 
+  nfs:
+    profiles:
+      - nfs
+    build:
+      context: .
+      dockerfile: build/nfs/Dockerfile
+    environment:
+      NFS_ALLOWED_CLIENTS: ${NFS_ALLOWED_CLIENTS:-127.0.0.1/32}
+      NFS_LOG_LEVEL: ${NFS_LOG_LEVEL:-DEBUG}
+    ports:
+      - "${NFS_PUBLIC_PORT:-2049}:2049"
+    volumes:
+      - nfs_logs:/var/log/nfs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f ganesha.nfsd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   l2tp:
     profiles:
       - l2tp
@@ -185,7 +205,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,nfs,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -193,6 +213,7 @@ services:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
       - ntp_logs:/var/log/ntp
+      - nfs_logs:/var/log/nfs
       - imap_logs:/var/log/imap
       - pop3_logs:/var/log/pop3
       - smtp_logs:/var/log/smtp
@@ -216,6 +237,7 @@ services:
     command: ["sleep", "infinity"]
     cap_add:
       - NET_ADMIN
+      - SYS_ADMIN
     profiles:
       - test
 
@@ -280,6 +302,7 @@ volumes:
   ssh_logs:
   ftp_logs:
   ntp_logs:
+  nfs_logs:
   imap_logs:
   pop3_logs:
   smtp_logs:
