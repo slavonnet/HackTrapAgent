@@ -18,6 +18,8 @@ Files:
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
+- `fail2ban/elasticsearch/jail.local` — Elasticsearch jail settings.
+- `fail2ban/elasticsearch/filter.conf` — Elasticsearch failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:
@@ -68,6 +70,14 @@ Files:
 - `etc/postgresql/postgresql.conf`
 - `etc/postgresql/pg_hba.conf`
 - `etc/postgresql/users.conf`
+
+Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## Elasticsearch honeypot tuning
+
+Files:
+
+- `etc/elasticsearch/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 
