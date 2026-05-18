@@ -8,6 +8,7 @@ RUN apk add --no-cache \
       netcat-openbsd \
       openldap-clients \
       openssh-client \
+      redis \
       strongswan \
       postgresql-client \
       sshpass

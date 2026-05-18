@@ -142,6 +142,25 @@ services:
       timeout: 3s
       retries: 10
 
+  redis:
+    profiles:
+      - redis
+    build:
+      context: .
+      dockerfile: build/redis/Dockerfile
+    environment:
+      HACKTRAP_USER: ${REDIS_RUNTIME_USER:-trap}
+    ports:
+      - "${REDIS_PUBLIC_PORT:-6379}:6379"
+    volumes:
+      - redis_logs:/var/log/redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p 6379 --no-auth-warning PING | grep -Eq 'PONG|NOAUTH'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   elasticsearch:
     profiles:
       - elasticsearch
@@ -223,7 +242,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -238,6 +257,7 @@ services:
       - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
+      - redis_logs:/var/log/redis
       - elasticsearch_logs:/var/log/elasticsearch
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
@@ -327,6 +347,7 @@ volumes:
   ike2_logs:
   postgresql_logs:
   mysql_logs:
+  redis_logs:
   elasticsearch_logs:
   bgp_logs:
   openvpn_logs:
