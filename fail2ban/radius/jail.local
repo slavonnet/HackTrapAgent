@@ -1,0 +1,6 @@
+[freeradius]
+enabled = true
+port = 1812
+protocol = udp
+logpath = /var/log/radius/radius.log
+backend = polling

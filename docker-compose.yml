@@ -257,6 +257,25 @@ services:
       timeout: 3s
       retries: 10
 
+  radius:
+    profiles:
+      - radius
+    build:
+      context: .
+      dockerfile: build/radius/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RADIUS_RUNTIME_USER:-trap}
+    ports:
+      - "${RADIUS_PUBLIC_PORT:-1812}:1812/udp"
+    volumes:
+      - radius_logs:/var/log/radius
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x freeradius >/dev/null || pgrep -x radiusd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   ad:
     profiles:
       - ad
@@ -281,7 +300,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -302,6 +321,7 @@ services:
       - elasticsearch_logs:/var/log/elasticsearch
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - radius_logs:/var/log/radius
       - ad_logs:/var/log/ad
     restart: unless-stopped
     healthcheck:
@@ -394,4 +414,5 @@ volumes:
   elasticsearch_logs:
   bgp_logs:
   openvpn_logs:
+  radius_logs:
   ad_logs:
