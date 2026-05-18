@@ -142,6 +142,25 @@ services:
       timeout: 3s
       retries: 10
 
+  elasticsearch:
+    profiles:
+      - elasticsearch
+    build:
+      context: .
+      dockerfile: build/elasticsearch/Dockerfile
+    environment:
+      HACKTRAP_USER: ${ELASTICSEARCH_RUNTIME_USER:-trap}
+    ports:
+      - "${ELASTICSEARCH_PUBLIC_PORT:-9200}:9200"
+    volumes:
+      - elasticsearch_logs:/var/log/elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 9200), 2); s.close()\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -204,7 +223,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,ad}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -219,6 +238,7 @@ services:
       - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
+      - elasticsearch_logs:/var/log/elasticsearch
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
       - ad_logs:/var/log/ad
@@ -307,6 +327,7 @@ volumes:
   ike2_logs:
   postgresql_logs:
   mysql_logs:
+  elasticsearch_logs:
   bgp_logs:
   openvpn_logs:
   ad_logs:
