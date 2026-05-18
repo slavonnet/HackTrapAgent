@@ -3,11 +3,28 @@
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 compose_file="${COMPOSE_FILE:-${project_root}/docker-compose.yml}"
 config_file="${CONFIG_FILE:-${project_root}/config/services.env}"
+runtime_config_generated=0
+runtime_config_cleanup=0
 
 load_service_config() {
   if [[ ! -f "$config_file" ]]; then
     echo "Missing config file: $config_file"
     exit 1
+  fi
+
+  local runtime_config_file="${RUNTIME_CONFIG_FILE:-/tmp/hacktrapagent-tests-$$.env}"
+  if ! python3 "${project_root}/scripts/prepare_runtime_env.py" \
+    --config "$config_file" \
+    --output "$runtime_config_file" \
+    --quiet; then
+    echo "Failed to prepare runtime services config for tests."
+    exit 1
+  fi
+
+  config_file="$runtime_config_file"
+  runtime_config_generated=1
+  if [[ -z "${RUNTIME_CONFIG_FILE:-}" ]]; then
+    runtime_config_cleanup=1
   fi
 
   set -a
@@ -85,6 +102,10 @@ get_compose_profile_args() {
 cleanup_compose() {
   mapfile -t profile_args < <(get_compose_profile_args)
   compose "${profile_args[@]}" down -v --remove-orphans >/dev/null 2>&1 || true
+
+  if [[ "$runtime_config_generated" -eq 1 && "$runtime_config_cleanup" -eq 1 && -f "$config_file" ]]; then
+    rm -f "$config_file"
+  fi
 }
 
 wait_for_exec_success() {

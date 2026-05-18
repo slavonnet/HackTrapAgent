@@ -6,6 +6,7 @@ Tests are split by service.
 
 - `tests/common/compose_test_lib.sh` contains shared setup and validation helpers.
 - `config/services.env` is the single source of truth for enabled services and test defaults.
+- Test helper scripts generate a temporary runtime env via `scripts/prepare_runtime_env.py` to auto-resolve occupied host ports (for example, `SSH_PUBLIC_PORT=22` on CI runners).
 
 ## Service tests
 
