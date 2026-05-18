@@ -39,6 +39,26 @@ services:
       timeout: 3s
       retries: 10
 
+  ntp:
+    profiles:
+      - ntp
+    build:
+      context: .
+      dockerfile: build/ntp/Dockerfile
+    environment:
+      NTP_LOG_FILE: /var/log/ntp/ntp.log
+      NTP_DEBUG_LEVEL: 3
+    ports:
+      - "${NTP_PUBLIC_PORT:-2123}:123/udp"
+    volumes:
+      - ntp_logs:/var/log/ntp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x ntpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   l2tp:
     profiles:
       - l2tp
@@ -165,13 +185,14 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
+      - ntp_logs:/var/log/ntp
       - imap_logs:/var/log/imap
       - pop3_logs:/var/log/pop3
       - smtp_logs:/var/log/smtp
@@ -258,6 +279,7 @@ services:
 volumes:
   ssh_logs:
   ftp_logs:
+  ntp_logs:
   imap_logs:
   pop3_logs:
   smtp_logs:

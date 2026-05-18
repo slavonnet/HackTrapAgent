@@ -18,6 +18,15 @@ for service in "${services[@]}"; do
   service="$(echo "$service" | xargs)"
   [[ -z "$service" ]] && continue
 
+  source_filter_dir="/opt/hacktrap/fail2ban/${service}/filter.d"
+  if [[ -d "$source_filter_dir" ]]; then
+    mkdir -p /etc/fail2ban/filter.d
+    for filter_file in "$source_filter_dir"/*; do
+      [[ -f "$filter_file" ]] || continue
+      cp -f "$filter_file" "/etc/fail2ban/filter.d/$(basename "$filter_file")"
+    done
+  fi
+
   source_jail="/opt/hacktrap/fail2ban/${service}/jail.local"
   target_jail="/etc/fail2ban/jail.d/${service}.local"
   if [[ -f "$source_jail" ]]; then
@@ -49,6 +58,11 @@ fi
 if [[ ",${services_raw}," == *",ftp,"* ]]; then
   mkdir -p /var/log/ftp
   touch /var/log/ftp/vsftpd.log
+fi
+
+if [[ ",${services_raw}," == *",ntp,"* ]]; then
+  mkdir -p /var/log/ntp
+  touch /var/log/ntp/ntp.log
 fi
 
 if [[ ",${services_raw}," == *",postgresql,"* ]]; then

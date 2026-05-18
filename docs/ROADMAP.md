@@ -27,6 +27,7 @@ For each service, provide:
 Priority candidates:
 
 - [x] `ftp`
+- [x] `ntp`
 - [x] `smtp`
 - [x] `imap`
 - [x] `pop3`

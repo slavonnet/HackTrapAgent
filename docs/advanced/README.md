@@ -7,6 +7,7 @@ Files:
 - `fail2ban/common/fail2ban.local` — global fail2ban daemon settings.
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
+- `fail2ban/ntp/jail.local` — NTP jail settings.
 - `fail2ban/imap/jail.local` — IMAP jail settings.
 - `fail2ban/pop3/jail.local` — POP3 jail settings.
 - `fail2ban/smtp/jail.local` — SMTP jail settings.

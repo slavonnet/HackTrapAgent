@@ -1,0 +1,5 @@
+[ntpd]
+enabled = true
+port = 123
+filter = ntpd
+logpath = /var/log/ntp/ntp.log

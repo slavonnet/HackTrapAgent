@@ -17,6 +17,8 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/ntp/test_fail2ban_scope.sh` — validates NTP + fail2ban:
+  - IP ban after repeated suspicious NTP mode 6/7 request probes
 - `tests/imap/test_fail2ban_scope.sh` — validates IMAP + fail2ban:
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
@@ -59,6 +61,7 @@ Tests are split by service.
 ```bash
 ./tests/ssh/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
+./tests/ntp/test_fail2ban_scope.sh
 ./tests/imap/test_fail2ban_scope.sh
 ./tests/pop3/test_fail2ban_scope.sh
 ./tests/smtp/test_fail2ban_scope.sh
@@ -73,7 +76,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp
+./tests/run_service_tests.sh ssh ftp ntp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp
 ```
 
 `run_service_tests.sh` runs service tests in parallel.
