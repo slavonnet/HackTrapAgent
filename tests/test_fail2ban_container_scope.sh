@@ -7,7 +7,7 @@ project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$project_root"
 
 cleanup() {
-  ${docker_cmd:-docker} compose -f "$compose_file" down -v --remove-orphans >/dev/null 2>&1 || true
+  ${docker_cmd:-docker} compose -f "$compose_file" --profile test down -v --remove-orphans >/dev/null 2>&1 || true
 }
 
 trap cleanup EXIT
@@ -27,12 +27,21 @@ if ! docker info >/dev/null 2>&1; then
   fi
 fi
 
-host_iptables_cmd="iptables"
+host_prefix=""
 if command -v sudo >/dev/null 2>&1 && sudo -n true >/dev/null 2>&1; then
-  host_iptables_cmd="sudo iptables"
+  host_prefix="sudo "
 fi
 
-if ! $host_iptables_cmd -S >/dev/null 2>&1; then
+host_iptables_bins=()
+for bin in iptables iptables-legacy; do
+  if command -v "$bin" >/dev/null 2>&1; then
+    if ${host_prefix}${bin} -S >/dev/null 2>&1; then
+      host_iptables_bins+=("$bin")
+    fi
+  fi
+done
+
+if [[ "${#host_iptables_bins[@]}" -eq 0 ]]; then
   echo "Cannot inspect host iptables; test cannot verify container-only scope."
   exit 1
 fi
@@ -84,15 +93,17 @@ if ! $docker_cmd compose -f "$compose_file" exec -T fail2ban fail2ban-client sta
   exit 1
 fi
 
-if ! $docker_cmd compose -f "$compose_file" exec -T fail2ban sh -lc "iptables -S | grep -F '$attacker_ip' >/dev/null"; then
+if ! $docker_cmd compose -f "$compose_file" exec -T fail2ban sh -lc "iptables -S 2>/dev/null | grep -F '$attacker_ip' >/dev/null || iptables-legacy -S 2>/dev/null | grep -F '$attacker_ip' >/dev/null"; then
   echo "Container iptables does not contain banned IP: $attacker_ip"
   exit 1
 fi
 
-if $host_iptables_cmd -S | grep -F "$attacker_ip" >/dev/null; then
-  echo "Host iptables unexpectedly contains banned IP: $attacker_ip"
-  exit 1
-fi
+for bin in "${host_iptables_bins[@]}"; do
+  if ${host_prefix}${bin} -S | grep -F "$attacker_ip" >/dev/null; then
+    echo "Host ${bin} unexpectedly contains banned IP: $attacker_ip"
+    exit 1
+  fi
+done
 
 if $docker_cmd compose -f "$compose_file" exec -T attacker sh -lc '
   sshpass -p trap123 ssh \

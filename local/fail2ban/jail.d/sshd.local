@@ -1,5 +1,5 @@
 [DEFAULT]
-banaction = iptables-multiport
+banaction = iptables-allports
 backend = polling
 findtime = 60
 bantime = 600

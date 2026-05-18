@@ -30,4 +30,6 @@ chmod 0644 /var/log/ssh/auth.log
 
 ssh-keygen -A
 
-exec /usr/sbin/sshd -D -e -f /etc/ssh/sshd_config -E /var/log/ssh/auth.log
+rsyslogd
+
+exec /usr/sbin/sshd -D -f /etc/ssh/sshd_config
