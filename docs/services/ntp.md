@@ -7,9 +7,16 @@ The NTP service acts as a UDP-based honeypot signal source for fail2ban.
 ## Runtime model
 
 - The container runs a lightweight Python UDP listener on port `123`.
-- Incoming datagrams are logged to `/var/log/ntp/ntp.log`.
+- Incoming datagrams are decoded and logged as explicit request actions
+  (for example: mode 6 control requests, mode 7 private requests, malformed packets).
+- Action logs are written to `/var/log/ntp/ntp.log`.
 - This log file is mounted via a shared volume and consumed by fail2ban.
 - The service intentionally does not provide valid NTP responses, so probes are treated as suspicious traffic events.
+
+## Filter strategy
+
+- The project reuses fail2ban's standard NTP-related parsing conventions where possible (mode-oriented request semantics).
+- A dedicated upstream filter for this synthetic honeypot log format is not shipped by fail2ban, so the repository keeps a minimal custom filter at `fail2ban/ntp/filter.d/ntp-honeypot.conf`.
 
 ## Credentials policy
 

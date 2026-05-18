@@ -18,7 +18,7 @@ Tests are split by service.
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 - `tests/ntp/test_fail2ban_scope.sh` — validates NTP + fail2ban:
-  - IP ban after repeated malformed UDP probes
+  - IP ban after repeated suspicious NTP mode 6/7 request probes
 - `tests/mysql/test_fail2ban_scope.sh` — validates MySQL + fail2ban:
   - IP ban after repeated failed logins
 - `tests/bgp/test_fail2ban_scope.sh` — validates BGP + fail2ban:

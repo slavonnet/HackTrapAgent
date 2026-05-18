@@ -28,8 +28,19 @@ if [[ -z "$attacker_ip" ]]; then
 fi
 
 compose exec -T attacker sh -lc '
+  send_ntp_mode6() {
+    { printf "\x1e\x01\x00\x00"; dd if=/dev/zero bs=1 count=44 2>/dev/null; } \
+      | nc -u -w 1 ntp 123 >/dev/null 2>&1 || true
+  }
+
+  send_ntp_mode7() {
+    { printf "\x1f\x00\x03\x2a"; dd if=/dev/zero bs=1 count=44 2>/dev/null; } \
+      | nc -u -w 1 ntp 123 >/dev/null 2>&1 || true
+  }
+
   for i in $(seq 1 6); do
-    printf "ntp-probe-%s\n" "$i" | nc -u -w 1 ntp 123 >/dev/null 2>&1 || true
+    send_ntp_mode6
+    send_ntp_mode7
     sleep 1
   done
 '

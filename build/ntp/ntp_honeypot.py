@@ -8,6 +8,29 @@ def utc_timestamp() -> str:
     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def classify_action(packet: bytes) -> str:
+    if not packet:
+        return "empty-datagram"
+
+    first_byte = packet[0]
+    version = (first_byte >> 3) & 0x07
+    mode = first_byte & 0x07
+    size = len(packet)
+
+    if size < 48:
+        return f"malformed-v{version}-mode{mode}-len{size}"
+
+    if mode == 6:
+        opcode = packet[1] & 0x1F
+        return f"mode6-control-opcode-{opcode}"
+
+    if mode == 7:
+        request_code = packet[3]
+        return f"mode7-private-request-{request_code}"
+
+    return f"mode{mode}-request-v{version}"
+
+
 def main() -> None:
     listen_port = int(os.environ.get("NTP_LISTEN_PORT", "123"))
     log_file = os.environ.get("NTP_LOG_FILE", "/var/log/ntp/ntp.log")
@@ -17,8 +40,9 @@ def main() -> None:
 
     with open(log_file, "a", encoding="utf-8", buffering=1) as stream:
         while True:
-            _, (source_ip, _) = sock.recvfrom(2048)
-            stream.write(f"{utc_timestamp()} ntp-honeypot denied packet from {source_ip}\n")
+            packet, (source_ip, _) = sock.recvfrom(2048)
+            action = classify_action(packet)
+            stream.write(f"{utc_timestamp()} ntp-honeypot action={action} from {source_ip}\n")
 
 
 if __name__ == "__main__":
