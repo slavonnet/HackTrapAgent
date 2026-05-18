@@ -39,6 +39,26 @@ services:
       timeout: 3s
       retries: 10
 
+  ntp:
+    profiles:
+      - ntp
+    build:
+      context: .
+      dockerfile: build/ntp/Dockerfile
+    environment:
+      NTP_LISTEN_PORT: 123
+      NTP_LOG_FILE: /var/log/ntp/ntp.log
+    ports:
+      - "${NTP_PUBLIC_PORT:-2123}:123/udp"
+    volumes:
+      - ntp_logs:/var/log/ntp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f ntp-honeypot.py >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
@@ -51,6 +71,7 @@ services:
     volumes:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
+      - ntp_logs:/var/log/ntp
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -69,3 +90,4 @@ services:
 volumes:
   ssh_logs:
   ftp_logs:
+  ntp_logs:
