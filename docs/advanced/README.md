@@ -11,6 +11,8 @@ Files:
 - `fail2ban/imap/jail.local` — IMAP jail settings.
 - `fail2ban/pop3/jail.local` — POP3 jail settings.
 - `fail2ban/smtp/jail.local` — SMTP jail settings.
+- `fail2ban/rdp/jail.local` — RDP jail settings.
+- `fail2ban/rdp/filter.d/xrdp-sesman.conf` — RDP failregex for `AUTHFAIL` events.
 - `fail2ban/l2tp/jail.local` — L2TP jail settings.
 - `fail2ban/ike2/jail.local` — IKEv2 jail settings.
 - `fail2ban/l2tp/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.
@@ -18,6 +20,8 @@ Files:
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
+- `fail2ban/mongodb/jail.local` — MongoDB jail settings.
+- `fail2ban/mongodb/filter.conf` — MongoDB JSON log failregex rules.
 - `fail2ban/radius/jail.local` — RADIUS jail settings.
 - `fail2ban/radius/filter.d/freeradius.conf` — RADIUS failregex rules.
 - `fail2ban/redis/jail.local` — Redis jail settings.
@@ -87,6 +91,12 @@ Files:
 - `etc/postgresql/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## MongoDB honeypot tuning
+
+Files:
+
+- `etc/mongodb/users.conf`
 
 ## Elasticsearch honeypot tuning
 

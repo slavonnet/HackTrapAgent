@@ -37,14 +37,17 @@ Priority candidates:
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
-- [ ] `snmp`
+- [x] `snmp`
+- [x] `snmptrap`
 - [x] `mysql`
+- [x] `mongodb`
 - [x] `redis`
 - [x] `postgresql`
 - [x] `elasticsearch`
 - [x] `l2tp`
 - [x] `ipsec` (IKEv2)
 - [x] `openvpn`
+- [x] `rdp`
 
 ## Phase 4 — Production hardening
 

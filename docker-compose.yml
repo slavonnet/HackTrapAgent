@@ -181,6 +181,25 @@ services:
       timeout: 3s
       retries: 10
 
+  mongodb:
+    profiles:
+      - mongodb
+    build:
+      context: .
+      dockerfile: build/mongodb/Dockerfile
+    environment:
+      HACKTRAP_USER: ${MONGODB_RUNTIME_USER:-trap}
+    ports:
+      - "${MONGODB_PUBLIC_PORT:-27017}:27017"
+    volumes:
+      - mongodb_logs:/var/log/mongodb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x mongod >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   redis:
     profiles:
       - redis
@@ -277,6 +296,63 @@ services:
       timeout: 3s
       retries: 10
 
+  snmp:
+    profiles:
+      - snmp
+    build:
+      context: .
+      dockerfile: build/snmp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMP_PUBLIC_PORT:-2161}:161/udp"
+    volumes:
+      - snmp_logs:/var/log/snmp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rdp:
+    profiles:
+      - rdp
+    build:
+      context: .
+      dockerfile: build/rdp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RDP_RUNTIME_USER:-trap}
+    ports:
+      - "${RDP_PUBLIC_PORT:-3389}:3389"
+    volumes:
+      - rdp_logs:/var/log/rdp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x xrdp >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  snmptrap:
+    profiles:
+      - snmptrap
+    build:
+      context: .
+      dockerfile: build/snmptrap/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMPTRAP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMPTRAP_PUBLIC_PORT:-2162}:162/udp"
+    volumes:
+      - snmptrap_logs:/var/log/snmptrap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmptrapd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   rabbitmq:
     profiles:
       - rabbitmq
@@ -341,7 +417,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,mongodb,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -358,11 +434,15 @@ services:
       - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
+      - mongodb_logs:/var/log/mongodb
       - redis_logs:/var/log/redis
       - elasticsearch_logs:/var/log/elasticsearch
       - clickhouse_logs:/var/log/clickhouse-server
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - snmp_logs:/var/log/snmp
+      - snmptrap_logs:/var/log/snmptrap
+      - rdp_logs:/var/log/rdp
       - rabbitmq_logs:/var/log/rabbitmq
       - radius_logs:/var/log/radius
       - ad_logs:/var/log/ad
@@ -453,11 +533,15 @@ volumes:
   ike2_logs:
   postgresql_logs:
   mysql_logs:
+  mongodb_logs:
   redis_logs:
   elasticsearch_logs:
   clickhouse_logs:
   bgp_logs:
   openvpn_logs:
+  snmp_logs:
+  snmptrap_logs:
+  rdp_logs:
   rabbitmq_logs:
   radius_logs:
   ad_logs:

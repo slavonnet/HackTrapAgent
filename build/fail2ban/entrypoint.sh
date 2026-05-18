@@ -35,13 +35,6 @@ for service in "${services[@]}"; do
     echo "WARN: no fail2ban jail for service '${service}' at ${source_jail}"
   fi
 
-  source_filter_dir="/opt/hacktrap/fail2ban/${service}/filter.d"
-  if [[ -d "$source_filter_dir" ]]; then
-    for filter_file in "${source_filter_dir}"/*.conf; do
-      cp -f "$filter_file" /etc/fail2ban/filter.d/
-    done
-  fi
-
   source_filter="/opt/hacktrap/fail2ban/${service}/filter.conf"
   target_filter="/etc/fail2ban/filter.d/${service}.conf"
   if [[ -f "$source_filter" ]]; then
@@ -101,6 +94,11 @@ if [[ ",${services_raw}," == *",redis,"* ]]; then
   touch /var/log/redis/redis-auth.log
 fi
 
+if [[ ",${services_raw}," == *",mongodb,"* ]]; then
+  mkdir -p /var/log/mongodb
+  touch /var/log/mongodb/mongodb.log
+fi
+
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
   mkdir -p /var/log/l2tp
   touch /var/log/l2tp/charon.log
@@ -139,6 +137,21 @@ fi
 if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   mkdir -p /var/log/openvpn
   touch /var/log/openvpn/openvpn.log
+fi
+
+if [[ ",${services_raw}," == *",snmp,"* ]]; then
+  mkdir -p /var/log/snmp
+  touch /var/log/snmp/snmpd.log
+fi
+
+if [[ ",${services_raw}," == *",snmptrap,"* ]]; then
+  mkdir -p /var/log/snmptrap
+  touch /var/log/snmptrap/snmptrapd.log
+fi
+
+if [[ ",${services_raw}," == *",rdp,"* ]]; then
+  mkdir -p /var/log/rdp
+  touch /var/log/rdp/xrdp-sesman.log
 fi
 
 if [[ ",${services_raw}," == *",ad,"* ]]; then

@@ -55,8 +55,12 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/mongodb/test_fail2ban_scope.sh` — validates MongoDB + fail2ban:
+  - IP ban after repeated failed logins
 - `tests/redis/test_fail2ban_scope.sh` — validates Redis + fail2ban:
   - IP ban after repeated failed ACL/password authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/elasticsearch/test_fail2ban_scope.sh` — validates Elasticsearch + fail2ban:
   - IP ban after repeated failed HTTP Basic authentication attempts
   - firewall rule exists inside the fail2ban container scope
@@ -73,6 +77,16 @@ Tests are split by service.
   - IP ban after repeated failed UDP probes
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/snmp/test_fail2ban_scope.sh` — validates SNMP + fail2ban:
+  - random SNMP community is required (common guesses like `public`/`private` do not work)
+  - SNMPv3 authentication is enforced
+  - IP ban after repeated failed SNMP authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/snmptrap/test_fail2ban_scope.sh` — validates SNMP trap + fail2ban:
+  - random trap community is required
+  - SNMPv3 trap authentication is enforced
+  - IP ban after repeated unauthorized trap attempts
 - `tests/radius/test_fail2ban_scope.sh` — validates RADIUS + fail2ban:
   - IP ban after repeated failed real RADIUS PAP authentication attempts
 - `tests/ad/test_fail2ban_scope.sh` — validates AD (LDAP) + fail2ban:
@@ -99,11 +113,14 @@ Tests are split by service.
 ./tests/ike2/test_fail2ban_scope.sh
 ./tests/postgresql/test_fail2ban_scope.sh
 ./tests/mysql/test_fail2ban_scope.sh
+./tests/mongodb/test_fail2ban_scope.sh
 ./tests/redis/test_fail2ban_scope.sh
 ./tests/elasticsearch/test_fail2ban_scope.sh
 ./tests/clickhouse/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
+./tests/snmp/test_fail2ban_scope.sh
+./tests/snmptrap/test_fail2ban_scope.sh
 ./tests/radius/test_fail2ban_scope.sh
 ./tests/ad/test_fail2ban_scope.sh
 ./tests/rabbitmq/test_fail2ban_scope.sh
@@ -112,7 +129,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch clickhouse bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq
+./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql mongodb redis elasticsearch clickhouse bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
 ```
 
 `run_service_tests.sh` runs service tests in parallel.
