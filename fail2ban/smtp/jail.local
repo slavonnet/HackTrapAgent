@@ -1,0 +1,5 @@
+[hacktrap-smtp]
+enabled = true
+port = 25
+filter = hacktrap-smtp
+logpath = /var/log/smtp/smtp-auth.log

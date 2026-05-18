@@ -27,11 +27,12 @@ For each service, provide:
 Priority candidates:
 
 - [x] `ftp`
+- [x] `smtp`
+- [x] `imap`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
 - [ ] `snmp`
-- [ ] `imap`
 - [ ] `mysql`
 - [ ] `postgresql`
 - [ ] `l2tp`

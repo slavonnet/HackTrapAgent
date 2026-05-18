@@ -51,6 +51,8 @@ services:
     volumes:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
+      - imap_logs:/var/log/imap
+      - smtp_logs:/var/log/smtp
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -66,6 +68,46 @@ services:
     profiles:
       - test
 
+  imap:
+    profiles:
+      - imap
+    build:
+      context: .
+      dockerfile: build/imap/Dockerfile
+    environment:
+      HACKTRAP_USER: ${IMAP_RUNTIME_USER:-trap}
+    ports:
+      - "${IMAP_PUBLIC_PORT:-2143}:143"
+    volumes:
+      - imap_logs:/var/log/imap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f imap_server.py >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  smtp:
+    profiles:
+      - smtp
+    build:
+      context: .
+      dockerfile: build/smtp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SMTP_RUNTIME_USER:-trap}
+    ports:
+      - "${SMTP_PUBLIC_PORT:-2525}:25"
+    volumes:
+      - smtp_logs:/var/log/smtp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f smtp_server.py >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
   ssh_logs:
   ftp_logs:
+  imap_logs:
+  smtp_logs:
