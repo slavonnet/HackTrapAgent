@@ -101,7 +101,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,mysql,bgp,openvpn,imap,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,mysql,bgp,openvpn,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -109,6 +109,7 @@ services:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
       - imap_logs:/var/log/imap
+      - pop3_logs:/var/log/pop3
       - smtp_logs:/var/log/smtp
       - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
@@ -147,6 +148,25 @@ services:
       timeout: 3s
       retries: 10
 
+  pop3:
+    profiles:
+      - pop3
+    build:
+      context: .
+      dockerfile: build/pop3/Dockerfile
+    environment:
+      HACKTRAP_USER: ${POP3_RUNTIME_USER:-trap}
+    ports:
+      - "${POP3_PUBLIC_PORT:-2110}:110"
+    volumes:
+      - pop3_logs:/var/log/pop3
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   smtp:
     profiles:
       - smtp
@@ -170,6 +190,7 @@ volumes:
   ssh_logs:
   ftp_logs:
   imap_logs:
+  pop3_logs:
   smtp_logs:
   mysql_logs:
   bgp_logs:

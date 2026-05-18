@@ -56,6 +56,11 @@ if [[ ",${services_raw}," == *",imap,"* ]]; then
   touch /var/log/imap/dovecot.log
 fi
 
+if [[ ",${services_raw}," == *",pop3,"* ]]; then
+  mkdir -p /var/log/pop3
+  touch /var/log/pop3/dovecot.log
+fi
+
 if [[ ",${services_raw}," == *",smtp,"* ]]; then
   mkdir -p /var/log/smtp
   touch /var/log/smtp/mail.log

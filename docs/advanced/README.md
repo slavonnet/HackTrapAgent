@@ -8,6 +8,7 @@ Files:
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
 - `fail2ban/imap/jail.local` — IMAP jail settings.
+- `fail2ban/pop3/jail.local` — POP3 jail settings.
 - `fail2ban/smtp/jail.local` — SMTP jail settings.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.

@@ -29,6 +29,7 @@ Priority candidates:
 - [x] `ftp`
 - [x] `smtp`
 - [x] `imap`
+- [x] `pop3`
 - [x] `bgp`
 - [ ] `sip`
 - [ ] `iax`

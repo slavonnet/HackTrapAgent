@@ -7,6 +7,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts an SSH honeypot (`localhost:2222`).
 - Starts an FTP honeypot (`localhost:2121`).
 - Starts an IMAP honeypot (`localhost:2143`).
+- Starts a POP3 honeypot (`localhost:2110`).
 - Starts an SMTP honeypot (`localhost:2525`).
 - Starts a MySQL honeypot (`localhost:3306`).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
@@ -25,7 +26,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh ftp mysql bgp imap smtp openvpn
+docker compose logs -f fail2ban ssh ftp mysql bgp imap pop3 smtp openvpn
 ```
 
 Stop:
@@ -50,6 +51,7 @@ Stop:
 - SSH service implementation: `docs/services/ssh.md`
 - FTP service implementation: `docs/services/ftp.md`
 - IMAP service implementation: `docs/services/imap.md`
+- POP3 service implementation: `docs/services/pop3.md`
 - SMTP service implementation: `docs/services/smtp.md`
 - MySQL service implementation: `docs/services/mysql.md`
 - BGP service implementation: `docs/services/bgp.md`

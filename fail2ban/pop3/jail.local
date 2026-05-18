@@ -1,0 +1,5 @@
+[dovecot-pop3]
+enabled = true
+port = 110
+filter = dovecot
+logpath = /var/log/pop3/dovecot.log
