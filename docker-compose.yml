@@ -59,6 +59,29 @@ services:
       timeout: 3s
       retries: 10
 
+  l2tp:
+    profiles:
+      - l2tp
+    build:
+      context: .
+      dockerfile: build/l2tp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${L2TP_RUNTIME_USER:-trap}
+    ports:
+      - "${L2TP_PUBLIC_PORT:-11701}:1701/udp"
+      - "${L2TP_IKE_PUBLIC_PORT:-15100}:500/udp"
+      - "${L2TP_NATT_PUBLIC_PORT:-14501}:4500/udp"
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - l2tp_logs:/var/log/l2tp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x charon >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   postgresql:
     profiles:
       - postgresql
@@ -74,6 +97,28 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "runuser -u postgres -- pg_isready -h /var/run/postgresql -U postgres >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ike2:
+    profiles:
+      - ike2
+    build:
+      context: .
+      dockerfile: build/ike2/Dockerfile
+    environment:
+      HACKTRAP_USER: ${IKE2_RUNTIME_USER:-trap}
+    ports:
+      - "${IKE2_PUBLIC_PORT:-1500}:500/udp"
+      - "${IKE2_NATT_PUBLIC_PORT:-14500}:4500/udp"
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ike2_logs:/var/log/ike2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x charon >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -140,7 +185,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,postgresql,mysql,bgp,openvpn}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -148,6 +193,11 @@ services:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
       - ntp_logs:/var/log/ntp
+      - imap_logs:/var/log/imap
+      - pop3_logs:/var/log/pop3
+      - smtp_logs:/var/log/smtp
+      - l2tp_logs:/var/log/l2tp
+      - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
@@ -164,13 +214,77 @@ services:
       context: .
       dockerfile: build/attacker/Dockerfile
     command: ["sleep", "infinity"]
+    cap_add:
+      - NET_ADMIN
     profiles:
       - test
+
+  imap:
+    profiles:
+      - imap
+    build:
+      context: .
+      dockerfile: build/imap/Dockerfile
+    environment:
+      HACKTRAP_USER: ${IMAP_RUNTIME_USER:-trap}
+    ports:
+      - "${IMAP_PUBLIC_PORT:-2143}:143"
+    volumes:
+      - imap_logs:/var/log/imap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  pop3:
+    profiles:
+      - pop3
+    build:
+      context: .
+      dockerfile: build/pop3/Dockerfile
+    environment:
+      HACKTRAP_USER: ${POP3_RUNTIME_USER:-trap}
+    ports:
+      - "${POP3_PUBLIC_PORT:-2110}:110"
+    volumes:
+      - pop3_logs:/var/log/pop3
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  smtp:
+    profiles:
+      - smtp
+    build:
+      context: .
+      dockerfile: build/smtp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SMTP_RUNTIME_USER:-trap}
+    ports:
+      - "${SMTP_PUBLIC_PORT:-2525}:25"
+    volumes:
+      - smtp_logs:/var/log/smtp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x master >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 volumes:
   ssh_logs:
   ftp_logs:
   ntp_logs:
+  imap_logs:
+  pop3_logs:
+  smtp_logs:
+  l2tp_logs:
+  ike2_logs:
   postgresql_logs:
   mysql_logs:
   bgp_logs:

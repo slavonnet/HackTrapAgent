@@ -1,0 +1,4 @@
+[dovecot]
+enabled = true
+port = 143
+logpath = /var/log/imap/dovecot.log
