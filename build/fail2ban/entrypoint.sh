@@ -6,6 +6,11 @@ mkdir -p /etc/fail2ban/jail.d /etc/fail2ban/filter.d /var/log/fail2ban /var/run/
 
 cp -f /opt/hacktrap/fail2ban/common/fail2ban.local /etc/fail2ban/fail2ban.local
 
+if [[ -d /opt/hacktrap/fail2ban/filter.d ]]; then
+  mkdir -p /etc/fail2ban/filter.d
+  cp -f /opt/hacktrap/fail2ban/filter.d/*.conf /etc/fail2ban/filter.d/ 2>/dev/null || true
+fi
+
 services_raw="${FAIL2BAN_SERVICES:-ssh}"
 IFS=',' read -ra services <<< "$services_raw"
 
@@ -54,6 +59,11 @@ fi
 if [[ ",${services_raw}," == *",smtp,"* ]]; then
   mkdir -p /var/log/smtp
   touch /var/log/smtp/smtp-auth.log
+fi
+
+if [[ ",${services_raw}," == *",bgp,"* ]]; then
+  mkdir -p /var/log/bgp
+  touch /var/log/bgp/bgp.log
 fi
 
 if [[ ",${services_raw}," == *",openvpn,"* ]]; then
