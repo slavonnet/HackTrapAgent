@@ -8,6 +8,8 @@ Files:
 - `fail2ban/asterisk/jail.local` — Asterisk jail settings.
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
+- `fail2ban/tftp/jail.local` — TFTP jail settings.
+- `fail2ban/tftp/filter.conf` — TFTP failregex rules.
 - `fail2ban/ntp/jail.local` — NTP jail settings.
 - `fail2ban/imap/jail.local` — IMAP jail settings.
 - `fail2ban/pop3/jail.local` — POP3 jail settings.
@@ -68,6 +70,14 @@ Files:
 - `etc/ftp/users.conf`
 
 Important: container password is always generated dynamically at startup and is never stored as a static value in the repository.
+
+## TFTP honeypot tuning
+
+Files:
+
+- `etc/tftp/tftpd.args`
+
+TFTP has no protocol-level authentication. The honeypot keeps the root directory read-only and uses repeated denied write attempts as fail2ban signals.
 
 ## MySQL honeypot tuning
 

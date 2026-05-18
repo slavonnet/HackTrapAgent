@@ -27,6 +27,7 @@ SERVICE_PORT_SPECS: Dict[str, List[PortSpec]] = {
     "ssh": [PortSpec("SSH_PUBLIC_PORT", ("tcp",))],
     "telnetd": [PortSpec("TELNETD_PUBLIC_PORT", ("tcp",))],
     "ftp": [PortSpec("FTP_PUBLIC_PORT", ("tcp",))],
+    "tftp": [PortSpec("TFTP_PUBLIC_PORT", ("udp",))],
     "ntp": [PortSpec("NTP_PUBLIC_PORT", ("udp",))],
     "nfs": [PortSpec("NFS_PUBLIC_PORT", ("tcp",))],
     "postgresql": [PortSpec("POSTGRESQL_PUBLIC_PORT", ("tcp",))],

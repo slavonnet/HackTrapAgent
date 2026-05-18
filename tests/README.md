@@ -26,6 +26,10 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/tftp/test_fail2ban_scope.sh` — validates TFTP + fail2ban:
+  - IP ban after repeated TFTP write request (`WRQ`) attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/ntp/test_fail2ban_scope.sh` — validates NTP + fail2ban:
   - IP ban after repeated suspicious NTP mode 6/7 request probes
 - `tests/nfs/test_fail2ban_scope.sh` — validates NFS + fail2ban:
@@ -120,6 +124,7 @@ Tests are split by service.
 ./tests/ssh/test_fail2ban_scope.sh
 ./tests/telnetd/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
+./tests/tftp/test_fail2ban_scope.sh
 ./tests/ntp/test_fail2ban_scope.sh
 ./tests/nfs/test_fail2ban_scope.sh
 ./tests/imap/test_fail2ban_scope.sh
@@ -148,7 +153,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh asterisk ssh telnetd ftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 openvpn smb kafka radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
+./tests/run_service_tests.sh asterisk ssh telnetd ftp tftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 openvpn smb kafka radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
 ```
 
 `run_service_tests.sh` runs service tests in parallel.
