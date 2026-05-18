@@ -1,0 +1,6 @@
+[openvpn]
+enabled = true
+port = 1194
+protocol = udp
+logpath = /var/log/openvpn/openvpn.log
+backend = polling

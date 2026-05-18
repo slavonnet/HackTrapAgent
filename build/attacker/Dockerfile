@@ -5,6 +5,8 @@ RUN apk add --no-cache \
       iproute2 \
       lftp \
       mariadb-client \
+      netcat-openbsd \
+      mariadb-client \
       openssh-client \
       sshpass
 
