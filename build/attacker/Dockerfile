@@ -21,7 +21,7 @@ RUN apk add --no-cache \
       strongswan \
       postgresql-client \
       sshpass \
-      util-linux
+      util-linux \
     && pip3 install --no-cache-dir --break-system-packages pymongo
 
 CMD ["sleep", "infinity"]
