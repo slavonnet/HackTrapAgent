@@ -51,6 +51,26 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",postgresql,"* ]]; then
+  mkdir -p /var/log/postgresql
+  touch /var/log/postgresql/postgresql.log
+fi
+
+if [[ ",${services_raw}," == *",mysql,"* ]]; then
+  mkdir -p /var/log/mysql
+  touch /var/log/mysql/error.log
+fi
+
+if [[ ",${services_raw}," == *",l2tp,"* ]]; then
+  mkdir -p /var/log/l2tp
+  touch /var/log/l2tp/charon.log
+fi
+
+if [[ ",${services_raw}," == *",ike2,"* ]]; then
+  mkdir -p /var/log/ike2
+  touch /var/log/ike2/charon.log
+fi
+
 if [[ ",${services_raw}," == *",imap,"* ]]; then
   mkdir -p /var/log/imap
   touch /var/log/imap/dovecot.log
@@ -74,11 +94,6 @@ fi
 if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   mkdir -p /var/log/openvpn
   touch /var/log/openvpn/openvpn.log
-fi
-
-if [[ ",${services_raw}," == *",mysql,"* ]]; then
-  mkdir -p /var/log/mysql
-  touch /var/log/mysql/error.log
 fi
 
 exec fail2ban-server -f -x -v

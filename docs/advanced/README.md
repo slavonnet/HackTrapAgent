@@ -10,6 +10,12 @@ Files:
 - `fail2ban/imap/jail.local` — IMAP jail settings.
 - `fail2ban/pop3/jail.local` — POP3 jail settings.
 - `fail2ban/smtp/jail.local` — SMTP jail settings.
+- `fail2ban/l2tp/jail.local` — L2TP jail settings.
+- `fail2ban/ike2/jail.local` — IKEv2 jail settings.
+- `fail2ban/l2tp/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.
+- `fail2ban/ike2/filter.d/strongswan_ikev2.conf` — strongSwan IKEv2 filter template.
+- `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
+- `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
@@ -51,6 +57,16 @@ Files:
 
 - `etc/mysql/mariadb-hacktrap.cnf`
 - `etc/mysql/users.conf`
+
+Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## PostgreSQL honeypot tuning
+
+Files:
+
+- `etc/postgresql/postgresql.conf`
+- `etc/postgresql/pg_hba.conf`
+- `etc/postgresql/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 

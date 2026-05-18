@@ -36,9 +36,9 @@ Priority candidates:
 - [ ] `dns`
 - [ ] `snmp`
 - [x] `mysql`
-- [ ] `postgresql`
-- [ ] `l2tp`
-- [ ] `ipsec`
+- [x] `postgresql`
+- [x] `l2tp`
+- [x] `ipsec` (IKEv2)
 - [x] `openvpn`
 
 ## Phase 4 — Production hardening

@@ -29,6 +29,18 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/l2tp/test_fail2ban_scope.sh` — validates L2TP + fail2ban:
+  - IP ban after repeated failed real IKEv1/IPsec authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/ike2/test_fail2ban_scope.sh` — validates IKEv2 + fail2ban:
+  - IP ban after repeated failed real IKEv2 certificate/EAP authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/postgresql/test_fail2ban_scope.sh` — validates PostgreSQL + fail2ban:
+  - IP ban after repeated failed logins
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/mysql/test_fail2ban_scope.sh` — validates MySQL + fail2ban:
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
@@ -50,6 +62,9 @@ Tests are split by service.
 ./tests/imap/test_fail2ban_scope.sh
 ./tests/pop3/test_fail2ban_scope.sh
 ./tests/smtp/test_fail2ban_scope.sh
+./tests/l2tp/test_fail2ban_scope.sh
+./tests/ike2/test_fail2ban_scope.sh
+./tests/postgresql/test_fail2ban_scope.sh
 ./tests/mysql/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
@@ -58,7 +73,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp mysql bgp openvpn imap pop3 smtp
+./tests/run_service_tests.sh ssh ftp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

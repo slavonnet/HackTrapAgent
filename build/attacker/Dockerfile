@@ -7,6 +7,8 @@ RUN apk add --no-cache \
       mariadb-client \
       netcat-openbsd \
       openssh-client \
+      strongswan \
+      postgresql-client \
       sshpass
 
 CMD ["sleep", "infinity"]
