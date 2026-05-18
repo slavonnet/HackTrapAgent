@@ -121,6 +121,11 @@ if [[ ",${services_raw}," == *",smtp,"* ]]; then
   touch /var/log/smtp/mail.log
 fi
 
+if [[ ",${services_raw}," == *",rabbitmq,"* ]]; then
+  mkdir -p /var/log/rabbitmq
+  touch /var/log/rabbitmq/rabbit.log
+fi
+
 if [[ ",${services_raw}," == *",bgp,"* ]]; then
   mkdir -p /var/log/bgp
   touch /var/log/bgp/bgp.log

@@ -14,6 +14,7 @@ RUN apk add --no-cache \
       nfs-utils \
       openldap-clients \
       openssh-client \
+      rabbitmq-c-utils \
       python3 \
       redis \
       strongswan \
