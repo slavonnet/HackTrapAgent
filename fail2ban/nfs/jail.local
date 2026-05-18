@@ -1,0 +1,5 @@
+[nfs-ganesha-rpc]
+enabled = true
+port = 2049
+filter = nfs-ganesha-rpc
+logpath = /var/log/nfs/ganesha.log

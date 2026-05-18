@@ -1,0 +1,5 @@
+[slapd]
+enabled = true
+port = 389
+logpath = /var/log/ad/slapd.log
+backend = polling
