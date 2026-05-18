@@ -166,6 +166,7 @@ def main() -> int:
 
     project_root = Path(__file__).resolve().parent.parent
     config_file = Path(os.environ.get("CONFIG_FILE", project_root / "config/services.env"))
+    runtime_env_file = Path(os.environ.get("RUNTIME_ENV_FILE", "/tmp/hacktrapagent-benchmark.runtime.env"))
     compose_file = Path(os.environ.get("COMPOSE_FILE", project_root / "docker-compose.yml"))
     output_dir = project_root / "reports" / "benchmarks"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -175,13 +176,24 @@ def main() -> int:
     output_csv = Path(args.output_csv) if args.output_csv else output_dir / f"services_benchmark_{timestamp}.csv"
 
     docker_cmd = resolve_docker_cmd()
-    services = parse_services_env(config_file)
+    run(
+        [
+            sys.executable,
+            str(project_root / "scripts" / "prepare_runtime_env.py"),
+            "--config",
+            str(config_file),
+            "--output",
+            str(runtime_env_file),
+            "--quiet",
+        ]
+    )
+    services = parse_services_env(runtime_env_file)
 
     compose_prefix = [
         *docker_cmd,
         "compose",
         "--env-file",
-        str(config_file),
+        str(runtime_env_file),
         "-f",
         str(compose_file),
     ]
