@@ -60,11 +60,31 @@ init_host_iptables_bins() {
 }
 
 compose() {
-  $docker_cmd compose --env-file "$config_file" -f "$compose_file" "$@"
+  local project_name="${COMPOSE_PROJECT_NAME:-hacktrap-test}"
+  $docker_cmd compose --project-name "$project_name" --env-file "$config_file" -f "$compose_file" "$@"
+}
+
+get_compose_profile_args() {
+  local profiles=("test")
+  local enabled_services_raw="${ENABLED_SERVICES:-}"
+  IFS=',' read -ra enabled_services <<< "$enabled_services_raw"
+  for service in "${enabled_services[@]}"; do
+    service="$(echo "$service" | xargs)"
+    [[ -z "$service" ]] && continue
+    profiles+=("$service")
+  done
+
+  local args=()
+  for profile in "${profiles[@]}"; do
+    args+=(--profile "$profile")
+  done
+
+  printf '%s\n' "${args[@]}"
 }
 
 cleanup_compose() {
-  compose --profile test down -v --remove-orphans >/dev/null 2>&1 || true
+  mapfile -t profile_args < <(get_compose_profile_args)
+  compose "${profile_args[@]}" down -v --remove-orphans >/dev/null 2>&1 || true
 }
 
 wait_for_exec_success() {

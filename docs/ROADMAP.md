@@ -26,7 +26,7 @@ For each service, provide:
 
 Priority candidates:
 
-- [ ] `ftp`
+- [x] `ftp`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`

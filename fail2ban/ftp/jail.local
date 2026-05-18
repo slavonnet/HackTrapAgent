@@ -1,0 +1,4 @@
+[vsftpd]
+enabled = true
+port = 21
+logpath = /var/log/ftp/vsftpd.log

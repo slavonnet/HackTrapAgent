@@ -5,6 +5,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 ## Current capabilities
 
 - Starts an SSH honeypot (`localhost:2222`).
+- Starts an FTP honeypot (`localhost:2121`).
 - `fail2ban` monitors failed auth attempts and records attacker IPs.
 - Temporary local bans are applied only inside the fail2ban container scope (host firewall is untouched).
 - Runtime service defaults come from one source: `config/services.env`.
@@ -19,7 +20,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh
+docker compose logs -f fail2ban ssh ftp
 ```
 
 Stop:
@@ -42,6 +43,7 @@ Stop:
 - Development and local testing: `docs/development/README.md`
 - Advanced configuration: `docs/advanced/README.md`
 - SSH service implementation: `docs/services/ssh.md`
+- FTP service implementation: `docs/services/ftp.md`
 - Roadmap: `docs/ROADMAP.md`
 
 ## License
