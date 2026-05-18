@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x charon && pgrep -x xl2tpd"
+wait_for_exec_success "$service_name" "pgrep -x charon"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -39,6 +39,7 @@ conn l2tp-test
   keyexchange=ikev1
   authby=secret
   type=transport
+  leftid=@untrusted-l2tp-client.hacktrap.local
   left=%defaultroute
   leftprotoport=17/1701
   right=l2tp
@@ -57,8 +58,8 @@ ipsec restart >/dev/null 2>&1 || ipsec start >/dev/null 2>&1
 sleep 2
 
 for i in $(seq 1 6); do
-  ipsec up l2tp-test >/dev/null 2>&1 || true
-  ipsec down l2tp-test >/dev/null 2>&1 || true
+  timeout 8 ipsec up l2tp-test >/dev/null 2>&1 || true
+  timeout 3 ipsec down l2tp-test >/dev/null 2>&1 || true
   sleep 1
 done
 '

@@ -55,8 +55,8 @@ ipsec restart >/dev/null 2>&1 || ipsec start >/dev/null 2>&1
 sleep 2
 
 for i in $(seq 1 6); do
-  ipsec up ike2-test >/dev/null 2>&1 || true
-  ipsec down ike2-test >/dev/null 2>&1 || true
+  timeout 8 ipsec up ike2-test >/dev/null 2>&1 || true
+  timeout 3 ipsec down ike2-test >/dev/null 2>&1 || true
   sleep 1
 done
 '

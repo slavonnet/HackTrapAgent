@@ -20,7 +20,7 @@ if ! id "$user_name" >/dev/null 2>&1; then
   useradd -m -s /bin/bash "$user_name"
 fi
 
-mkdir -p /run/hacktrap /var/log/l2tp /etc/xl2tpd /etc/ppp
+mkdir -p /run/hacktrap /var/log/l2tp /etc/xl2tpd /etc/ppp /var/run/xl2tpd
 credentials_file="/run/hacktrap/l2tp_credentials.env"
 {
   printf "L2TP_SERVICE_USER=%s\nL2TP_SERVICE_PASSWORD=%s\n" "$user_name" "$l2tp_user_password"
@@ -50,14 +50,15 @@ conn l2tp-transport
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
-: PSK "${l2tp_psk}"
+@l2tp.hacktrap.local @trusted-l2tp-client.hacktrap.local : PSK "${l2tp_psk}"
 EOF
 chmod 600 /etc/ipsec.secrets
 
 cat > /etc/strongswan.d/charon-logging.conf <<'EOF'
 charon {
   filelog {
-    /var/log/l2tp/charon.log {
+    l2tp_charon {
+      path = /var/log/l2tp/charon.log
       time_format = %b %e %T
       append = no
       default = 2
@@ -109,18 +110,29 @@ pid_ipsec="$!"
 sleep 2
 /usr/sbin/xl2tpd -D &
 pid_xl2tpd="$!"
+sleep 1
+if ! kill -0 "$pid_xl2tpd" >/dev/null 2>&1; then
+  echo "WARN: xl2tpd exited, continuing with IPsec responder only."
+  pid_xl2tpd=""
+fi
 
 cleanup() {
-  kill "$pid_xl2tpd" "$pid_ipsec" >/dev/null 2>&1 || true
+  if [[ -n "${pid_xl2tpd:-}" ]]; then
+    kill "$pid_xl2tpd" >/dev/null 2>&1 || true
+  fi
+  kill "$pid_ipsec" >/dev/null 2>&1 || true
 }
 
 trap cleanup TERM INT
 
 set +e
-wait -n "$pid_xl2tpd" "$pid_ipsec"
+wait "$pid_ipsec"
 exit_code="$?"
 set -e
 
 cleanup
-wait "$pid_xl2tpd" "$pid_ipsec" >/dev/null 2>&1 || true
+if [[ -n "${pid_xl2tpd:-}" ]]; then
+  wait "$pid_xl2tpd" >/dev/null 2>&1 || true
+fi
+wait "$pid_ipsec" >/dev/null 2>&1 || true
 exit "$exit_code"

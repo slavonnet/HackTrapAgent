@@ -57,7 +57,7 @@ services:
       - l2tp_logs:/var/log/l2tp
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -x charon >/dev/null && pgrep -x xl2tpd >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x charon >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10

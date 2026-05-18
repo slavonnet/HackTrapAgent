@@ -76,7 +76,8 @@ chmod 600 /etc/ipsec.secrets
 cat > /etc/strongswan.d/charon-logging.conf <<'EOF'
 charon {
   filelog {
-    /var/log/ike2/charon.log {
+    ike2_charon {
+      path = /var/log/ike2/charon.log
       time_format = %b %e %T
       append = no
       default = 2
