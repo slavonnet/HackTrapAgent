@@ -18,8 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x memcached"
-wait_for_exec_success "$service_name" "pgrep -f memcached-auth-proxy.py"
+wait_for_exec_success "$service_name" "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 11211), 2); s.close()\""
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -29,15 +28,21 @@ if [[ -z "$attacker_ip" ]]; then
   exit 1
 fi
 
-service_password="$(compose exec -T memcached sh -lc "awk -F= '/^MEMCACHED_AUTH_PASSWORD=/{print \\$2}' /run/hacktrap/memcached_credentials.env" | tr -d '\r')"
+service_password="$(compose exec -T memcached sh -lc 'awk -F= "/^MEMCACHED_AUTH_PASSWORD=/{print \$2}" /run/hacktrap/memcached_credentials.env' | tr -d '\r')"
 if [[ -z "$service_password" ]]; then
   echo "Cannot determine runtime memcached auth password"
   exit 1
 fi
 
 if ! compose exec -T -e TARGET_USER="$target_user" -e TARGET_PASSWORD="$service_password" attacker sh -lc '
-  payload="$(printf "auth %s %s\r\nset probe 0 30 5\r\nhello\r\nget probe\r\n" "$TARGET_USER" "$TARGET_PASSWORD")"
-  response="$(printf "%s" "$payload" | nc -w2 memcached 11211 || true)"
+  response="$({
+    printf "auth %s %s\r\n" "$TARGET_USER" "$TARGET_PASSWORD"
+    sleep 1
+    printf "set probe 0 30 5\r\nhello\r\n"
+    sleep 1
+    printf "get probe\r\n"
+    sleep 1
+  } | nc -w3 memcached 11211 || true)"
   printf "%s" "$response" | grep -F "STORED" >/dev/null
   printf "%s" "$response" | grep -F "VALUE probe 0 5" >/dev/null
 '; then
