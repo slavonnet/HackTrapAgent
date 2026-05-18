@@ -31,6 +31,25 @@ This VM runs inside a Firecracker microVM. The following workarounds are already
 
 If you upgrade Docker to v29+, you may need to disable the `containerd-snapshotter` feature for `fuse-overlayfs` to keep working.
 
+### Enabling Docker memory accounting (cgroup v2)
+
+By default the Firecracker VM does not delegate the `memory` cgroup v2 controller to child cgroups, so `docker stats` shows `0B / 0B`. The update script fixes this automatically, but if you need to do it manually:
+
+```bash
+# 1. Stop dockerd if running.
+# 2. Remove Docker's threaded cgroups so root reverts from "domain threaded" to "domain".
+sudo rmdir /sys/fs/cgroup/docker/buildkit 2>/dev/null || true
+sudo rmdir /sys/fs/cgroup/docker 2>/dev/null || true
+# 3. Clear threaded controllers from root subtree, reverting root cgroup to "domain".
+sudo sh -c 'echo "-cpuset -cpu -pids" > /sys/fs/cgroup/cgroup.subtree_control' 2>/dev/null || true
+# 4. Create init.scope and move all root processes there (cgroup v2 "no internal process" rule).
+sudo mkdir -p /sys/fs/cgroup/init.scope
+sudo sh -c 'for pid in $(cat /sys/fs/cgroup/cgroup.procs); do echo $pid > /sys/fs/cgroup/init.scope/cgroup.procs 2>/dev/null || true; done'
+# 5. Enable memory (and other) controllers.
+sudo sh -c 'echo "+cpuset +cpu +pids +memory +io" > /sys/fs/cgroup/cgroup.subtree_control'
+# 6. Start dockerd.
+```
+
 ### Development workflow
 
 Since the project is Docker Compose-based, development follows this pattern:
