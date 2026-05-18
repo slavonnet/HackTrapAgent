@@ -16,7 +16,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts a MySQL honeypot (`localhost:3306`).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
 - Starts an OpenVPN honeypot (`localhost:1194/udp`).
-- Starts an Active Directory-compatible SMB honeypot (`localhost:2445`).
+- Starts an Active Directory-compatible LDAP honeypot (`localhost:2389`).
 - `fail2ban` monitors failed auth attempts and records attacker IPs.
 - Temporary local bans are applied only inside the fail2ban container scope (host firewall is untouched).
 - Runtime service defaults come from one source: `config/services.env`.

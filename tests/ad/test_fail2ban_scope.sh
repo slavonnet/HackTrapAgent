@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x smbd"
+wait_for_exec_success "$service_name" "pgrep -x slapd"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -29,20 +29,21 @@ if [[ -z "$attacker_ip" ]]; then
 fi
 
 compose exec -T -e TARGET_USER="$target_user" attacker sh -lc '
+  bind_dn="uid=${TARGET_USER},ou=people,dc=hacktrap,dc=local"
   for i in $(seq 1 6); do
-    smbclient -L "//ad" -p 445 -U "${TARGET_USER}%wrong" -m SMB3 >/dev/null 2>&1 || true
+    ldapwhoami -x -H "ldap://ad:389" -D "${bind_dn}" -w wrong >/dev/null 2>&1 || true
     sleep 1
   done
 '
 
 for _ in $(seq 1 30); do
-  if compose exec -T fail2ban fail2ban-client status samba | grep -F "$attacker_ip" >/dev/null; then
+  if compose exec -T fail2ban fail2ban-client status slapd | grep -F "$attacker_ip" >/dev/null; then
     break
   fi
   sleep 2
 done
 
-if ! compose exec -T fail2ban fail2ban-client status samba | grep -F "$attacker_ip" >/dev/null; then
+if ! compose exec -T fail2ban fail2ban-client status slapd | grep -F "$attacker_ip" >/dev/null; then
   echo "Attacker IP was not banned: $attacker_ip"
   compose logs fail2ban "$service_name"
   exit 1

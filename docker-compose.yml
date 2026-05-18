@@ -189,12 +189,12 @@ services:
     environment:
       HACKTRAP_USER: ${AD_RUNTIME_USER:-trap}
     ports:
-      - "${AD_PUBLIC_PORT:-2445}:445"
+      - "${AD_PUBLIC_PORT:-2389}:389"
     volumes:
       - ad_logs:/var/log/ad
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -x smbd >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x slapd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10

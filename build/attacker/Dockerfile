@@ -6,8 +6,8 @@ RUN apk add --no-cache \
       lftp \
       mariadb-client \
       netcat-openbsd \
+      openldap-clients \
       openssh-client \
-      samba-client \
       strongswan \
       postgresql-client \
       sshpass

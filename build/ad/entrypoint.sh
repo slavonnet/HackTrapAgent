@@ -3,6 +3,8 @@ set -euo pipefail
 
 user_name="${HACKTRAP_USER:-trap}"
 users_file="/opt/hacktrap/etc/ad/users.conf"
+base_dn="dc=hacktrap,dc=local"
+admin_dn="cn=admin,${base_dn}"
 
 if [[ -f "$users_file" ]]; then
   while IFS=: read -r cfg_user _; do
@@ -18,37 +20,60 @@ if [[ ! "$user_name" =~ ^[A-Za-z0-9_]+$ ]]; then
   exit 1
 fi
 
-if ! id "$user_name" >/dev/null 2>&1; then
-  useradd -M -s /usr/sbin/nologin "$user_name"
-fi
+service_dn="uid=${user_name},ou=people,${base_dn}"
 
-root_password="$(openssl rand -hex 24)"
+admin_password="$(openssl rand -hex 24)"
 service_password="$(openssl rand -hex 24)"
+admin_password_hash="$(slappasswd -s "$admin_password")"
+service_password_hash="$(slappasswd -s "$service_password")"
 
-echo "root:${root_password}" | chpasswd
-echo "${user_name}:${service_password}" | chpasswd
+mkdir -p /run/hacktrap /var/log/ad /run/slapd /var/lib/ldap
+touch /var/log/ad/slapd.log
+chmod 0644 /var/log/ad/slapd.log
+chown -R openldap:openldap /var/lib/ldap /run/slapd
 
-if pdbedit -Lw -u root >/dev/null 2>&1; then
-  smbpasswd -x root >/dev/null 2>&1 || true
-fi
-if pdbedit -Lw -u "$user_name" >/dev/null 2>&1; then
-  smbpasswd -x "$user_name" >/dev/null 2>&1 || true
-fi
+sed "s|__ROOTPW_HASH__|${admin_password_hash}|g" /opt/hacktrap/etc/ad/slapd.conf.template > /etc/ldap/slapd.conf
+cp /opt/hacktrap/etc/ad/rsyslog-slapd.conf /etc/rsyslog.d/10-slapd.conf
 
-printf "%s\n%s\n" "$root_password" "$root_password" | smbpasswd -s -a root >/dev/null
-printf "%s\n%s\n" "$service_password" "$service_password" | smbpasswd -s -a "$user_name" >/dev/null
+rm -rf /var/lib/ldap/*
+cat > /tmp/bootstrap.ldif <<EOF
+dn: ${base_dn}
+objectClass: dcObject
+objectClass: organization
+o: HackTrap LDAP Directory
+dc: hacktrap
 
-mkdir -p /run/hacktrap /var/log/ad /run/samba /srv/ad/share
-chown -R "${user_name}:${user_name}" /srv/ad/share
-touch /var/log/ad/log.smbd
-chmod 0644 /var/log/ad/log.smbd
+dn: ou=people,${base_dn}
+objectClass: organizationalUnit
+ou: people
+
+dn: ${admin_dn}
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: admin
+description: LDAP administrator
+userPassword: ${admin_password_hash}
+
+dn: ${service_dn}
+objectClass: inetOrgPerson
+uid: ${user_name}
+sn: ${user_name}
+cn: ${user_name}
+userPassword: ${service_password_hash}
+EOF
+
+slapadd -f /etc/ldap/slapd.conf -l /tmp/bootstrap.ldif
+chown -R openldap:openldap /var/lib/ldap
+rm -f /tmp/bootstrap.ldif
+
+rsyslogd
 
 credentials_file="/run/hacktrap/ad_credentials.env"
 {
-  printf "AD_ROOT_USER=root\nAD_ROOT_PASSWORD=%s\n" "$root_password"
-  printf "AD_SERVICE_USER=%s\nAD_SERVICE_PASSWORD=%s\n" "$user_name" "$service_password"
+  printf "AD_BASE_DN=%s\nAD_ADMIN_DN=%s\nAD_ADMIN_PASSWORD=%s\n" "$base_dn" "$admin_dn" "$admin_password"
+  printf "AD_SERVICE_USER=%s\nAD_SERVICE_DN=%s\nAD_SERVICE_PASSWORD=%s\n" "$user_name" "$service_dn" "$service_password"
 } > "$credentials_file"
 chmod 600 "$credentials_file"
-echo "Generated random AD/Samba passwords for runtime users."
+echo "Generated random LDAP credentials for runtime users."
 
-exec /usr/sbin/smbd --foreground --no-process-group --configfile=/etc/samba/smb.conf
+exec /usr/sbin/slapd -f /etc/ldap/slapd.conf -h "ldap://0.0.0.0:389/" -u openldap -g openldap

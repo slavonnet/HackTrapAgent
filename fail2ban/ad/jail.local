@@ -1,5 +1,5 @@
-[samba]
+[slapd]
 enabled = true
-port = 445
-logpath = /var/log/ad/log.smbd
+port = 389
+logpath = /var/log/ad/slapd.log
 backend = polling

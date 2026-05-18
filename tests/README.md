@@ -55,8 +55,8 @@ Tests are split by service.
   - IP ban after repeated failed UDP probes
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
-- `tests/ad/test_fail2ban_scope.sh` — validates AD (Samba) + fail2ban:
-  - IP ban after repeated failed SMB authentication attempts
+- `tests/ad/test_fail2ban_scope.sh` — validates AD (LDAP) + fail2ban:
+  - IP ban after repeated failed LDAP bind attempts
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 

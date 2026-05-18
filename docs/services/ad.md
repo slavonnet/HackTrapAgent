@@ -1,21 +1,21 @@
-# Active Directory (Samba) service implementation details
+# Active Directory (LDAP) service implementation details
 
 ## Purpose
 
-The AD service is used as an additional fail2ban event source for SMB authentication brute-force attempts.
+The AD service is used as an additional fail2ban event source for LDAP bind brute-force attempts.
 
 ## Runtime model
 
-- The container runs `smbd` and exposes TCP `445`.
-- Samba auth failures are written to `/var/log/ad/log.smbd`.
+- The container runs `slapd` and exposes TCP `389`.
+- LDAP auth failures are written to `/var/log/ad/slapd.log` via rsyslog.
 - This file is mounted via a shared volume and read by fail2ban.
-- Anonymous guest access is disabled to force explicit credential guessing attempts.
+- Anonymous bind is disabled to force explicit credential guessing attempts.
 
 ## Credentials policy
 
 - No static password is stored in the repository.
 - New random passwords are generated on every container start for:
-  - `root`
+  - LDAP admin (`cn=admin,dc=hacktrap,dc=local`)
   - runtime service user from `etc/ad/users.conf`
 - Current runtime credentials are written to `/run/hacktrap/ad_credentials.env` inside the container.
 
