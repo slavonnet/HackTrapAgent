@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x postgres"
+wait_for_exec_success "$service_name" "runuser -u postgres -- pg_isready -h /var/run/postgresql -U postgres >/dev/null"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"

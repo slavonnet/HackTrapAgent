@@ -24,3 +24,4 @@ The PostgreSQL service is used as an additional fail2ban event source for passwo
 - Service defaults: `config/services.env`
 - Test: `tests/postgresql/test_fail2ban_scope.sh`
 - fail2ban jail: `fail2ban/postgresql/jail.local`
+- fail2ban filter: `fail2ban/postgresql/filter.conf`

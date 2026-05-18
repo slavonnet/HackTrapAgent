@@ -53,7 +53,7 @@ services:
       - postgresql_logs:/var/log/postgresql
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -x postgres >/dev/null"]
+      test: ["CMD-SHELL", "runuser -u postgres -- pg_isready -h /var/run/postgresql -U postgres >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10

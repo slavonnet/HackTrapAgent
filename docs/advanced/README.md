@@ -8,6 +8,7 @@ Files:
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
+- `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:

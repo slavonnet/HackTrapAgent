@@ -17,25 +17,25 @@ sql_escape_literal() {
   printf "%s" "$1" | sed "s/'/''/g"
 }
 
-cluster_line="$(pg_lsclusters --no-header | awk 'NR==1 {print $1" "$2}')"
+cluster_line="$(pg_lsclusters --no-header | awk 'NR==1 {print $1 "|" $2 "|" $6}')"
 if [[ -z "$cluster_line" ]]; then
   echo "Cannot detect PostgreSQL cluster."
   exit 1
 fi
 
-version="$(awk '{print $1}' <<< "$cluster_line")"
-cluster="$(awk '{print $2}' <<< "$cluster_line")"
+IFS='|' read -r version cluster cluster_data_dir <<< "$cluster_line"
 cluster_config_dir="/etc/postgresql/${version}/${cluster}"
-cluster_data_dir="/var/lib/postgresql/${version}/${cluster}"
+cluster_override_dir="${cluster_config_dir}/conf.d"
 
 mkdir -p /var/log/postgresql /run/hacktrap /run/postgresql
 touch /var/log/postgresql/postgresql.log
 chmod 0644 /var/log/postgresql/postgresql.log
 chown -R postgres:postgres /var/log/postgresql /run/postgresql "$cluster_data_dir"
 
+mkdir -p "$cluster_override_dir"
 cp -f /opt/hacktrap/etc/postgresql/pg_hba.conf "${cluster_config_dir}/pg_hba.conf"
-cp -f /opt/hacktrap/etc/postgresql/postgresql.conf "${cluster_config_dir}/postgresql.conf"
-chown postgres:postgres "${cluster_config_dir}/pg_hba.conf" "${cluster_config_dir}/postgresql.conf"
+cp -f /opt/hacktrap/etc/postgresql/postgresql.conf "${cluster_override_dir}/hacktrap.conf"
+chown postgres:postgres "${cluster_config_dir}/pg_hba.conf" "${cluster_override_dir}/hacktrap.conf"
 
 postgres_password="$(openssl rand -hex 24)"
 service_password="$(openssl rand -hex 24)"
