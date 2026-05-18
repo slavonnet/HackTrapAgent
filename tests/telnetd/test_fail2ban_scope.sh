@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -f in.telnetd"
+wait_for_exec_success "$service_name" "bash -lc ': >/dev/tcp/127.0.0.1/23'"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -32,13 +32,15 @@ compose exec -T -e TARGET_USER="$target_user" attacker sh -lc '
   for i in $(seq 1 6); do
     {
       sleep 1
-      printf "%s\r\n" "$TARGET_USER"
+      printf "%s\n" "$TARGET_USER"
       sleep 1
-      printf "wrong\r\n"
+      printf "wrong\n"
       sleep 1
-      printf "wrong\r\n"
+      printf "wrong\n"
       sleep 1
-    } | nc -w 8 telnetd 23 >/dev/null 2>&1 || true
+      printf "exit\n"
+      sleep 1
+    } | telnet telnetd 23 >/dev/null 2>&1 || true
     sleep 1
   done
 '

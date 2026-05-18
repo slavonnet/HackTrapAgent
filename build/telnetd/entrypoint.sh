@@ -43,4 +43,4 @@ chmod 0644 /var/log/telnet/auth.log
 
 rsyslogd
 
-exec /usr/sbin/in.telnetd -debug 23
+exec /usr/sbin/inetutils-inetd -d /opt/hacktrap/etc/telnetd/inetd.conf

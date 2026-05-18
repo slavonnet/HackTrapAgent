@@ -3,6 +3,7 @@ FROM debian:bookworm-slim
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
       inetutils-telnetd \
+      inetutils-inetd \
       rsyslog \
       passwd \
       ca-certificates \

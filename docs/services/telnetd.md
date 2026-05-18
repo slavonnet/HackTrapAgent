@@ -6,7 +6,7 @@ The Telnet service is used as an additional fail2ban event source for brute-forc
 
 ## Runtime model
 
-- The container runs `in.telnetd` and `rsyslog`.
+- The container runs `inetutils-inetd`, `telnetd`, and `rsyslog`.
 - PAM authentication logs are written to `/var/log/telnet/auth.log`.
 - This file is mounted via a shared volume and read by fail2ban.
 - Password authentication is intentionally enabled to capture realistic failed login traffic.

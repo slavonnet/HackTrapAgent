@@ -34,7 +34,7 @@ services:
       - telnetd_logs:/var/log/telnet
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f in.telnetd >/dev/null"]
+      test: ["CMD-SHELL", "bash -lc ': >/dev/tcp/127.0.0.1/23'"]
       interval: 5s
       timeout: 3s
       retries: 10
