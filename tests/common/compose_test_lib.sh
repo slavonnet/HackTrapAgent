@@ -60,7 +60,8 @@ init_host_iptables_bins() {
 }
 
 compose() {
-  $docker_cmd compose --env-file "$config_file" -f "$compose_file" "$@"
+  local project_name="${COMPOSE_PROJECT_NAME:-hacktrap-test}"
+  $docker_cmd compose --project-name "$project_name" --env-file "$config_file" -f "$compose_file" "$@"
 }
 
 cleanup_compose() {
