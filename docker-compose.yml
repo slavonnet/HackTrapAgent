@@ -469,7 +469,7 @@ services:
       - rabbitmq_logs:/var/log/rabbitmq
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      test: ["CMD-SHELL", "pgrep -x beam.smp >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10

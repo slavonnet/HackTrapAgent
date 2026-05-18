@@ -14,6 +14,7 @@ The RabbitMQ service provides an AMQP honeypot endpoint that emits fail2ban even
 - By default, management and metrics plugins are disabled at startup (`RABBITMQ_ENABLE_MANAGEMENT=false`) to reduce CPU overhead.
 - Low-CPU Erlang scheduler flags are applied by default via `RABBITMQ_LOW_CPU_ERL_ARGS`.
 - In low-overhead mode, mnesia state is moved to `/dev/shm/rabbitmq/mnesia` (`RABBITMQ_UNSAFE_RAM_STORAGE=true`) to avoid disk durability costs.
+- The container healthcheck uses a lightweight local process probe (`pgrep -x beam.smp`) instead of frequent CLI diagnostics calls to avoid periodic CPU spikes.
 
 ## Credentials policy
 
