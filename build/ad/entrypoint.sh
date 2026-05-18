@@ -80,7 +80,7 @@ echo "Generated random LDAP credentials for runtime users."
 /usr/sbin/slapd -f /etc/ldap/slapd.conf -h "ldap://0.0.0.0:389/" -u openldap -g openldap
 
 for _ in $(seq 1 10); do
-  if pgrep -x slapd >/dev/null 2>&1; then
+  if pidof slapd >/dev/null 2>&1; then
     exec tail -F /var/log/ad/slapd.log
   fi
   sleep 1

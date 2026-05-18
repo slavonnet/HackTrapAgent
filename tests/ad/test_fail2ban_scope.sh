@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x slapd"
+wait_for_exec_success "$service_name" "pidof slapd >/dev/null"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"

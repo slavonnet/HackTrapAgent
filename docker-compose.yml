@@ -194,7 +194,7 @@ services:
       - ad_logs:/var/log/ad
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -x slapd >/dev/null"]
+      test: ["CMD-SHELL", "pidof slapd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
