@@ -33,6 +33,7 @@ Priority candidates:
 - [x] `imap`
 - [x] `pop3`
 - [x] `bgp`
+- [x] `kafka`
 - [x] `radius`
 - [x] `sip` (PJSIP in Asterisk)
 - [x] `iax` (IAX2 in Asterisk)

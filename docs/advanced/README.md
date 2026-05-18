@@ -21,6 +21,8 @@ Files:
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
+- `fail2ban/kafka/jail.local` — Kafka jail settings.
+- `fail2ban/kafka/filter.conf` — Kafka failregex rules.
 - `fail2ban/memcached/jail.local` — Memcached jail settings.
 - `fail2ban/memcached/filter.conf` — Memcached failregex rules.
 - `fail2ban/mongodb/jail.local` — MongoDB jail settings.
@@ -102,6 +104,14 @@ Files:
 - `etc/postgresql/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## Kafka honeypot tuning
+
+Files:
+
+- `etc/kafka/users.conf`
+
+Important: container credentials are generated dynamically at startup and are never stored as static values in the repository.
 
 ## MongoDB honeypot tuning
 

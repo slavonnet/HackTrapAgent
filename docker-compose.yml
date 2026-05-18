@@ -338,6 +338,25 @@ services:
       timeout: 3s
       retries: 10
 
+  kafka:
+    profiles:
+      - kafka
+    build:
+      context: .
+      dockerfile: build/kafka/Dockerfile
+    environment:
+      HACKTRAP_USER: ${KAFKA_RUNTIME_USER:-trap}
+    ports:
+      - "${KAFKA_PUBLIC_PORT:-29092}:9092"
+    volumes:
+      - kafka_logs:/var/log/kafka
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ss -ltn | grep -q ':9092'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   snmp:
     profiles:
       - snmp
@@ -459,7 +478,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,kafka,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -484,6 +503,7 @@ services:
       - clickhouse_logs:/var/log/clickhouse-server
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - kafka_logs:/var/log/kafka
       - snmp_logs:/var/log/snmp
       - snmptrap_logs:/var/log/snmptrap
       - rdp_logs:/var/log/rdp
@@ -585,6 +605,7 @@ volumes:
   clickhouse_logs:
   bgp_logs:
   openvpn_logs:
+  kafka_logs:
   snmp_logs:
   snmptrap_logs:
   rdp_logs:

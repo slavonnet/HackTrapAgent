@@ -24,6 +24,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts a ClickHouse honeypot (`localhost:8123` HTTP, `localhost:9000` native TCP).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
 - Starts an OpenVPN honeypot (`localhost:1194/udp`).
+- Starts a Kafka honeypot (`localhost:29092`) and logs failed SASL-style auth attempts.
 - Starts an SNMP honeypot (`localhost:2161/udp`) with random runtime community and SNMPv3 credentials.
 - Starts an SNMP trap honeypot (`localhost:2162/udp`) with random runtime community and SNMPv3 credentials.
 - Starts an RDP honeypot (`localhost:3389`).
@@ -44,7 +45,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban asterisk ssh telnetd ftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 imap pop3 smtp openvpn snmp snmptrap rdp radius ad rabbitmq
+docker compose logs -f fail2ban asterisk ssh telnetd ftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 imap pop3 smtp openvpn kafka snmp snmptrap rdp radius ad rabbitmq
 ```
 
 Stop:
@@ -86,6 +87,7 @@ Stop:
 - ClickHouse service implementation: `docs/services/clickhouse.md`
 - BGP service implementation: `docs/services/bgp.md`
 - OpenVPN service implementation: `docs/services/openvpn.md`
+- Kafka service implementation: `docs/services/kafka.md`
 - SNMP service implementation: `docs/services/snmp.md`
 - SNMP trap service implementation: `docs/services/snmptrap.md`
 - RDP service implementation: `docs/services/rdp.md`
