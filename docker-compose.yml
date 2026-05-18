@@ -236,7 +236,7 @@ services:
       - bgp_logs:/var/log/bgp
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "vtysh -c 'show bgp summary' >/dev/null 2>&1"]
+      test: ["CMD-SHELL", "ss -ltn sport = :179 | grep -q ':179'"]
       interval: 5s
       timeout: 3s
       retries: 10

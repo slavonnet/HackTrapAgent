@@ -12,6 +12,7 @@ router_id="${BGP_ROUTER_ID:-198.51.100.1}"
 mkdir -p /var/log/bgp /etc/frr
 touch "$bgp_log_file"
 chmod 0644 "$bgp_log_file"
+mkdir -p /var/run/frr /var/tmp/frr
 
 is_valid_ipv4() {
   local ip="$1"
@@ -68,7 +69,6 @@ EOF
 
   cat <<'EOF'
 !
-debug bgp events
 debug bgp neighbor-events
 !
 line vty
@@ -88,4 +88,6 @@ if [[ -z "$bgpd_bin" ]]; then
   exit 1
 fi
 
-exec "$bgpd_bin" -f "$bgpd_conf_file" -A 0.0.0.0 -p 179 -n -Z -u root -g root
+bgpd_args=(-f "$bgpd_conf_file" -A 0.0.0.0 -p 179 -n -Z -S)
+
+exec "$bgpd_bin" "${bgpd_args[@]}"

@@ -17,7 +17,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "vtysh -c 'show bgp summary' >/dev/null 2>&1"
+wait_for_exec_success "$service_name" "ss -ltn sport = :179 | grep -q ':179'"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
