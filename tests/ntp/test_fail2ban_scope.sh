@@ -29,7 +29,7 @@ fi
 
 compose exec -T attacker sh -lc '
   for i in $(seq 1 6); do
-    bash -lc "echo ntp-probe-${i} > /dev/udp/ntp/123" >/dev/null 2>&1 || true
+    printf "ntp-probe-%s\n" "$i" | nc -u -w 1 ntp 123 >/dev/null 2>&1 || true
     sleep 1
   done
 '
