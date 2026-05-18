@@ -96,4 +96,14 @@ if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   touch /var/log/openvpn/openvpn.log
 fi
 
+if [[ ",${services_raw}," == *",snmp,"* ]]; then
+  mkdir -p /var/log/snmp
+  touch /var/log/snmp/snmpd.log
+fi
+
+if [[ ",${services_raw}," == *",snmptrap,"* ]]; then
+  mkdir -p /var/log/snmptrap
+  touch /var/log/snmptrap/snmptrapd.log
+fi
+
 exec fail2ban-server -f -x -v

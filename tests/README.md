@@ -53,6 +53,18 @@ Tests are split by service.
   - IP ban after repeated failed UDP probes
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/snmp/test_fail2ban_scope.sh` — validates SNMP + fail2ban:
+  - random SNMP community is required (common guesses like `public`/`private` do not work)
+  - SNMPv3 authentication is enforced
+  - IP ban after repeated failed SNMP authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/snmptrap/test_fail2ban_scope.sh` — validates SNMP trap + fail2ban:
+  - random trap community is required
+  - SNMPv3 trap authentication is enforced
+  - IP ban after repeated unauthorized trap attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 
 ## Run one service
 
@@ -68,12 +80,14 @@ Tests are split by service.
 ./tests/mysql/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
+./tests/snmp/test_fail2ban_scope.sh
+./tests/snmptrap/test_fail2ban_scope.sh
 ```
 
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp
+./tests/run_service_tests.sh ssh ftp postgresql mysql bgp l2tp ike2 openvpn imap pop3 smtp snmp snmptrap
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

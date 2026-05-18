@@ -34,7 +34,8 @@ Priority candidates:
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
-- [ ] `snmp`
+- [x] `snmp`
+- [x] `snmptrap`
 - [x] `mysql`
 - [x] `postgresql`
 - [x] `l2tp`
