@@ -8,14 +8,19 @@ on:
       - "cursor/**"
 
 jobs:
-  container-scope-ban:
+  service-tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - ssh
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run fail2ban container-scope integration test
+      - name: Run service integration test
         run: |
-          chmod +x tests/test_fail2ban_container_scope.sh
-          ./tests/test_fail2ban_container_scope.sh
+          chmod +x tests/run_service_tests.sh tests/${{ matrix.service }}/test_fail2ban_scope.sh
+          ./tests/run_service_tests.sh "${{ matrix.service }}"

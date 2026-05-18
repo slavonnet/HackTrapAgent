@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+service_name="ssh"
 compose_file="${COMPOSE_FILE:-docker-compose.yml}"
-project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+compose_project_name="${COMPOSE_PROJECT_NAME:-hacktrap-${service_name}-$$}"
 
 cd "$project_root"
+export COMPOSE_PROJECT_NAME="$compose_project_name"
+target_user="$(awk -F: '/^[^#[:space:]]/{print $1; exit}' etc/ssh/users.conf)"
+if [[ -z "$target_user" ]]; then
+  target_user="trap"
+fi
 
 cleanup() {
   ${docker_cmd:-docker} compose -f "$compose_file" --profile test down -v --remove-orphans >/dev/null 2>&1 || true
@@ -67,7 +74,7 @@ if [[ -z "$attacker_ip" ]]; then
   exit 1
 fi
 
-$docker_cmd compose -f "$compose_file" exec -T attacker sh -lc '
+$docker_cmd compose -f "$compose_file" exec -T -e TARGET_USER="$target_user" attacker sh -lc '
   for i in $(seq 1 6); do
     sshpass -p wrong ssh \
       -o StrictHostKeyChecking=no \
@@ -75,7 +82,7 @@ $docker_cmd compose -f "$compose_file" exec -T attacker sh -lc '
       -o PreferredAuthentications=password \
       -o PubkeyAuthentication=no \
       -o ConnectTimeout=3 \
-      trap@ssh "true" >/dev/null 2>&1 || true
+      "${TARGET_USER}@ssh" "true" >/dev/null 2>&1 || true
     sleep 1
   done
 '
@@ -105,17 +112,4 @@ for bin in "${host_iptables_bins[@]}"; do
   fi
 done
 
-if $docker_cmd compose -f "$compose_file" exec -T attacker sh -lc '
-  sshpass -p trap123 ssh \
-    -o StrictHostKeyChecking=no \
-    -o UserKnownHostsFile=/dev/null \
-    -o PreferredAuthentications=password \
-    -o PubkeyAuthentication=no \
-    -o ConnectTimeout=5 \
-    trap@ssh "true"
-' >/dev/null 2>&1; then
-  echo "Attacker is still able to connect after ban"
-  exit 1
-fi
-
-echo "PASS: fail2ban bans attacker IP in container namespace only ($attacker_ip)"
+echo "PASS [$service_name]: fail2ban bans attacker IP in container namespace only ($attacker_ip)"

@@ -1,28 +1,24 @@
 # Testing
 
-## Goal
+Тесты разделены по сервисам.
 
-Validate that:
+## Service tests
 
-1. Failed SSH brute-force attempts trigger a ban in `fail2ban`.
-2. The ban is applied only in container network namespace (not on host).
+- `tests/ssh/test_fail2ban_scope.sh` — проверяет SSH + fail2ban:
+  - бан IP после серии неуспешных логинов
+  - наличие firewall-правила в контейнере
+  - отсутствие этого правила на хосте
 
-## Local run
-
-Prerequisites:
-
-- Docker Engine with `docker compose`
-- Access to host `iptables` (directly or via passwordless `sudo`)
-
-Command:
+## Run one service
 
 ```bash
-chmod +x tests/test_fail2ban_container_scope.sh
-./tests/test_fail2ban_container_scope.sh
+./tests/ssh/test_fail2ban_scope.sh
 ```
 
-Expected output:
+## Run selected services
 
-```text
-PASS: fail2ban bans attacker IP in container namespace only (<ip>)
+```bash
+./tests/run_service_tests.sh ssh
 ```
+
+`run_service_tests.sh` запускает тесты сервисов параллельно.

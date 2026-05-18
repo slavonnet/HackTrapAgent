@@ -12,10 +12,12 @@ RUN mkdir -p \
       /etc/fail2ban/jail.d \
       /var/log/fail2ban \
       /var/run/fail2ban \
-      /opt/hacktrap/local/fail2ban
+      /opt/hacktrap/fail2ban/common \
+      /opt/hacktrap/fail2ban/ssh
 
-COPY local/fail2ban/ /opt/hacktrap/local/fail2ban/
-COPY docker/fail2ban/start.sh /usr/local/bin/fail2ban-entrypoint.sh
+COPY fail2ban/common/ /opt/hacktrap/fail2ban/common/
+COPY fail2ban/ssh/ /opt/hacktrap/fail2ban/ssh/
+COPY build/fail2ban/entrypoint.sh /usr/local/bin/fail2ban-entrypoint.sh
 
 RUN chmod +x /usr/local/bin/fail2ban-entrypoint.sh
 

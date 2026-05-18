@@ -4,10 +4,9 @@ services:
   ssh:
     build:
       context: .
-      dockerfile: docker/ssh/Dockerfile
+      dockerfile: build/ssh/Dockerfile
     environment:
       HACKTRAP_USER: trap
-      HACKTRAP_PASSWORD: trap123
     ports:
       - "2222:22"
     volumes:
@@ -22,7 +21,7 @@ services:
   fail2ban:
     build:
       context: .
-      dockerfile: docker/fail2ban/Dockerfile
+      dockerfile: build/fail2ban/Dockerfile
     depends_on:
       ssh:
         condition: service_healthy
@@ -42,7 +41,7 @@ services:
   attacker:
     build:
       context: .
-      dockerfile: docker/attacker/Dockerfile
+      dockerfile: build/attacker/Dockerfile
     depends_on:
       ssh:
         condition: service_healthy

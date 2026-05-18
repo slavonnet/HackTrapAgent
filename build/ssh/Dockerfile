@@ -6,14 +6,15 @@ RUN apt-get update \
       rsyslog \
       passwd \
       ca-certificates \
+      openssl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /run/sshd /var/log/ssh /opt/hacktrap/local/ssh
+RUN mkdir -p /run/sshd /var/log/ssh /opt/hacktrap/etc/ssh
 
-COPY docker/ssh/sshd_config /etc/ssh/sshd_config
-COPY docker/ssh/rsyslog-sshd.conf /etc/rsyslog.d/00-sshd.conf
-COPY docker/ssh/entrypoint.sh /usr/local/bin/ssh-entrypoint.sh
-COPY local/ssh/ /opt/hacktrap/local/ssh/
+COPY etc/ssh/sshd_config /etc/ssh/sshd_config
+COPY etc/ssh/rsyslog-sshd.conf /etc/rsyslog.d/00-sshd.conf
+COPY build/ssh/entrypoint.sh /usr/local/bin/ssh-entrypoint.sh
+COPY etc/ssh/ /opt/hacktrap/etc/ssh/
 
 RUN chmod +x /usr/local/bin/ssh-entrypoint.sh
 
