@@ -14,12 +14,14 @@ RUN apk add --no-cache \
       nfs-utils \
       openldap-clients \
       openssh-client \
+      py3-pip \
       rabbitmq-c-utils \
       python3 \
       redis \
       strongswan \
       postgresql-client \
       sshpass \
-      util-linux
+      util-linux \
+    && pip3 install --no-cache-dir --break-system-packages pymongo
 
 CMD ["sleep", "infinity"]

@@ -55,10 +55,20 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/memcached/test_fail2ban_scope.sh` — validates Memcached + fail2ban:
+  - IP ban after repeated failed `auth` attempts
+- `tests/mongodb/test_fail2ban_scope.sh` — validates MongoDB + fail2ban:
+  - IP ban after repeated failed logins
 - `tests/redis/test_fail2ban_scope.sh` — validates Redis + fail2ban:
   - IP ban after repeated failed ACL/password authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/elasticsearch/test_fail2ban_scope.sh` — validates Elasticsearch + fail2ban:
   - IP ban after repeated failed HTTP Basic authentication attempts
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/clickhouse/test_fail2ban_scope.sh` — validates ClickHouse + fail2ban:
+  - IP ban after repeated failed HTTP authentication attempts
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 - `tests/bgp/test_fail2ban_scope.sh` — validates BGP + fail2ban:
@@ -105,8 +115,11 @@ Tests are split by service.
 ./tests/ike2/test_fail2ban_scope.sh
 ./tests/postgresql/test_fail2ban_scope.sh
 ./tests/mysql/test_fail2ban_scope.sh
+./tests/memcached/test_fail2ban_scope.sh
+./tests/mongodb/test_fail2ban_scope.sh
 ./tests/redis/test_fail2ban_scope.sh
 ./tests/elasticsearch/test_fail2ban_scope.sh
+./tests/clickhouse/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
 ./tests/snmp/test_fail2ban_scope.sh
@@ -119,7 +132,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
+./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

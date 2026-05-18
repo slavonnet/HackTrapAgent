@@ -78,15 +78,30 @@ if [[ ",${services_raw}," == *",mysql,"* ]]; then
   touch /var/log/mysql/error.log
 fi
 
+if [[ ",${services_raw}," == *",memcached,"* ]]; then
+  mkdir -p /var/log/memcached
+  touch /var/log/memcached/memcached.log
+fi
+
 if [[ ",${services_raw}," == *",elasticsearch,"* ]]; then
   mkdir -p /var/log/elasticsearch
   touch /var/log/elasticsearch/elasticsearch.log
+fi
+
+if [[ ",${services_raw}," == *",clickhouse,"* ]]; then
+  mkdir -p /var/log/clickhouse-server
+  touch /var/log/clickhouse-server/clickhouse-server.log
 fi
 
 if [[ ",${services_raw}," == *",redis,"* ]]; then
   mkdir -p /var/log/redis
   touch /var/log/redis/redis.log
   touch /var/log/redis/redis-auth.log
+fi
+
+if [[ ",${services_raw}," == *",mongodb,"* ]]; then
+  mkdir -p /var/log/mongodb
+  touch /var/log/mongodb/mongodb.log
 fi
 
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then

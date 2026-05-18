@@ -40,6 +40,7 @@ Priority candidates:
 - [x] `snmp`
 - [x] `snmptrap`
 - [x] `mysql`
+- [x] `mongodb`
 - [x] `redis`
 - [x] `postgresql`
 - [x] `elasticsearch`
