@@ -1,0 +1,7 @@
+[tftpd]
+enabled = true
+filter = tftp
+port = 69
+protocol = udp
+logpath = /var/log/tftp/tftpd.log
+backend = polling

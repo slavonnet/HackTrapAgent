@@ -81,6 +81,23 @@ services:
       timeout: 3s
       retries: 10
 
+  tftp:
+    profiles:
+      - tftp
+    build:
+      context: .
+      dockerfile: build/tftp/Dockerfile
+    ports:
+      - "${TFTP_PUBLIC_PORT:-2069}:69/udp"
+    volumes:
+      - tftp_logs:/var/log/tftp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f in.tftpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   ntp:
     profiles:
       - ntp
@@ -497,7 +514,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,smb,kafka,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,tftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,smb,kafka,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -506,6 +523,7 @@ services:
       - ssh_logs:/var/log/ssh
       - telnetd_logs:/var/log/telnet
       - ftp_logs:/var/log/ftp
+      - tftp_logs:/var/log/tftp
       - ntp_logs:/var/log/ntp
       - nfs_logs:/var/log/nfs
       - imap_logs:/var/log/imap
@@ -609,6 +627,7 @@ volumes:
   ssh_logs:
   telnetd_logs:
   ftp_logs:
+  tftp_logs:
   ntp_logs:
   nfs_logs:
   imap_logs:
