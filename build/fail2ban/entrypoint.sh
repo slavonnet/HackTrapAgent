@@ -32,4 +32,9 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",openvpn,"* ]]; then
+  mkdir -p /var/log/openvpn
+  touch /var/log/openvpn/openvpn.log
+fi
+
 exec fail2ban-server -f -x -v
