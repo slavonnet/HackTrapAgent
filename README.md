@@ -1,17 +1,18 @@
 # HackTrapAgent
 
-A lightweight Docker Compose honeypot for collecting attacker IP addresses and automatically blocking them in the container scope.
+A lightweight Docker Compose honeypot for collecting attacker IP addresses and forwarding security signals to an external system.
 
 ## Current capabilities
 
 - Starts an SSH honeypot (`localhost:2222`).
-- `fail2ban` monitors failed auth attempts and bans attacker IPs.
-- The ban is applied only in the service container network namespace (not on the host).
+- `fail2ban` monitors failed auth attempts and records attacker IPs.
+- Temporary local bans are applied only inside the fail2ban container scope (host firewall is untouched).
+- Runtime service defaults come from one source: `config/services.env`.
 
 ## Quick start
 
 ```bash
-docker compose up -d --build ssh fail2ban
+./scripts/compose_up.sh
 ```
 
 Check status:
@@ -24,7 +25,7 @@ docker compose logs -f fail2ban ssh
 Stop:
 
 ```bash
-docker compose down -v
+./scripts/compose_down.sh
 ```
 
 ## Project structure
@@ -34,12 +35,14 @@ docker compose down -v
 - `fail2ban/<service>/` — fail2ban jail for a specific service.
 - `tests/<service>/` — service-specific integration tests.
 - `docs/services/<service>.md` — implementation details for a specific service.
+- `config/services.env` — one source of truth for enabled services and ports.
 
 ## Additional documentation
 
 - Development and local testing: `docs/development/README.md`
 - Advanced configuration: `docs/advanced/README.md`
 - SSH service implementation: `docs/services/ssh.md`
+- Roadmap: `docs/ROADMAP.md`
 
 ## License
 

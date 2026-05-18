@@ -2,8 +2,16 @@
 set -euo pipefail
 
 services=("$@")
+config_file="${CONFIG_FILE:-config/services.env}"
+
 if [[ "${#services[@]}" -eq 0 ]]; then
-  services=("ssh")
+  if [[ ! -f "$config_file" ]]; then
+    echo "Missing config file: $config_file"
+    exit 1
+  fi
+
+  enabled_services="$(awk -F= '/^ENABLED_SERVICES=/{print $2}' "$config_file" | tr -d '[:space:]')"
+  IFS=',' read -ra services <<< "$enabled_services"
 fi
 
 failed=0
@@ -11,6 +19,7 @@ pids=()
 services_started=()
 
 for service in "${services[@]}"; do
+  [[ -z "$service" ]] && continue
   test_script="tests/${service}/test_fail2ban_scope.sh"
   if [[ ! -x "$test_script" ]]; then
     echo "Missing executable service test: $test_script"

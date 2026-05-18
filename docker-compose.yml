@@ -2,13 +2,15 @@ name: hacktrapagent
 
 services:
   ssh:
+    profiles:
+      - ssh
     build:
       context: .
       dockerfile: build/ssh/Dockerfile
     environment:
-      HACKTRAP_USER: trap
+      HACKTRAP_USER: ${SSH_RUNTIME_USER:-trap}
     ports:
-      - "2222:22"
+      - "${SSH_PUBLIC_PORT:-2222}:22"
     volumes:
       - ssh_logs:/var/log/ssh
     restart: unless-stopped
@@ -22,10 +24,8 @@ services:
     build:
       context: .
       dockerfile: build/fail2ban/Dockerfile
-    depends_on:
-      ssh:
-        condition: service_healthy
-    network_mode: "service:ssh"
+    environment:
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -42,9 +42,6 @@ services:
     build:
       context: .
       dockerfile: build/attacker/Dockerfile
-    depends_on:
-      ssh:
-        condition: service_healthy
     command: ["sleep", "infinity"]
     profiles:
       - test

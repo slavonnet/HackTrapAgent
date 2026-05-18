@@ -2,11 +2,16 @@
 
 Tests are split by service.
 
+## Shared test helpers
+
+- `tests/common/compose_test_lib.sh` contains shared setup and validation helpers.
+- `config/services.env` is the single source of truth for enabled services and test defaults.
+
 ## Service tests
 
 - `tests/ssh/test_fail2ban_scope.sh` — validates SSH + fail2ban:
   - IP ban after repeated failed logins
-  - firewall rule exists inside the container scope
+  - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 
 ## Run one service
@@ -22,3 +27,5 @@ Tests are split by service.
 ```
 
 `run_service_tests.sh` runs service tests in parallel.
+
+When no service arguments are passed, it runs tests for `ENABLED_SERVICES` from `config/services.env`.

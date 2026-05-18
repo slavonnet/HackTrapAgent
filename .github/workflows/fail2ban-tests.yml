@@ -8,13 +8,34 @@ on:
       - "cursor/**"
 
 jobs:
+  discover-services:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.services }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build service matrix from config
+        id: matrix
+        run: |
+          services="$(awk -F= '/^ENABLED_SERVICES=/{print $2}' config/services.env | tr -d '[:space:]')"
+          if [ -z "$services" ]; then
+            echo "services=[]" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          json="$(printf '%s' "$services" | tr ',' '\n' | sed '/^$/d' | jq -R -s -c 'split("\n")[:-1]')"
+          echo "services=$json" >> "$GITHUB_OUTPUT"
+
   service-tests:
+    needs: discover-services
+    if: ${{ needs.discover-services.outputs.matrix != '[]' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        service:
-          - ssh
+        service: ${{ fromJson(needs.discover-services.outputs.matrix) }}
 
     steps:
       - name: Checkout repository
@@ -22,5 +43,5 @@ jobs:
 
       - name: Run service integration test
         run: |
-          chmod +x tests/run_service_tests.sh tests/${{ matrix.service }}/test_fail2ban_scope.sh
+          chmod +x tests/run_service_tests.sh tests/common/compose_test_lib.sh tests/${{ matrix.service }}/test_fail2ban_scope.sh
           ./tests/run_service_tests.sh "${{ matrix.service }}"

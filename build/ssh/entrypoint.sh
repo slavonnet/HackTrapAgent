@@ -13,18 +13,28 @@ if [[ -f "$users_file" ]]; then
   done < "$users_file"
 fi
 
-if ! id "$user_name" >/dev/null 2>&1; then
-  useradd -m -s /bin/bash "$user_name"
-fi
+root_password="$(openssl rand -hex 24)"
+echo "root:${root_password}" | chpasswd
 
-generated_password="$(openssl rand -hex 24)"
-echo "${user_name}:${generated_password}" | chpasswd
+service_password=""
+if [[ "$user_name" != "root" ]]; then
+  if ! id "$user_name" >/dev/null 2>&1; then
+    useradd -m -s /bin/bash "$user_name"
+  fi
+  service_password="$(openssl rand -hex 24)"
+  echo "${user_name}:${service_password}" | chpasswd
+fi
 
 mkdir -p /run/hacktrap
 credentials_file="/run/hacktrap/ssh_credentials.env"
-printf "HACKTRAP_USER=%s\nHACKTRAP_PASSWORD=%s\n" "$user_name" "$generated_password" > "$credentials_file"
+{
+  printf "SSH_ROOT_USER=root\nSSH_ROOT_PASSWORD=%s\n" "$root_password"
+  if [[ "$user_name" != "root" ]]; then
+    printf "SSH_SERVICE_USER=%s\nSSH_SERVICE_PASSWORD=%s\n" "$user_name" "$service_password"
+  fi
+} > "$credentials_file"
 chmod 600 "$credentials_file"
-echo "Generated random SSH password for user '${user_name}'."
+echo "Generated random SSH passwords for runtime users."
 
 mkdir -p /run/sshd /var/log/ssh
 touch /var/log/ssh/auth.log

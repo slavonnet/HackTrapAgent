@@ -2,79 +2,33 @@
 set -euo pipefail
 
 service_name="ssh"
-compose_file="${COMPOSE_FILE:-docker-compose.yml}"
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-compose_project_name="${COMPOSE_PROJECT_NAME:-hacktrap-${service_name}-$$}"
 
-cd "$project_root"
-export COMPOSE_PROJECT_NAME="$compose_project_name"
-target_user="$(awk -F: '/^[^#[:space:]]/{print $1; exit}' etc/ssh/users.conf)"
-if [[ -z "$target_user" ]]; then
-  target_user="trap"
-fi
+# shellcheck source=tests/common/compose_test_lib.sh
+source "${project_root}/tests/common/compose_test_lib.sh"
 
-cleanup() {
-  ${docker_cmd:-docker} compose -f "$compose_file" --profile test down -v --remove-orphans >/dev/null 2>&1 || true
-}
+load_service_config
+set_compose_project_name "$service_name"
+target_user="${SSH_TEST_LOGIN_USER:-root}"
 
-trap cleanup EXIT
+trap cleanup_compose EXIT
 
-if ! command -v docker >/dev/null 2>&1; then
-  echo "docker is required"
-  exit 1
-fi
+init_docker_cmd
+init_host_iptables_bins
 
-docker_cmd="docker"
-if ! docker info >/dev/null 2>&1; then
-  if command -v sudo >/dev/null 2>&1 && sudo -n docker info >/dev/null 2>&1; then
-    docker_cmd="sudo docker"
-  else
-    echo "Cannot access docker daemon."
-    exit 1
-  fi
-fi
+compose --profile test up -d --build "$service_name" fail2ban attacker
 
-host_prefix=""
-if command -v sudo >/dev/null 2>&1 && sudo -n true >/dev/null 2>&1; then
-  host_prefix="sudo "
-fi
+wait_for_exec_success "$service_name" "pgrep -x sshd"
+wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
-host_iptables_bins=()
-for bin in iptables iptables-legacy; do
-  if command -v "$bin" >/dev/null 2>&1; then
-    if ${host_prefix}${bin} -S >/dev/null 2>&1; then
-      host_iptables_bins+=("$bin")
-    fi
-  fi
-done
-
-if [[ "${#host_iptables_bins[@]}" -eq 0 ]]; then
-  echo "Cannot inspect host iptables; test cannot verify container-only scope."
-  exit 1
-fi
-
-$docker_cmd compose -f "$compose_file" --profile test up -d --build ssh fail2ban attacker
-
-for _ in $(seq 1 40); do
-  if $docker_cmd compose -f "$compose_file" exec -T fail2ban fail2ban-client ping >/dev/null 2>&1; then
-    break
-  fi
-  sleep 2
-done
-
-if ! $docker_cmd compose -f "$compose_file" exec -T fail2ban fail2ban-client ping >/dev/null 2>&1; then
-  echo "fail2ban did not become ready"
-  exit 1
-fi
-
-attacker_ip="$($docker_cmd compose -f "$compose_file" exec -T attacker sh -lc "ip -4 -o addr show eth0 | awk '{print \$4}' | cut -d/ -f1" | tr -d '\r')"
+attacker_ip="$(get_attacker_ip)"
 
 if [[ -z "$attacker_ip" ]]; then
   echo "Cannot determine attacker IP"
   exit 1
 fi
 
-$docker_cmd compose -f "$compose_file" exec -T -e TARGET_USER="$target_user" attacker sh -lc '
+compose exec -T -e TARGET_USER="$target_user" attacker sh -lc '
   for i in $(seq 1 6); do
     sshpass -p wrong ssh \
       -o StrictHostKeyChecking=no \
@@ -88,28 +42,23 @@ $docker_cmd compose -f "$compose_file" exec -T -e TARGET_USER="$target_user" att
 '
 
 for _ in $(seq 1 30); do
-  if $docker_cmd compose -f "$compose_file" exec -T fail2ban fail2ban-client status sshd | grep -F "$attacker_ip" >/dev/null; then
+  if compose exec -T fail2ban fail2ban-client status sshd | grep -F "$attacker_ip" >/dev/null; then
     break
   fi
   sleep 2
 done
 
-if ! $docker_cmd compose -f "$compose_file" exec -T fail2ban fail2ban-client status sshd | grep -F "$attacker_ip" >/dev/null; then
+if ! compose exec -T fail2ban fail2ban-client status sshd | grep -F "$attacker_ip" >/dev/null; then
   echo "Attacker IP was not banned: $attacker_ip"
-  $docker_cmd compose -f "$compose_file" logs fail2ban ssh
+  compose logs fail2ban "$service_name"
   exit 1
 fi
 
-if ! $docker_cmd compose -f "$compose_file" exec -T fail2ban sh -lc "iptables -S 2>/dev/null | grep -F '$attacker_ip' >/dev/null || iptables-legacy -S 2>/dev/null | grep -F '$attacker_ip' >/dev/null"; then
-  echo "Container iptables does not contain banned IP: $attacker_ip"
+if ! compose exec -T fail2ban sh -lc "iptables -S 2>/dev/null | grep -F '$attacker_ip' >/dev/null || iptables-legacy -S 2>/dev/null | grep -F '$attacker_ip' >/dev/null"; then
+  echo "Fail2ban container iptables does not contain banned IP: $attacker_ip"
   exit 1
 fi
 
-for bin in "${host_iptables_bins[@]}"; do
-  if ${host_prefix}${bin} -S | grep -F "$attacker_ip" >/dev/null; then
-    echo "Host ${bin} unexpectedly contains banned IP: $attacker_ip"
-    exit 1
-  fi
-done
+assert_ip_not_banned_on_host "$attacker_ip"
 
-echo "PASS [$service_name]: fail2ban bans attacker IP in container namespace only ($attacker_ip)"
+echo "PASS [$service_name]: fail2ban bans attacker IP in fail2ban container namespace only ($attacker_ip)"

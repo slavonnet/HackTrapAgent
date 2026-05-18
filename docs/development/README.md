@@ -10,23 +10,25 @@
 1. Build and start services:
 
    ```bash
-   docker compose --profile test up -d --build ssh fail2ban attacker
+   ./scripts/compose_up.sh
    ```
 
 2. Run service tests:
 
    ```bash
-   chmod +x tests/run_service_tests.sh tests/ssh/test_fail2ban_scope.sh
-   ./tests/run_service_tests.sh ssh
+   chmod +x tests/run_service_tests.sh tests/common/compose_test_lib.sh tests/ssh/test_fail2ban_scope.sh
+   ./tests/run_service_tests.sh
    ```
 
 3. Stop and cleanup:
 
    ```bash
-   docker compose --profile test down -v --remove-orphans
+   ./scripts/compose_down.sh
    ```
 
 ## Test model
 
 - Each service must have its own test under `tests/<service>/...`.
 - CI runs service tests as separate matrix jobs for parallel execution.
+- Shared logic belongs in `tests/common/`.
+- Service/port enablement is controlled from `config/services.env`.
