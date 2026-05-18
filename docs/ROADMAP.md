@@ -45,6 +45,7 @@ Priority candidates:
 - [x] `l2tp`
 - [x] `ipsec` (IKEv2)
 - [x] `openvpn`
+- [x] `rdp`
 
 ## Phase 4 — Production hardening
 

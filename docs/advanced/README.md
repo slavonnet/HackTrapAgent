@@ -11,6 +11,8 @@ Files:
 - `fail2ban/imap/jail.local` — IMAP jail settings.
 - `fail2ban/pop3/jail.local` — POP3 jail settings.
 - `fail2ban/smtp/jail.local` — SMTP jail settings.
+- `fail2ban/rdp/jail.local` — RDP jail settings.
+- `fail2ban/rdp/filter.d/xrdp-sesman.conf` — RDP failregex for `AUTHFAIL` events.
 - `fail2ban/l2tp/jail.local` — L2TP jail settings.
 - `fail2ban/ike2/jail.local` — IKEv2 jail settings.
 - `fail2ban/l2tp/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.

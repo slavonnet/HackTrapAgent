@@ -257,6 +257,25 @@ services:
       timeout: 3s
       retries: 10
 
+  rdp:
+    profiles:
+      - rdp
+    build:
+      context: .
+      dockerfile: build/rdp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RDP_RUNTIME_USER:-trap}
+    ports:
+      - "${RDP_PUBLIC_PORT:-3389}:3389"
+    volumes:
+      - rdp_logs:/var/log/rdp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x xrdp >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   rabbitmq:
     profiles:
       - rabbitmq
@@ -321,7 +340,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius,rabbitmq}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius,rabbitmq,rdp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -342,6 +361,7 @@ services:
       - elasticsearch_logs:/var/log/elasticsearch
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - rdp_logs:/var/log/rdp
       - rabbitmq_logs:/var/log/rabbitmq
       - radius_logs:/var/log/radius
       - ad_logs:/var/log/ad
@@ -436,6 +456,7 @@ volumes:
   elasticsearch_logs:
   bgp_logs:
   openvpn_logs:
+  rdp_logs:
   rabbitmq_logs:
   radius_logs:
   ad_logs:
