@@ -1,0 +1,5 @@
+[rabbitmq]
+enabled = true
+port = 5672
+logpath = /var/log/rabbitmq/rabbit.log
+backend = polling
