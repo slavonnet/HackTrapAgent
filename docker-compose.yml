@@ -20,6 +20,25 @@ services:
       timeout: 3s
       retries: 10
 
+  ftp:
+    profiles:
+      - ftp
+    build:
+      context: .
+      dockerfile: build/ftp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${FTP_RUNTIME_USER:-trap}
+    ports:
+      - "${FTP_PUBLIC_PORT:-2121}:21"
+    volumes:
+      - ftp_logs:/var/log/ftp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x vsftpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
@@ -31,6 +50,7 @@ services:
       - NET_RAW
     volumes:
       - ssh_logs:/var/log/ssh
+      - ftp_logs:/var/log/ftp
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -48,3 +68,4 @@ services:
 
 volumes:
   ssh_logs:
+  ftp_logs:

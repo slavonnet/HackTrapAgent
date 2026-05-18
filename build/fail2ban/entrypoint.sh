@@ -27,4 +27,9 @@ if [[ ",${services_raw}," == *",ssh,"* ]]; then
   touch /var/log/ssh/auth.log
 fi
 
+if [[ ",${services_raw}," == *",ftp,"* ]]; then
+  mkdir -p /var/log/ftp
+  touch /var/log/ftp/vsftpd.log
+fi
+
 exec fail2ban-server -f -x -v
