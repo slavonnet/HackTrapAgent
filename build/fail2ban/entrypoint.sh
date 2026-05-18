@@ -53,4 +53,9 @@ if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   touch /var/log/openvpn/openvpn.log
 fi
 
+if [[ ",${services_raw}," == *",mysql,"* ]]; then
+  mkdir -p /var/log/mysql
+  touch /var/log/mysql/error.log
+fi
+
 exec fail2ban-server -f -x -v

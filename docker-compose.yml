@@ -39,6 +39,25 @@ services:
       timeout: 3s
       retries: 10
 
+  mysql:
+    profiles:
+      - mysql
+    build:
+      context: .
+      dockerfile: build/mysql/Dockerfile
+    environment:
+      HACKTRAP_USER: ${MYSQL_RUNTIME_USER:-trap}
+    ports:
+      - "${MYSQL_PUBLIC_PORT:-3306}:3306"
+    volumes:
+      - mysql_logs:/var/log/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x mariadbd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -82,13 +101,14 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,mysql,bgp,openvpn}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
+      - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
@@ -109,5 +129,6 @@ services:
 volumes:
   ssh_logs:
   ftp_logs:
+  mysql_logs:
   bgp_logs:
   openvpn_logs:
