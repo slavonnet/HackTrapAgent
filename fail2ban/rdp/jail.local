@@ -1,5 +1,6 @@
 [xrdp-sesman]
 enabled = true
 port = 3389
+filter = xrdp-sesman
 logpath = /var/log/rdp/xrdp-sesman.log
 backend = polling

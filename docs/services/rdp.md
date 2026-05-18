@@ -24,3 +24,4 @@ The RDP service provides an authentication-focused honeypot endpoint for fail2ba
 - Service defaults: `config/services.env`
 - Test: `tests/rdp/test_fail2ban_scope.sh`
 - fail2ban jail: `fail2ban/rdp/jail.local`
+- fail2ban filter: `fail2ban/rdp/filter.d/xrdp-sesman.conf`
