@@ -19,6 +19,7 @@ Files:
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
 - `fail2ban/mongodb/jail.local` — MongoDB jail settings.
+- `fail2ban/mongodb/filter.conf` — MongoDB JSON log failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:

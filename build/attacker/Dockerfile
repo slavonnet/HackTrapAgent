@@ -7,10 +7,11 @@ RUN apk add --no-cache \
       mariadb-client \
       netcat-openbsd \
       openssh-client \
-      py3-pymongo \
+      py3-pip \
       python3 \
       strongswan \
       postgresql-client \
-      sshpass
+      sshpass \
+    && pip3 install --no-cache-dir --break-system-packages pymongo
 
 CMD ["sleep", "infinity"]

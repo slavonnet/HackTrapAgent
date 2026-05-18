@@ -1,5 +1,5 @@
 [mongodb-auth]
 enabled = true
 port = 27017
-filter = mongodb-auth
+filter = mongodb
 logpath = /var/log/mongodb/mongodb.log

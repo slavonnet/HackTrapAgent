@@ -26,7 +26,10 @@ The MongoDB service is used as an additional fail2ban event source for brute-for
 - Service defaults: `config/services.env`
 - Test: `tests/mongodb/test_fail2ban_scope.sh`
 - fail2ban jail: `fail2ban/mongodb/jail.local`
+- fail2ban filter: `fail2ban/mongodb/filter.conf`
 
 ## fail2ban filter choice
 
-- The service uses fail2ban's maintained upstream `mongodb-auth` filter.
+- The Debian `fail2ban` package ships an upstream `mongodb-auth` filter.
+- MongoDB 8 writes JSON-formatted auth failure logs (`"msg":"Failed to authenticate"`), which are not parsed by that upstream filter.
+- For this reason, the service uses a local JSON-aware filter in `fail2ban/mongodb/filter.conf`.
