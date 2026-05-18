@@ -1,0 +1,7 @@
+[snmp]
+enabled = true
+port = 161
+protocol = udp
+filter = snmp
+logpath = /var/log/snmp/snmpd.log
+backend = polling

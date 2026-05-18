@@ -37,7 +37,8 @@ Priority candidates:
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
-- [ ] `snmp`
+- [x] `snmp`
+- [x] `snmptrap`
 - [x] `mysql`
 - [x] `redis`
 - [x] `postgresql`

@@ -1,0 +1,7 @@
+[snmptrap]
+enabled = true
+port = 162
+protocol = udp
+filter = snmptrap
+logpath = /var/log/snmptrap/snmptrapd.log
+backend = polling

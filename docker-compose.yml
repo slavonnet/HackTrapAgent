@@ -257,6 +257,25 @@ services:
       timeout: 3s
       retries: 10
 
+  snmp:
+    profiles:
+      - snmp
+    build:
+      context: .
+      dockerfile: build/snmp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMP_PUBLIC_PORT:-2161}:161/udp"
+    volumes:
+      - snmp_logs:/var/log/snmp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   rdp:
     profiles:
       - rdp
@@ -272,6 +291,25 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pgrep -x xrdp >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  snmptrap:
+    profiles:
+      - snmptrap
+    build:
+      context: .
+      dockerfile: build/snmptrap/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMPTRAP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMPTRAP_PUBLIC_PORT:-2162}:162/udp"
+    volumes:
+      - snmptrap_logs:/var/log/snmptrap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmptrapd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -340,7 +378,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius,rabbitmq,rdp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -361,6 +399,8 @@ services:
       - elasticsearch_logs:/var/log/elasticsearch
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - snmp_logs:/var/log/snmp
+      - snmptrap_logs:/var/log/snmptrap
       - rdp_logs:/var/log/rdp
       - rabbitmq_logs:/var/log/rabbitmq
       - radius_logs:/var/log/radius
@@ -456,6 +496,8 @@ volumes:
   elasticsearch_logs:
   bgp_logs:
   openvpn_logs:
+  snmp_logs:
+  snmptrap_logs:
   rdp_logs:
   rabbitmq_logs:
   radius_logs:

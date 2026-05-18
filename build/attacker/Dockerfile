@@ -10,6 +10,7 @@ RUN apk add --no-cache \
       lftp \
       mariadb-client \
       netcat-openbsd \
+      net-snmp-tools \
       nfs-utils \
       openldap-clients \
       openssh-client \
