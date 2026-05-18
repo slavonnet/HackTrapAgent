@@ -2,6 +2,7 @@ FROM alpine:3.20
 
 RUN apk add --no-cache \
       bash \
+      hydra \
       iproute2 \
       lftp \
       mariadb-client \

@@ -110,4 +110,9 @@ if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   touch /var/log/openvpn/openvpn.log
 fi
 
+if [[ ",${services_raw}," == *",rdp,"* ]]; then
+  mkdir -p /var/log/rdp
+  touch /var/log/rdp/xrdp-sesman.log
+fi
+
 exec fail2ban-server -f -x -v

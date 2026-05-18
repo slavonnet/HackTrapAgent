@@ -180,12 +180,31 @@ services:
       timeout: 3s
       retries: 10
 
+  rdp:
+    profiles:
+      - rdp
+    build:
+      context: .
+      dockerfile: build/rdp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RDP_RUNTIME_USER:-trap}
+    ports:
+      - "${RDP_PUBLIC_PORT:-3389}:3389"
+    volumes:
+      - rdp_logs:/var/log/rdp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x xrdp >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,ntp,postgresql,mysql,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,rdp}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -202,6 +221,7 @@ services:
       - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - rdp_logs:/var/log/rdp
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -289,3 +309,4 @@ volumes:
   mysql_logs:
   bgp_logs:
   openvpn_logs:
+  rdp_logs:
