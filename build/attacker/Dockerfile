@@ -14,6 +14,7 @@ RUN apk add --no-cache \
       nfs-utils \
       openldap-clients \
       openssh-client \
+      samba-client \
       py3-pip \
       rabbitmq-c-utils \
       python3 \

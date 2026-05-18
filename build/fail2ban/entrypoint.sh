@@ -149,6 +149,11 @@ if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   touch /var/log/openvpn/openvpn.log
 fi
 
+if [[ ",${services_raw}," == *",smb,"* ]]; then
+  mkdir -p /var/log/smb
+  touch /var/log/smb/log.smbd
+fi
+
 if [[ ",${services_raw}," == *",kafka,"* ]]; then
   mkdir -p /var/log/kafka
   touch /var/log/kafka/kafka.log
