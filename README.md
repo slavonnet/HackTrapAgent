@@ -45,37 +45,38 @@ HackTrapAgent is a Docker Compose honeypot suite with service-specific container
 
 The table below is based on the 5-minute benchmark format (`Port`, service docs link, image size, peak memory, CPU time).  
 Peak memory can be `n/a` when Docker memory accounting is unavailable on the host.
+Because L2TP and IKEv2 share default UDP ports `500` and `4500`, runtime conflict resolver keeps L2TP on defaults and moves IKEv2 to free alternatives.
 
 | Port | Service (docs) | Image size | Peak memory | CPU time (core-seconds) |
 | --- | --- | --- | --- | --- |
-| 5060/tcp, 5060/udp, 4569/udp, 5038/tcp, 8088/tcp | [asterisk](docs/services/asterisk.md) | 238.34 MiB | n/a | 1.27 |
-| 22/tcp | [ssh](docs/services/ssh.md) | 93.69 MiB | n/a | 0.50 |
-| 23/tcp | [telnetd](docs/services/telnetd.md) | 129.96 MiB | n/a | 0.66 |
-| 21/tcp | [ftp](docs/services/ftp.md) | 83.86 MiB | n/a | 0.52 |
-| 123/udp | [ntp](docs/services/ntp.md) | 118.05 MiB | n/a | 0.51 |
-| 2049/tcp | [nfs](docs/services/nfs.md) | 123.87 MiB | n/a | 0.49 |
-| 5432/tcp | [postgresql](docs/services/postgresql.md) | 406.11 MiB | n/a | 1.31 |
-| 3306/tcp | [mysql](docs/services/mysql.md) | 430.07 MiB | n/a | 0.52 |
-| 11211/tcp | [memcached](docs/services/memcached.md) | 163.42 MiB | n/a | 0.16 |
-| 27017/tcp | [mongodb](docs/services/mongodb.md) | 905.25 MiB | n/a | 2.05 |
-| 6379/tcp | [redis](docs/services/redis.md) | 86.04 MiB | n/a | 1.51 |
-| 179/tcp | [bgp](docs/services/bgp.md) | 109.42 MiB | n/a | 0.53 |
-| 1194/udp | [openvpn](docs/services/openvpn.md) | 88.16 MiB | n/a | 0.51 |
+| 5060/tcp, 5060/udp, 4569/udp, 5038/tcp, 8088/tcp | [asterisk](docs/services/asterisk.md) | 238.34 MiB | n/a | 1.19 |
+| 22/tcp | [ssh](docs/services/ssh.md) | 93.69 MiB | n/a | 0.54 |
+| 23/tcp | [telnetd](docs/services/telnetd.md) | 129.96 MiB | n/a | 0.54 |
+| 21/tcp | [ftp](docs/services/ftp.md) | 83.86 MiB | n/a | 0.53 |
+| 123/udp | [ntp](docs/services/ntp.md) | 118.05 MiB | n/a | 0.48 |
+| 2049/tcp | [nfs](docs/services/nfs.md) | 123.87 MiB | n/a | 0.53 |
+| 5432/tcp | [postgresql](docs/services/postgresql.md) | 406.11 MiB | n/a | 1.38 |
+| 3306/tcp | [mysql](docs/services/mysql.md) | 430.07 MiB | n/a | 0.56 |
+| 11211/tcp | [memcached](docs/services/memcached.md) | 163.42 MiB | n/a | 0.24 |
+| 27017/tcp | [mongodb](docs/services/mongodb.md) | 905.25 MiB | n/a | 1.99 |
+| 6379/tcp | [redis](docs/services/redis.md) | 86.04 MiB | n/a | 1.50 |
+| 179/tcp | [bgp](docs/services/bgp.md) | 109.42 MiB | n/a | 0.54 |
+| 1194/udp | [openvpn](docs/services/openvpn.md) | 88.16 MiB | n/a | 0.55 |
 | 445/tcp | [smb](docs/services/smb.md) | 225.86 MiB | n/a | 0.50 |
-| 9092/tcp | [kafka](docs/services/kafka.md) | 88.16 MiB | n/a | 0.54 |
+| 9092/tcp | [kafka](docs/services/kafka.md) | 88.16 MiB | n/a | 0.52 |
 | 1701/udp, 500/udp, 4500/udp | [l2tp](docs/services/l2tp.md) | 93.29 MiB | n/a | 0.51 |
-| 500/udp, 4500/udp | [ike2](docs/services/ike2.md) | 92.80 MiB | n/a | 0.55 |
-| 143/tcp | [imap](docs/services/imap.md) | 131.15 MiB | n/a | 0.52 |
+| 10500/udp, 14500/udp | [ike2](docs/services/ike2.md) | 92.80 MiB | n/a | 0.51 |
+| 143/tcp | [imap](docs/services/imap.md) | 131.15 MiB | n/a | 0.54 |
 | 110/tcp | [pop3](docs/services/pop3.md) | 130.66 MiB | n/a | 0.52 |
-| 25/tcp | [smtp](docs/services/smtp.md) | 169.55 MiB | n/a | 0.51 |
-| 9200/tcp | [elasticsearch](docs/services/elasticsearch.md) | 116.99 MiB | n/a | 0.99 |
-| 8123/tcp, 9000/tcp | [clickhouse](docs/services/clickhouse.md) | 583.92 MiB | n/a | 4.74 |
+| 25/tcp | [smtp](docs/services/smtp.md) | 169.55 MiB | n/a | 0.52 |
+| 9200/tcp | [elasticsearch](docs/services/elasticsearch.md) | 116.99 MiB | n/a | 1.01 |
+| 8123/tcp, 9000/tcp | [clickhouse](docs/services/clickhouse.md) | 583.92 MiB | n/a | 4.88 |
 | 389/tcp | [ad](docs/services/ad.md) | 135.98 MiB | n/a | 0.46 |
 | 1812/udp | [radius](docs/services/radius.md) | 137.81 MiB | n/a | 0.51 |
-| 5672/tcp, 15672/tcp | [rabbitmq](docs/services/rabbitmq.md) | 238.80 MiB | n/a | 19.40 |
-| 3389/tcp | [rdp](docs/services/rdp.md) | 88.91 MiB | n/a | 0.51 |
-| 161/udp | [snmp](docs/services/snmp.md) | 135.89 MiB | n/a | 0.54 |
-| 162/udp | [snmptrap](docs/services/snmptrap.md) | 136.58 MiB | n/a | 0.53 |
+| 5672/tcp, 15672/tcp | [rabbitmq](docs/services/rabbitmq.md) | 238.80 MiB | n/a | 19.89 |
+| 3389/tcp | [rdp](docs/services/rdp.md) | 88.91 MiB | n/a | 0.52 |
+| 161/udp | [snmp](docs/services/snmp.md) | 135.89 MiB | n/a | 0.53 |
+| 162/udp | [snmptrap](docs/services/snmptrap.md) | 136.58 MiB | n/a | 0.52 |
 
 ## Targets
 
