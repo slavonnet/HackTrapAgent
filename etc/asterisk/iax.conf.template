@@ -1,0 +1,12 @@
+[general]
+bindaddr = 0.0.0.0
+bindport = 4569
+allowguest = no
+delayreject = yes
+
+[__ASTERISK_USER__]
+type = friend
+host = dynamic
+secret = __ASTERISK_PASSWORD__
+context = default
+auth = md5

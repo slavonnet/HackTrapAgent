@@ -9,6 +9,11 @@ Tests are split by service.
 
 ## Service tests
 
+- `tests/asterisk/test_fail2ban_scope.sh` — validates Asterisk (IAX/PJSIP/AMI/ARI) + fail2ban:
+  - service listeners are up on IAX, PJSIP, AMI, and ARI ports
+  - IP ban after repeated failed AMI/ARI/PJSIP authentication probes
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 - `tests/ssh/test_fail2ban_scope.sh` — validates SSH + fail2ban:
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
@@ -103,6 +108,7 @@ Tests are split by service.
 ## Run one service
 
 ```bash
+./tests/asterisk/test_fail2ban_scope.sh
 ./tests/ssh/test_fail2ban_scope.sh
 ./tests/telnetd/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
@@ -132,7 +138,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
+./tests/run_service_tests.sh asterisk ssh telnetd ftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq rdp snmp snmptrap
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

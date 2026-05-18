@@ -1,0 +1,9 @@
+[general]
+enabled = yes
+pretty = yes
+allowed_origins = *
+
+[__ASTERISK_USER__]
+type = user
+read_only = no
+password = __ASTERISK_PASSWORD__

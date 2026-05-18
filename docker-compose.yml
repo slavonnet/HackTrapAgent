@@ -1,6 +1,29 @@
 name: hacktrapagent
 
 services:
+  asterisk:
+    profiles:
+      - asterisk
+    build:
+      context: .
+      dockerfile: build/asterisk/Dockerfile
+    environment:
+      HACKTRAP_USER: ${ASTERISK_RUNTIME_USER:-trap}
+    ports:
+      - "${ASTERISK_PJSIP_PUBLIC_PORT:-5060}:5060/tcp"
+      - "${ASTERISK_PJSIP_PUBLIC_PORT:-5060}:5060/udp"
+      - "${ASTERISK_IAX_PUBLIC_PORT:-4569}:4569/udp"
+      - "${ASTERISK_MANAGER_PUBLIC_PORT:-5038}:5038"
+      - "${ASTERISK_ARI_PUBLIC_PORT:-8088}:8088"
+    volumes:
+      - asterisk_logs:/var/log/asterisk
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "asterisk -rx 'core show version' >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   ssh:
     profiles:
       - ssh
@@ -436,11 +459,12 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
+      - asterisk_logs:/var/log/asterisk
       - ssh_logs:/var/log/ssh
       - telnetd_logs:/var/log/telnet
       - ftp_logs:/var/log/ftp
@@ -541,6 +565,7 @@ services:
       retries: 10
 
 volumes:
+  asterisk_logs:
   ssh_logs:
   telnetd_logs:
   ftp_logs:

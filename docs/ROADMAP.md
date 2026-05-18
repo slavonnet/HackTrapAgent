@@ -34,8 +34,9 @@ Priority candidates:
 - [x] `pop3`
 - [x] `bgp`
 - [x] `radius`
-- [ ] `sip`
-- [ ] `iax`
+- [x] `sip` (PJSIP in Asterisk)
+- [x] `iax` (IAX2 in Asterisk)
+- [x] `asterisk` (PJSIP + IAX2 + AMI + ARI)
 - [ ] `dns`
 - [x] `snmp`
 - [x] `snmptrap`
