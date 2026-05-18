@@ -7,6 +7,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts an SSH honeypot (`localhost:2222`).
 - Starts a Telnet honeypot (`localhost:2323`).
 - Starts an FTP honeypot (`localhost:2121`).
+- Starts a TFTP honeypot (`localhost:2069/udp`).
 - Starts an NTP honeypot (`localhost:2123/udp`).
 - Starts an NFS honeypot (`localhost:2049`).
 - Starts an IMAP honeypot (`localhost:2143`).
@@ -37,7 +38,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn radius ad rabbitmq
+docker compose logs -f fail2ban ssh telnetd ftp tftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn radius ad rabbitmq
 ```
 
 Stop:
@@ -62,6 +63,7 @@ Stop:
 - SSH service implementation: `docs/services/ssh.md`
 - Telnet service implementation: `docs/services/telnetd.md`
 - FTP service implementation: `docs/services/ftp.md`
+- TFTP service implementation: `docs/services/tftp.md`
 - NTP service implementation: `docs/services/ntp.md`
 - NFS service implementation: `docs/services/nfs.md`
 - IMAP service implementation: `docs/services/imap.md`

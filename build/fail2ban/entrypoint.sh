@@ -65,6 +65,11 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",tftp,"* ]]; then
+  mkdir -p /var/log/tftp
+  touch /var/log/tftp/tftpd.log
+fi
+
 if [[ ",${services_raw}," == *",ntp,"* ]]; then
   mkdir -p /var/log/ntp
   touch /var/log/ntp/ntp.log

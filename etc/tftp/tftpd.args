@@ -1,0 +1,1 @@
+--listen --foreground --secure --verbose --address 0.0.0.0:69 /srv/tftp
