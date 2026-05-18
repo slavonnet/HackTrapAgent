@@ -20,6 +20,10 @@ Files:
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
 - `fail2ban/radius/jail.local` — RADIUS jail settings.
 - `fail2ban/radius/filter.d/freeradius.conf` — RADIUS failregex rules.
+- `fail2ban/redis/jail.local` — Redis jail settings.
+- `fail2ban/redis/filter.conf` — Redis failregex rules.
+- `fail2ban/elasticsearch/jail.local` — Elasticsearch jail settings.
+- `fail2ban/elasticsearch/filter.conf` — Elasticsearch failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:
@@ -63,6 +67,15 @@ Files:
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 
+## Redis honeypot tuning
+
+Files:
+
+- `etc/redis/redis.conf`
+- `etc/redis/users.conf`
+
+Important: Redis ACL passwords are generated dynamically at startup and are never stored as static values in the repository.
+
 ## PostgreSQL honeypot tuning
 
 Files:
@@ -70,6 +83,14 @@ Files:
 - `etc/postgresql/postgresql.conf`
 - `etc/postgresql/pg_hba.conf`
 - `etc/postgresql/users.conf`
+
+Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## Elasticsearch honeypot tuning
+
+Files:
+
+- `etc/elasticsearch/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 

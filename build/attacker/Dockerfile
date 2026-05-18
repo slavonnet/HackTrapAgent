@@ -4,13 +4,21 @@ RUN apk add --no-cache \
       bash \
       freeradius-client \
       freeradius-utils \
+      busybox-extras \
+      freeradius-client \
+      freeradius-utils \
       iproute2 \
       lftp \
       mariadb-client \
       netcat-openbsd \
+      nfs-utils \
+      openldap-clients \
       openssh-client \
+      python3 \
+      redis \
       strongswan \
       postgresql-client \
-      sshpass
+      sshpass \
+      util-linux
 
 CMD ["sleep", "infinity"]
