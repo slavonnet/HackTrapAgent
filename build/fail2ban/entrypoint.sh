@@ -83,6 +83,11 @@ if [[ ",${services_raw}," == *",elasticsearch,"* ]]; then
   touch /var/log/elasticsearch/elasticsearch.log
 fi
 
+if [[ ",${services_raw}," == *",clickhouse,"* ]]; then
+  mkdir -p /var/log/clickhouse-server
+  touch /var/log/clickhouse-server/clickhouse-server.log
+fi
+
 if [[ ",${services_raw}," == *",redis,"* ]]; then
   mkdir -p /var/log/redis
   touch /var/log/redis/redis.log

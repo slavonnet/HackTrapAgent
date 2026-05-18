@@ -19,6 +19,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts a MongoDB honeypot (`localhost:27017`).
 - Starts a Redis honeypot (`localhost:6379`).
 - Starts an Elasticsearch honeypot (`localhost:9200`).
+- Starts a ClickHouse honeypot (`localhost:8123` HTTP, `localhost:9000` native TCP).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
 - Starts an OpenVPN honeypot (`localhost:1194/udp`).
 - Starts an SNMP honeypot (`localhost:2161/udp`) with random runtime community and SNMPv3 credentials.
@@ -41,7 +42,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh telnetd ftp ntp nfs postgresql mysql mongodb redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn snmp snmptrap rdp radius ad rabbitmq
+docker compose logs -f fail2ban ssh telnetd ftp ntp nfs postgresql mysql mongodb redis elasticsearch clickhouse bgp l2tp ike2 imap pop3 smtp openvpn snmp snmptrap rdp radius ad rabbitmq
 ```
 
 Stop:
@@ -78,6 +79,7 @@ Stop:
 - MongoDB service implementation: `docs/services/mongodb.md`
 - Redis service implementation: `docs/services/redis.md`
 - Elasticsearch service implementation: `docs/services/elasticsearch.md`
+- ClickHouse service implementation: `docs/services/clickhouse.md`
 - BGP service implementation: `docs/services/bgp.md`
 - OpenVPN service implementation: `docs/services/openvpn.md`
 - SNMP service implementation: `docs/services/snmp.md`
