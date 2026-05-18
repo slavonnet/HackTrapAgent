@@ -1,0 +1,4 @@
+[redis]
+enabled = true
+port = 6379
+logpath = /var/log/redis/redis.log

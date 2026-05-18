@@ -37,6 +37,7 @@ Priority candidates:
 - [ ] `dns`
 - [ ] `snmp`
 - [x] `mysql`
+- [x] `redis`
 - [x] `postgresql`
 - [x] `l2tp`
 - [x] `ipsec` (IKEv2)
