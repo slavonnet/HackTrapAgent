@@ -110,4 +110,9 @@ if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   touch /var/log/openvpn/openvpn.log
 fi
 
+if [[ ",${services_raw}," == *",radius,"* ]]; then
+  mkdir -p /var/log/radius
+  touch /var/log/radius/radius.log
+fi
+
 exec fail2ban-server -f -x -v
