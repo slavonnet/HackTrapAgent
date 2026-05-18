@@ -219,6 +219,26 @@ services:
       timeout: 3s
       retries: 10
 
+  clickhouse:
+    profiles:
+      - clickhouse
+    build:
+      context: .
+      dockerfile: build/clickhouse/Dockerfile
+    environment:
+      HACKTRAP_USER: ${CLICKHOUSE_RUNTIME_USER:-trap}
+    ports:
+      - "${CLICKHOUSE_HTTP_PUBLIC_PORT:-8123}:8123"
+      - "${CLICKHOUSE_NATIVE_PUBLIC_PORT:-9000}:9000"
+    volumes:
+      - clickhouse_logs:/var/log/clickhouse-server
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x clickhouse-server >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -321,7 +341,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius,rabbitmq}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -340,6 +360,7 @@ services:
       - mysql_logs:/var/log/mysql
       - redis_logs:/var/log/redis
       - elasticsearch_logs:/var/log/elasticsearch
+      - clickhouse_logs:/var/log/clickhouse-server
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
       - rabbitmq_logs:/var/log/rabbitmq
@@ -434,6 +455,7 @@ volumes:
   mysql_logs:
   redis_logs:
   elasticsearch_logs:
+  clickhouse_logs:
   bgp_logs:
   openvpn_logs:
   rabbitmq_logs:

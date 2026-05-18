@@ -24,6 +24,8 @@ Files:
 - `fail2ban/redis/filter.conf` — Redis failregex rules.
 - `fail2ban/elasticsearch/jail.local` — Elasticsearch jail settings.
 - `fail2ban/elasticsearch/filter.conf` — Elasticsearch failregex rules.
+- `fail2ban/clickhouse/jail.local` — ClickHouse jail settings.
+- `fail2ban/clickhouse/filter.conf` — ClickHouse failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:
@@ -91,6 +93,14 @@ Important: container passwords are generated dynamically at startup and are neve
 Files:
 
 - `etc/elasticsearch/users.conf`
+
+Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## ClickHouse honeypot tuning
+
+Files:
+
+- `etc/clickhouse/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 
