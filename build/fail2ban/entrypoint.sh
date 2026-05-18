@@ -19,6 +19,12 @@ for service in "${services[@]}"; do
   else
     echo "WARN: no fail2ban jail for service '${service}' at ${source_jail}"
   fi
+
+  source_filter="/opt/hacktrap/fail2ban/${service}/filter.conf"
+  target_filter="/etc/fail2ban/filter.d/${service}.conf"
+  if [[ -f "$source_filter" ]]; then
+    cp -f "$source_filter" "$target_filter"
+  fi
 done
 
 touch /var/log/fail2ban/fail2ban.log

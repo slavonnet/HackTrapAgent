@@ -23,3 +23,4 @@ The OpenVPN service acts as an additional UDP-based honeypot signal source for f
 - Service defaults: `config/services.env`
 - Test: `tests/openvpn/test_fail2ban_scope.sh`
 - fail2ban jail: `fail2ban/openvpn/jail.local`
+- fail2ban filter: `fail2ban/openvpn/filter.conf`

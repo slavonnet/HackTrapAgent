@@ -4,4 +4,3 @@ port = 1194
 protocol = udp
 logpath = /var/log/openvpn/openvpn.log
 backend = polling
-failregex = ^.*AUTH_FAILED \[AF_INET\]<HOST>:\d+.*$
