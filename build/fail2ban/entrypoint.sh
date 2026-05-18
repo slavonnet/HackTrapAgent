@@ -35,13 +35,6 @@ for service in "${services[@]}"; do
     echo "WARN: no fail2ban jail for service '${service}' at ${source_jail}"
   fi
 
-  source_filter_dir="/opt/hacktrap/fail2ban/${service}/filter.d"
-  if [[ -d "$source_filter_dir" ]]; then
-    for filter_file in "${source_filter_dir}"/*.conf; do
-      cp -f "$filter_file" /etc/fail2ban/filter.d/
-    done
-  fi
-
   source_filter="/opt/hacktrap/fail2ban/${service}/filter.conf"
   target_filter="/etc/fail2ban/filter.d/${service}.conf"
   if [[ -f "$source_filter" ]]; then
@@ -80,6 +73,11 @@ if [[ ",${services_raw}," == *",nfs,"* ]]; then
   touch /var/log/nfs/ganesha.log
 fi
 
+if [[ ",${services_raw}," == *",asterisk,"* ]]; then
+  mkdir -p /var/log/asterisk
+  touch /var/log/asterisk/messages
+fi
+
 if [[ ",${services_raw}," == *",postgresql,"* ]]; then
   mkdir -p /var/log/postgresql
   touch /var/log/postgresql/postgresql.log
@@ -90,15 +88,30 @@ if [[ ",${services_raw}," == *",mysql,"* ]]; then
   touch /var/log/mysql/error.log
 fi
 
+if [[ ",${services_raw}," == *",memcached,"* ]]; then
+  mkdir -p /var/log/memcached
+  touch /var/log/memcached/memcached.log
+fi
+
 if [[ ",${services_raw}," == *",elasticsearch,"* ]]; then
   mkdir -p /var/log/elasticsearch
   touch /var/log/elasticsearch/elasticsearch.log
+fi
+
+if [[ ",${services_raw}," == *",clickhouse,"* ]]; then
+  mkdir -p /var/log/clickhouse-server
+  touch /var/log/clickhouse-server/clickhouse-server.log
 fi
 
 if [[ ",${services_raw}," == *",redis,"* ]]; then
   mkdir -p /var/log/redis
   touch /var/log/redis/redis.log
   touch /var/log/redis/redis-auth.log
+fi
+
+if [[ ",${services_raw}," == *",mongodb,"* ]]; then
+  mkdir -p /var/log/mongodb
+  touch /var/log/mongodb/mongodb.log
 fi
 
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
@@ -139,6 +152,31 @@ fi
 if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   mkdir -p /var/log/openvpn
   touch /var/log/openvpn/openvpn.log
+fi
+
+if [[ ",${services_raw}," == *",smb,"* ]]; then
+  mkdir -p /var/log/smb
+  touch /var/log/smb/log.smbd
+fi
+
+if [[ ",${services_raw}," == *",kafka,"* ]]; then
+  mkdir -p /var/log/kafka
+  touch /var/log/kafka/kafka.log
+fi
+
+if [[ ",${services_raw}," == *",snmp,"* ]]; then
+  mkdir -p /var/log/snmp
+  touch /var/log/snmp/snmpd.log
+fi
+
+if [[ ",${services_raw}," == *",snmptrap,"* ]]; then
+  mkdir -p /var/log/snmptrap
+  touch /var/log/snmptrap/snmptrapd.log
+fi
+
+if [[ ",${services_raw}," == *",rdp,"* ]]; then
+  mkdir -p /var/log/rdp
+  touch /var/log/rdp/xrdp-sesman.log
 fi
 
 if [[ ",${services_raw}," == *",ad,"* ]]; then

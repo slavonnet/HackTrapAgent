@@ -4,6 +4,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 
 ## Current capabilities
 
+- Starts an Asterisk honeypot (`localhost:5060/tcp+udp`, `localhost:4569/udp`, `localhost:5038`, `localhost:8088`) with IAX, PJSIP, AMI (Manager), and ARI enabled.
 - Starts an SSH honeypot (`localhost:2222`).
 - Starts a Telnet honeypot (`localhost:2323`).
 - Starts an FTP honeypot (`localhost:2121`).
@@ -17,10 +18,18 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts an IKEv2 honeypot (`localhost:1500/udp` and `localhost:14500/udp`).
 - Starts a PostgreSQL honeypot (`localhost:5432`).
 - Starts a MySQL honeypot (`localhost:3306`).
+- Starts a Memcached honeypot (`localhost:2112`) with auth-gated command flow logging.
+- Starts a MongoDB honeypot (`localhost:27017`).
 - Starts a Redis honeypot (`localhost:6379`).
 - Starts an Elasticsearch honeypot (`localhost:9200`).
+- Starts a ClickHouse honeypot (`localhost:8123` HTTP, `localhost:9000` native TCP).
 - Starts a BGP honeypot (`localhost:2179`) and logs unconfigured peer connection attempts.
 - Starts an OpenVPN honeypot (`localhost:1194/udp`).
+- Starts an SMB honeypot (`localhost:2445`) and logs failed SMB authentications.
+- Starts a Kafka honeypot (`localhost:29092`) and logs failed SASL-style auth attempts.
+- Starts an SNMP honeypot (`localhost:2161/udp`) with random runtime community and SNMPv3 credentials.
+- Starts an SNMP trap honeypot (`localhost:2162/udp`) with random runtime community and SNMPv3 credentials.
+- Starts an RDP honeypot (`localhost:3389`).
 - Starts a RabbitMQ honeypot (`localhost:5672`, management API at `localhost:15672`).
 - Starts a RADIUS honeypot (`localhost:1812/udp`).
 - Starts an Active Directory-compatible LDAP honeypot (`localhost:2389`).
@@ -38,7 +47,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh telnetd ftp tftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn radius ad rabbitmq
+docker compose logs -f fail2ban asterisk ssh telnetd ftp tftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 imap pop3 smtp openvpn smb kafka snmp snmptrap rdp radius ad rabbitmq
 ```
 
 Stop:
@@ -60,6 +69,7 @@ Stop:
 
 - Development and local testing: `docs/development/README.md`
 - Advanced configuration: `docs/advanced/README.md`
+- Asterisk service implementation: `docs/services/asterisk.md`
 - SSH service implementation: `docs/services/ssh.md`
 - Telnet service implementation: `docs/services/telnetd.md`
 - FTP service implementation: `docs/services/ftp.md`
@@ -73,10 +83,18 @@ Stop:
 - IKEv2 service implementation: `docs/services/ike2.md`
 - PostgreSQL service implementation: `docs/services/postgresql.md`
 - MySQL service implementation: `docs/services/mysql.md`
+- Memcached service implementation: `docs/services/memcached.md`
+- MongoDB service implementation: `docs/services/mongodb.md`
 - Redis service implementation: `docs/services/redis.md`
 - Elasticsearch service implementation: `docs/services/elasticsearch.md`
+- ClickHouse service implementation: `docs/services/clickhouse.md`
 - BGP service implementation: `docs/services/bgp.md`
 - OpenVPN service implementation: `docs/services/openvpn.md`
+- SMB service implementation: `docs/services/smb.md`
+- Kafka service implementation: `docs/services/kafka.md`
+- SNMP service implementation: `docs/services/snmp.md`
+- SNMP trap service implementation: `docs/services/snmptrap.md`
+- RDP service implementation: `docs/services/rdp.md`
 - RabbitMQ service implementation: `docs/services/rabbitmq.md`
 - RADIUS service implementation: `docs/services/radius.md`
 - AD service implementation: `docs/services/ad.md`

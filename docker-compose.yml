@@ -1,6 +1,29 @@
 name: hacktrapagent
 
 services:
+  asterisk:
+    profiles:
+      - asterisk
+    build:
+      context: .
+      dockerfile: build/asterisk/Dockerfile
+    environment:
+      HACKTRAP_USER: ${ASTERISK_RUNTIME_USER:-trap}
+    ports:
+      - "${ASTERISK_PJSIP_PUBLIC_PORT:-5060}:5060/tcp"
+      - "${ASTERISK_PJSIP_PUBLIC_PORT:-5060}:5060/udp"
+      - "${ASTERISK_IAX_PUBLIC_PORT:-4569}:4569/udp"
+      - "${ASTERISK_MANAGER_PUBLIC_PORT:-5038}:5038"
+      - "${ASTERISK_ARI_PUBLIC_PORT:-8088}:8088"
+    volumes:
+      - asterisk_logs:/var/log/asterisk
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "asterisk -rx 'core show version' >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   ssh:
     profiles:
       - ssh
@@ -198,6 +221,41 @@ services:
       timeout: 3s
       retries: 10
 
+  memcached:
+    profiles:
+      - memcached
+    build:
+      context: .
+      dockerfile: build/memcached/Dockerfile
+    environment:
+      HACKTRAP_USER: ${MEMCACHED_RUNTIME_USER:-trap}
+    ports:
+      - "${MEMCACHED_PUBLIC_PORT:-2112}:11211"
+    volumes:
+      - memcached_logs:/var/log/memcached
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 11211), 2); s.sendall(b'auth invalid invalid\\r\\n'); s.recv(64); s.close()\""]
+
+  mongodb:
+    profiles:
+      - mongodb
+    build:
+      context: .
+      dockerfile: build/mongodb/Dockerfile
+    environment:
+      HACKTRAP_USER: ${MONGODB_RUNTIME_USER:-trap}
+    ports:
+      - "${MONGODB_PUBLIC_PORT:-27017}:27017"
+    volumes:
+      - mongodb_logs:/var/log/mongodb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x mongod >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   redis:
     profiles:
       - redis
@@ -236,6 +294,26 @@ services:
       timeout: 3s
       retries: 10
 
+  clickhouse:
+    profiles:
+      - clickhouse
+    build:
+      context: .
+      dockerfile: build/clickhouse/Dockerfile
+    environment:
+      HACKTRAP_USER: ${CLICKHOUSE_RUNTIME_USER:-trap}
+    ports:
+      - "${CLICKHOUSE_HTTP_PUBLIC_PORT:-8123}:8123"
+      - "${CLICKHOUSE_NATIVE_PUBLIC_PORT:-9000}:9000"
+    volumes:
+      - clickhouse_logs:/var/log/clickhouse-server
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x clickhouse-server >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   bgp:
     profiles:
       - bgp
@@ -244,13 +322,16 @@ services:
       dockerfile: build/bgp/Dockerfile
     environment:
       BGP_ALLOWED_PEERS: ${BGP_ALLOWED_PEERS:-}
+      BGP_LOCAL_ASN: ${BGP_LOCAL_ASN:-65000}
+      BGP_PEER_ASN: ${BGP_PEER_ASN:-65001}
+      BGP_ROUTER_ID: ${BGP_ROUTER_ID:-198.51.100.1}
     ports:
       - "${BGP_PUBLIC_PORT:-2179}:179"
     volumes:
       - bgp_logs:/var/log/bgp
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 179), 2); s.close()\""]
+      test: ["CMD-SHELL", "ss -ltn sport = :179 | grep -q ':179'"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -270,6 +351,101 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "ss -lun | grep -q ':1194'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  smb:
+    profiles:
+      - smb
+    build:
+      context: .
+      dockerfile: build/smb/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SMB_RUNTIME_USER:-trap}
+    ports:
+      - "${SMB_PUBLIC_PORT:-2445}:445"
+    volumes:
+      - smb_logs:/var/log/smb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x smbd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  kafka:
+    profiles:
+      - kafka
+    build:
+      context: .
+      dockerfile: build/kafka/Dockerfile
+    environment:
+      HACKTRAP_USER: ${KAFKA_RUNTIME_USER:-trap}
+    ports:
+      - "${KAFKA_PUBLIC_PORT:-29092}:9092"
+    volumes:
+      - kafka_logs:/var/log/kafka
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ss -ltn | grep -q ':9092'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  snmp:
+    profiles:
+      - snmp
+    build:
+      context: .
+      dockerfile: build/snmp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMP_PUBLIC_PORT:-2161}:161/udp"
+    volumes:
+      - snmp_logs:/var/log/snmp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmpd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rdp:
+    profiles:
+      - rdp
+    build:
+      context: .
+      dockerfile: build/rdp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${RDP_RUNTIME_USER:-trap}
+    ports:
+      - "${RDP_PUBLIC_PORT:-3389}:3389"
+    volumes:
+      - rdp_logs:/var/log/rdp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x xrdp >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  snmptrap:
+    profiles:
+      - snmptrap
+    build:
+      context: .
+      dockerfile: build/snmptrap/Dockerfile
+    environment:
+      HACKTRAP_USER: ${SNMPTRAP_RUNTIME_USER:-trap}
+    ports:
+      - "${SNMPTRAP_PUBLIC_PORT:-2162}:162/udp"
+    volumes:
+      - snmptrap_logs:/var/log/snmptrap
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x snmptrapd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -338,11 +514,12 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,telnetd,ftp,tftp,ntp,nfs,postgresql,mysql,redis,bgp,openvpn,l2tp,ike2,imap,pop3,smtp,elasticsearch,ad,radius,rabbitmq}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,tftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,smb,kafka,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
+      - asterisk_logs:/var/log/asterisk
       - ssh_logs:/var/log/ssh
       - telnetd_logs:/var/log/telnet
       - ftp_logs:/var/log/ftp
@@ -356,10 +533,18 @@ services:
       - ike2_logs:/var/log/ike2
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
+      - memcached_logs:/var/log/memcached
+      - mongodb_logs:/var/log/mongodb
       - redis_logs:/var/log/redis
       - elasticsearch_logs:/var/log/elasticsearch
+      - clickhouse_logs:/var/log/clickhouse-server
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
+      - smb_logs:/var/log/smb
+      - kafka_logs:/var/log/kafka
+      - snmp_logs:/var/log/snmp
+      - snmptrap_logs:/var/log/snmptrap
+      - rdp_logs:/var/log/rdp
       - rabbitmq_logs:/var/log/rabbitmq
       - radius_logs:/var/log/radius
       - ad_logs:/var/log/ad
@@ -438,6 +623,7 @@ services:
       retries: 10
 
 volumes:
+  asterisk_logs:
   ssh_logs:
   telnetd_logs:
   ftp_logs:
@@ -451,10 +637,18 @@ volumes:
   ike2_logs:
   postgresql_logs:
   mysql_logs:
+  memcached_logs:
+  mongodb_logs:
   redis_logs:
   elasticsearch_logs:
+  clickhouse_logs:
   bgp_logs:
   openvpn_logs:
+  smb_logs:
+  kafka_logs:
+  snmp_logs:
+  snmptrap_logs:
+  rdp_logs:
   rabbitmq_logs:
   radius_logs:
   ad_logs:

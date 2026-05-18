@@ -1,0 +1,5 @@
+[asterisk]
+enabled = true
+port = 5060,4569,5038,8088
+logpath = /var/log/asterisk/messages
+backend = polling

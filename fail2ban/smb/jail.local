@@ -1,0 +1,6 @@
+[samba]
+enabled = true
+port = 445,139
+filter = samba
+logpath = /var/log/smb/log.smbd
+backend = polling
