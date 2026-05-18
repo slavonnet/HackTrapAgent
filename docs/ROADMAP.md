@@ -33,6 +33,7 @@ Priority candidates:
 - [x] `imap`
 - [x] `pop3`
 - [x] `bgp`
+- [x] `radius`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`

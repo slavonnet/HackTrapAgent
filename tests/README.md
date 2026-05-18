@@ -69,6 +69,8 @@ Tests are split by service.
   - IP ban after repeated failed UDP probes
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/radius/test_fail2ban_scope.sh` — validates RADIUS + fail2ban:
+  - IP ban after repeated failed real RADIUS PAP authentication attempts
 - `tests/ad/test_fail2ban_scope.sh` — validates AD (LDAP) + fail2ban:
   - IP ban after repeated failed LDAP bind attempts
   - firewall rule exists inside the fail2ban container scope
@@ -97,6 +99,7 @@ Tests are split by service.
 ./tests/elasticsearch/test_fail2ban_scope.sh
 ./tests/bgp/test_fail2ban_scope.sh
 ./tests/openvpn/test_fail2ban_scope.sh
+./tests/radius/test_fail2ban_scope.sh
 ./tests/ad/test_fail2ban_scope.sh
 ./tests/rabbitmq/test_fail2ban_scope.sh
 ```
@@ -104,7 +107,7 @@ Tests are split by service.
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 openvpn imap pop3 smtp ad rabbitmq
+./tests/run_service_tests.sh ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 openvpn radius imap pop3 smtp ad rabbitmq
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

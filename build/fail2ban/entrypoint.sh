@@ -141,4 +141,9 @@ if [[ ",${services_raw}," == *",ad,"* ]]; then
   touch /var/log/ad/slapd.log
 fi
 
+if [[ ",${services_raw}," == *",radius,"* ]]; then
+  mkdir -p /var/log/radius
+  touch /var/log/radius/radius.log
+fi
+
 exec fail2ban-server -f -x -v

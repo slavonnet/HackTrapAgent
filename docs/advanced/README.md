@@ -18,6 +18,8 @@ Files:
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
+- `fail2ban/radius/jail.local` — RADIUS jail settings.
+- `fail2ban/radius/filter.d/freeradius.conf` — RADIUS failregex rules.
 - `fail2ban/redis/jail.local` — Redis jail settings.
 - `fail2ban/redis/filter.conf` — Redis failregex rules.
 - `fail2ban/elasticsearch/jail.local` — Elasticsearch jail settings.
