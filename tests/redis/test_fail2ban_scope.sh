@@ -18,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -x redis-server"
+wait_for_exec_success "$service_name" "redis-cli -h 127.0.0.1 -p 6379 --no-auth-warning PING | grep -Eq 'PONG|NOAUTH'"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"

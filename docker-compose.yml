@@ -156,7 +156,7 @@ services:
       - redis_logs:/var/log/redis
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -x redis-server >/dev/null"]
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p 6379 --no-auth-warning PING | grep -Eq 'PONG|NOAUTH'"]
       interval: 5s
       timeout: 3s
       retries: 10

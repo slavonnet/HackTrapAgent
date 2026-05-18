@@ -78,6 +78,7 @@ fi
 if [[ ",${services_raw}," == *",redis,"* ]]; then
   mkdir -p /var/log/redis
   touch /var/log/redis/redis.log
+  touch /var/log/redis/redis-auth.log
 fi
 
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then

@@ -7,8 +7,9 @@ The Redis service is used as a fail2ban event source for repeated authentication
 ## Runtime model
 
 - The container runs `redis-server` and exposes TCP `6379`.
-- Redis logs are written to `/var/log/redis/redis.log`.
-- This log file is mounted via a shared volume and monitored by fail2ban.
+- Redis server logs are written to `/var/log/redis/redis.log`.
+- Redis ACL auth failures are exported to `/var/log/redis/redis-auth.log`.
+- The auth log is mounted via a shared volume and monitored by fail2ban.
 - Startup logic generates a random ACL password on each container start.
 
 ## Credentials policy
