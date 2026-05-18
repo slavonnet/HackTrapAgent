@@ -2,21 +2,22 @@
 
 ## Purpose
 
-The BGP service acts as a lightweight honeypot endpoint that records connection attempts from unconfigured peers.
+The BGP service runs a real BGP daemon (`bgpd`) from FRRouting (successor of Quagga) and logs peer connection activity for fail2ban.
 
 ## Runtime model
 
-- The container runs a small TCP listener on port `179`.
-- Every incoming connection is checked against the configured peer list.
-- Unconfigured peer attempts are logged to `/var/log/bgp/bgp.log`.
-- The log file is mounted via shared volume and consumed by fail2ban.
+- The container starts `bgpd` on TCP port `179`.
+- Startup renders `/etc/frr/bgpd.conf` from `etc/bgp/peers.conf` plus `BGP_ALLOWED_PEERS`.
+- `bgpd` writes detailed events to `/var/log/bgp/bgp.log`.
+- fail2ban monitors that log and bans repeated unconfigured peer attempts.
 
 ## Peer configuration
 
-- Configured peers can be provided via:
+- Configured peers can be provided by:
   - `etc/bgp/peers.conf`
   - `BGP_ALLOWED_PEERS` in `config/services.env`
-- All peer entries must be valid IP addresses.
+- Peer tokens must be valid IPv4 addresses.
+- `BGP_LOCAL_ASN`, `BGP_PEER_ASN`, and `BGP_ROUTER_ID` are configurable in `config/services.env`.
 
 ## Paths
 

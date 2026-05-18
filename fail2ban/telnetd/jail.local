@@ -1,0 +1,6 @@
+[telnetd]
+enabled = true
+port = 23
+filter = pam-generic
+logpath = /var/log/telnet/auth.log
+backend = polling

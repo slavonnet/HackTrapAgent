@@ -1,0 +1,37 @@
+[global]
+type = global
+user_agent = HackTrapAsterisk
+
+[transport-udp]
+type = transport
+protocol = udp
+bind = 0.0.0.0:5060
+
+[transport-tcp]
+type = transport
+protocol = tcp
+bind = 0.0.0.0:5060
+
+[honeypot-auth]
+type = auth
+auth_type = userpass
+username = __ASTERISK_USER__
+password = __ASTERISK_PASSWORD__
+
+[honeypot-aor]
+type = aor
+max_contacts = 1
+remove_existing = yes
+
+[honeypot-endpoint]
+type = endpoint
+context = default
+disallow = all
+allow = ulaw
+auth = honeypot-auth
+aors = honeypot-aor
+
+[honeypot-identify]
+type = identify
+endpoint = honeypot-endpoint
+match = 0.0.0.0/0

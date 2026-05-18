@@ -27,21 +27,29 @@ For each service, provide:
 Priority candidates:
 
 - [x] `ftp`
+- [x] `telnetd`
 - [x] `ntp`
 - [x] `smtp`
 - [x] `imap`
 - [x] `pop3`
 - [x] `bgp`
 - [x] `kafka`
-- [ ] `sip`
-- [ ] `iax`
+- [x] `radius`
+- [x] `sip` (PJSIP in Asterisk)
+- [x] `iax` (IAX2 in Asterisk)
+- [x] `asterisk` (PJSIP + IAX2 + AMI + ARI)
 - [ ] `dns`
-- [ ] `snmp`
+- [x] `snmp`
+- [x] `snmptrap`
 - [x] `mysql`
+- [x] `mongodb`
+- [x] `redis`
 - [x] `postgresql`
+- [x] `elasticsearch`
 - [x] `l2tp`
 - [x] `ipsec` (IKEv2)
 - [x] `openvpn`
+- [x] `rdp`
 
 ## Phase 4 — Production hardening
 

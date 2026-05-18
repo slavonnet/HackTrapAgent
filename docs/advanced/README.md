@@ -5,12 +5,15 @@
 Files:
 
 - `fail2ban/common/fail2ban.local` — global fail2ban daemon settings.
+- `fail2ban/asterisk/jail.local` — Asterisk jail settings.
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
 - `fail2ban/ntp/jail.local` — NTP jail settings.
 - `fail2ban/imap/jail.local` — IMAP jail settings.
 - `fail2ban/pop3/jail.local` — POP3 jail settings.
 - `fail2ban/smtp/jail.local` — SMTP jail settings.
+- `fail2ban/rdp/jail.local` — RDP jail settings.
+- `fail2ban/rdp/filter.d/xrdp-sesman.conf` — RDP failregex for `AUTHFAIL` events.
 - `fail2ban/l2tp/jail.local` — L2TP jail settings.
 - `fail2ban/ike2/jail.local` — IKEv2 jail settings.
 - `fail2ban/l2tp/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.
@@ -20,6 +23,18 @@ Files:
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
 - `fail2ban/kafka/jail.local` — Kafka jail settings.
 - `fail2ban/kafka/filter.conf` — Kafka failregex rules.
+- `fail2ban/memcached/jail.local` — Memcached jail settings.
+- `fail2ban/memcached/filter.conf` — Memcached failregex rules.
+- `fail2ban/mongodb/jail.local` — MongoDB jail settings.
+- `fail2ban/mongodb/filter.conf` — MongoDB JSON log failregex rules.
+- `fail2ban/radius/jail.local` — RADIUS jail settings.
+- `fail2ban/radius/filter.d/freeradius.conf` — RADIUS failregex rules.
+- `fail2ban/redis/jail.local` — Redis jail settings.
+- `fail2ban/redis/filter.conf` — Redis failregex rules.
+- `fail2ban/elasticsearch/jail.local` — Elasticsearch jail settings.
+- `fail2ban/elasticsearch/filter.conf` — Elasticsearch failregex rules.
+- `fail2ban/clickhouse/jail.local` — ClickHouse jail settings.
+- `fail2ban/clickhouse/filter.conf` — ClickHouse failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:
@@ -63,6 +78,23 @@ Files:
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 
+## Memcached honeypot tuning
+
+Files:
+
+- `etc/memcached/users.conf`
+
+Important: container password is generated dynamically at startup and is never stored as a static value in the repository.
+
+## Redis honeypot tuning
+
+Files:
+
+- `etc/redis/redis.conf`
+- `etc/redis/users.conf`
+
+Important: Redis ACL passwords are generated dynamically at startup and are never stored as static values in the repository.
+
 ## PostgreSQL honeypot tuning
 
 Files:
@@ -80,6 +112,28 @@ Files:
 - `etc/kafka/users.conf`
 
 Important: container credentials are generated dynamically at startup and are never stored as static values in the repository.
+
+## MongoDB honeypot tuning
+
+Files:
+
+- `etc/mongodb/users.conf`
+
+## Elasticsearch honeypot tuning
+
+Files:
+
+- `etc/elasticsearch/users.conf`
+
+Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## ClickHouse honeypot tuning
+
+Files:
+
+- `etc/clickhouse/users.conf`
+
+Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 
 ## Service toggle and ports
 
