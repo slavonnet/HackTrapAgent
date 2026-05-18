@@ -62,6 +62,25 @@ services:
       timeout: 3s
       retries: 10
 
+  postgresql:
+    profiles:
+      - postgresql
+    build:
+      context: .
+      dockerfile: build/postgresql/Dockerfile
+    environment:
+      HACKTRAP_USER: ${POSTGRESQL_RUNTIME_USER:-trap}
+    ports:
+      - "${POSTGRESQL_PUBLIC_PORT:-5432}:5432"
+    volumes:
+      - postgresql_logs:/var/log/postgresql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "runuser -u postgres -- pg_isready -h /var/run/postgresql -U postgres >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   ike2:
     profiles:
       - ike2
@@ -80,6 +99,25 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pgrep -x charon >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mysql:
+    profiles:
+      - mysql
+    build:
+      context: .
+      dockerfile: build/mysql/Dockerfile
+    environment:
+      HACKTRAP_USER: ${MYSQL_RUNTIME_USER:-trap}
+    ports:
+      - "${MYSQL_PUBLIC_PORT:-3306}:3306"
+    volumes:
+      - mysql_logs:/var/log/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x mariadbd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -127,7 +165,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-ssh,ftp,postgresql,mysql,bgp,openvpn}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -136,6 +174,8 @@ services:
       - ftp_logs:/var/log/ftp
       - l2tp_logs:/var/log/l2tp
       - ike2_logs:/var/log/ike2
+      - postgresql_logs:/var/log/postgresql
+      - mysql_logs:/var/log/mysql
       - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
@@ -160,5 +200,7 @@ volumes:
   ftp_logs:
   l2tp_logs:
   ike2_logs:
+  postgresql_logs:
+  mysql_logs:
   bgp_logs:
   openvpn_logs:

@@ -79,3 +79,23 @@ All `docker` commands require `sudo` (the Cloud Agent user is not in the `docker
    - When communicating with the user in chat, respond in Russian.
    - For pull request or issue discussions, use the language in which the question/request was asked.
    - If a discussion is mixed-language, default to English.
+
+9. **Services must be operational and log real attack actions.**
+   - A service is considered valid only if it supports real interaction flows (for example: authentication attempts, command execution, or SQL statements such as `UPDATE`), not only TCP connection acceptance.
+   - Logging must capture explicit attack-related actions, not just connect/disconnect events.
+
+10. **Use fail2ban-provided filters and known log formats whenever available.**
+   - Before creating any custom filter or log parser, check the standard fail2ban filter set and service log patterns shipped with fail2ban.
+   - If a maintained upstream filter exists for the target service, use it instead of inventing a project-specific equivalent.
+
+11. **Prefer reuse of proven upstream components over custom implementations.**
+   - If a production-proven component is already available and suitable, integrate or reference it instead of implementing a new local version from scratch.
+   - Prefer integration-based reuse over code copying to reduce maintenance overhead and keep receiving upstream updates.
+
+12. **Disable anonymous access for network services whenever feasible.**
+   - For services such as DNS, SMTP, NTP, and similar protocols, disable anonymous or unauthenticated actions when configuration allows it.
+   - Prefer configurations that force an attacker to perform explicit credential or access guessing attempts instead of granting default anonymous capabilities.
+
+13. **Do not use project agents for external DDoS or attack traffic generation.**
+   - Any built-in service, script, or agent behavior that can be repurposed to generate attack traffic against third-party networks must be disabled or excluded.
+   - Testing and simulation traffic must stay scoped to local/lab targets defined for this project only.

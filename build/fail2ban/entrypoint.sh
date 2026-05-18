@@ -52,6 +52,16 @@ if [[ ",${services_raw}," == *",ftp,"* ]]; then
   touch /var/log/ftp/vsftpd.log
 fi
 
+if [[ ",${services_raw}," == *",postgresql,"* ]]; then
+  mkdir -p /var/log/postgresql
+  touch /var/log/postgresql/postgresql.log
+fi
+
+if [[ ",${services_raw}," == *",mysql,"* ]]; then
+  mkdir -p /var/log/mysql
+  touch /var/log/mysql/error.log
+fi
+
 if [[ ",${services_raw}," == *",l2tp,"* ]]; then
   mkdir -p /var/log/l2tp
   touch /var/log/l2tp/charon.log
