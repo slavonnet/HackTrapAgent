@@ -30,7 +30,7 @@ fi
 compose exec -T attacker sh -lc '
   mkdir -p /tmp/nfs-mount
   for i in $(seq 1 6); do
-    mount -t nfs -o vers=4,nolock nfs:/export /tmp/nfs-mount >/dev/null 2>&1 || true
+    timeout 3 mount -t nfs -o vers=4,nolock nfs:/export /tmp/nfs-mount >/dev/null 2>&1 || true
     umount /tmp/nfs-mount >/dev/null 2>&1 || true
     sleep 1
   done
@@ -45,6 +45,8 @@ done
 
 if ! compose exec -T fail2ban fail2ban-client status nfs-ganesha-rpc | grep -F "$attacker_ip" >/dev/null; then
   echo "Attacker IP was not banned: $attacker_ip"
+  echo "Recent nfs-ganesha log tail:"
+  compose exec -T nfs sh -lc "tail -n 80 /var/log/nfs/ganesha.log || true"
   compose logs fail2ban "$service_name"
   exit 1
 fi

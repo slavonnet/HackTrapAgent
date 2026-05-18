@@ -20,7 +20,7 @@ The NFS service provides a real NFSv4 endpoint that generates fail2ban signals f
 ## Filter strategy
 
 - Debian fail2ban package does not provide a maintained upstream filter for nfs-ganesha request logs.
-- The jail uses a service-scoped `nfs-ganesha-rpc` filter matching native `nfs_rpc_process_request` debug traces with source IP.
+- The jail uses a service-scoped `nfs-ganesha-rpc` filter matching native `nfs_rpc_process_request` debug traces with source IP (`Program 100003`, `Version 4`, function `0` or `1`).
 - Filter file: `fail2ban/nfs/filter.d/nfs-ganesha-rpc.conf`.
 
 ## Credentials policy
