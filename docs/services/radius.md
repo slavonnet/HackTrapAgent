@@ -9,7 +9,7 @@ The RADIUS service provides a UDP authentication honeypot endpoint that produces
 - The container runs upstream `freeradius` on port `1812/udp`.
 - Authentication attempts are logged to `/var/log/radius/radius.log`.
 - The log file is mounted via a shared volume and consumed by fail2ban.
-- fail2ban uses the upstream `freeradius` filter.
+- fail2ban uses a local `freeradius`-compatible filter because this fail2ban package build does not ship one by default.
 
 ## Credentials policy
 
@@ -24,3 +24,4 @@ The RADIUS service provides a UDP authentication honeypot endpoint that produces
 - Service defaults: `config/services.env`
 - Test: `tests/radius/test_fail2ban_scope.sh`
 - fail2ban jail: `fail2ban/radius/jail.local`
+- fail2ban filter: `fail2ban/radius/filter.d/freeradius.conf`

@@ -19,6 +19,7 @@ Files:
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
 - `fail2ban/radius/jail.local` — RADIUS jail settings.
+- `fail2ban/radius/filter.d/freeradius.conf` — RADIUS failregex rules.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:

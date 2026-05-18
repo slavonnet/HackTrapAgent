@@ -194,7 +194,7 @@ services:
       - radius_logs:/var/log/radius
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -x freeradius >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x freeradius >/dev/null || pgrep -x radiusd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
