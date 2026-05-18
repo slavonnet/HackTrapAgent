@@ -8,6 +8,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts an FTP honeypot (`localhost:2121`).
 - Starts an L2TP honeypot (`localhost:11701/udp`).
 - Starts an IKEv2 honeypot (`localhost:1500/udp` and `localhost:14500/udp`).
+- Starts an OpenVPN honeypot (`localhost:1194/udp`).
 - `fail2ban` monitors failed auth attempts and records attacker IPs.
 - Temporary local bans are applied only inside the fail2ban container scope (host firewall is untouched).
 - Runtime service defaults come from one source: `config/services.env`.
@@ -22,7 +23,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh ftp l2tp ike2
+docker compose logs -f fail2ban ssh ftp l2tp ike2 openvpn
 ```
 
 Stop:
@@ -48,6 +49,7 @@ Stop:
 - FTP service implementation: `docs/services/ftp.md`
 - L2TP service implementation: `docs/services/l2tp.md`
 - IKEv2 service implementation: `docs/services/ike2.md`
+- OpenVPN service implementation: `docs/services/openvpn.md`
 - Roadmap: `docs/ROADMAP.md`
 
 ## License

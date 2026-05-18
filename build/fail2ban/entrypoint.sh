@@ -28,6 +28,12 @@ for service in "${services[@]}"; do
     done
     shopt -u nullglob
   fi
+
+  source_filter="/opt/hacktrap/fail2ban/${service}/filter.conf"
+  target_filter="/etc/fail2ban/filter.d/${service}.conf"
+  if [[ -f "$source_filter" ]]; then
+    cp -f "$source_filter" "$target_filter"
+  fi
 done
 
 touch /var/log/fail2ban/fail2ban.log
@@ -49,6 +55,11 @@ fi
 if [[ ",${services_raw}," == *",ike2,"* ]]; then
   mkdir -p /var/log/ike2
   touch /var/log/ike2/ike2.log
+fi
+
+if [[ ",${services_raw}," == *",openvpn,"* ]]; then
+  mkdir -p /var/log/openvpn
+  touch /var/log/openvpn/openvpn.log
 fi
 
 exec fail2ban-server -f -x -v
