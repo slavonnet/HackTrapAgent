@@ -1,0 +1,21 @@
+name: fail2ban integration tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "cursor/**"
+
+jobs:
+  container-scope-ban:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run fail2ban container-scope integration test
+        run: |
+          chmod +x tests/test_fail2ban_container_scope.sh
+          ./tests/test_fail2ban_container_scope.sh

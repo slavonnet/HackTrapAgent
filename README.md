@@ -50,7 +50,36 @@ All containers are orchestrated with **Docker Compose**.
 
 ### Quick start
 
-In development
+```bash
+docker compose up -d --build ssh fail2ban
+```
+
+Services:
+
+- SSH honeypot: `localhost:2222`
+- fail2ban monitors `/var/log/ssh/auth.log` from shared volume
+
+### Local build assets
+
+Local files included into Docker image builds are stored in:
+
+- `local/ssh/`
+- `local/fail2ban/`
+
+You can customize these files and rebuild images to apply changes.
+
+### Integration test
+
+```bash
+chmod +x tests/test_fail2ban_container_scope.sh
+./tests/test_fail2ban_container_scope.sh
+```
+
+The test performs failed SSH logins from a dedicated attacker container and checks:
+
+1. attacker IP is banned in fail2ban jail
+2. iptables rule exists inside container namespace
+3. host iptables does not contain banned IP
 
 ## Roadmap
 

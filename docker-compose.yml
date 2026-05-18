@@ -1,0 +1,54 @@
+name: hacktrapagent
+
+services:
+  ssh:
+    build:
+      context: .
+      dockerfile: docker/ssh/Dockerfile
+    environment:
+      HACKTRAP_USER: trap
+      HACKTRAP_PASSWORD: trap123
+    ports:
+      - "2222:22"
+    volumes:
+      - ssh_logs:/var/log/ssh
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x sshd >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  fail2ban:
+    build:
+      context: .
+      dockerfile: docker/fail2ban/Dockerfile
+    depends_on:
+      ssh:
+        condition: service_healthy
+    network_mode: "service:ssh"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ssh_logs:/var/log/ssh
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  attacker:
+    build:
+      context: .
+      dockerfile: docker/attacker/Dockerfile
+    depends_on:
+      ssh:
+        condition: service_healthy
+    command: ["sleep", "infinity"]
+    profiles:
+      - test
+
+volumes:
+  ssh_logs:
