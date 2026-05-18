@@ -13,6 +13,11 @@ The NTP service acts as a UDP-based honeypot signal source for fail2ban.
 - This log file is mounted via a shared volume and consumed by fail2ban.
 - The service intentionally does not provide valid NTP responses, so probes are treated as suspicious traffic events.
 
+## Anonymous access policy
+
+- The service does not grant anonymous access to NTP actions.
+- Unauthenticated packets are explicitly denied and logged as `unauth-denied-*` events.
+
 ## Filter strategy
 
 - The project reuses fail2ban's standard NTP-related parsing conventions where possible (mode-oriented request semantics).
@@ -22,6 +27,11 @@ The NTP service acts as a UDP-based honeypot signal source for fail2ban.
 
 - NTP service does not use authentication credentials.
 - No static passwords or secrets are stored for this service.
+
+## Traffic safety scope
+
+- Test traffic for this service is restricted to local Docker Compose lab targets only.
+- The service and tests are not intended for generating external attack or stress traffic.
 
 ## Paths
 

@@ -8,6 +8,8 @@ Files:
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
 - `fail2ban/ntp/jail.local` — NTP jail settings.
+- `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
+- `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
@@ -49,6 +51,16 @@ Files:
 
 - `etc/mysql/mariadb-hacktrap.cnf`
 - `etc/mysql/users.conf`
+
+Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
+
+## PostgreSQL honeypot tuning
+
+Files:
+
+- `etc/postgresql/postgresql.conf`
+- `etc/postgresql/pg_hba.conf`
+- `etc/postgresql/users.conf`
 
 Important: container passwords are generated dynamically at startup and are never stored as static values in the repository.
 

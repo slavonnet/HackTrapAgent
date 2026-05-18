@@ -35,7 +35,7 @@ Priority candidates:
 - [ ] `snmp`
 - [ ] `imap`
 - [x] `mysql`
-- [ ] `postgresql`
+- [x] `postgresql`
 - [ ] `l2tp`
 - [ ] `ipsec`
 - [x] `openvpn`

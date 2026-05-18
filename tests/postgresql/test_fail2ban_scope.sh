@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-service_name="ntp"
+service_name="postgresql"
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # shellcheck source=tests/common/compose_test_lib.sh
@@ -9,6 +9,7 @@ source "${project_root}/tests/common/compose_test_lib.sh"
 
 load_service_config
 set_compose_project_name "$service_name"
+target_user="${POSTGRESQL_TEST_LOGIN_USER:-trap}"
 
 trap cleanup_compose EXIT
 
@@ -17,7 +18,7 @@ init_host_iptables_bins
 
 compose --profile test up -d --build "$service_name" fail2ban attacker
 
-wait_for_exec_success "$service_name" "pgrep -f ntp-honeypot.py"
+wait_for_exec_success "$service_name" "runuser -u postgres -- pg_isready -h /var/run/postgresql -U postgres >/dev/null"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
 attacker_ip="$(get_attacker_ip)"
@@ -27,33 +28,24 @@ if [[ -z "$attacker_ip" ]]; then
   exit 1
 fi
 
-compose exec -T attacker sh -lc '
-  # Keep probes local to the compose lab network only.
-  send_ntp_mode6() {
-    { printf "\x1e\x01\x00\x00"; dd if=/dev/zero bs=1 count=44 2>/dev/null; } \
-      | nc -u -w 1 ntp 123 >/dev/null 2>&1 || true
-  }
-
-  send_ntp_mode7() {
-    { printf "\x1f\x00\x03\x2a"; dd if=/dev/zero bs=1 count=44 2>/dev/null; } \
-      | nc -u -w 1 ntp 123 >/dev/null 2>&1 || true
-  }
-
+compose exec -T -e TARGET_USER="$target_user" attacker sh -lc '
   for i in $(seq 1 6); do
-    send_ntp_mode6
-    send_ntp_mode7
+    PGPASSWORD=wrong psql \
+      "host=postgresql user=${TARGET_USER} dbname=postgres connect_timeout=3" \
+      --no-password \
+      --command "SELECT 1;" >/dev/null 2>&1 || true
     sleep 1
   done
 '
 
 for _ in $(seq 1 30); do
-  if compose exec -T fail2ban fail2ban-client status ntp-honeypot | grep -F "$attacker_ip" >/dev/null; then
+  if compose exec -T fail2ban fail2ban-client status postgresql | grep -F "$attacker_ip" >/dev/null; then
     break
   fi
   sleep 2
 done
 
-if ! compose exec -T fail2ban fail2ban-client status ntp-honeypot | grep -F "$attacker_ip" >/dev/null; then
+if ! compose exec -T fail2ban fail2ban-client status postgresql | grep -F "$attacker_ip" >/dev/null; then
   echo "Attacker IP was not banned: $attacker_ip"
   compose logs fail2ban "$service_name"
   exit 1

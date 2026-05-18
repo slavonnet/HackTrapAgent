@@ -10,7 +10,7 @@ def utc_timestamp() -> str:
 
 def classify_action(packet: bytes) -> str:
     if not packet:
-        return "empty-datagram"
+        return "unauth-denied-empty-datagram"
 
     first_byte = packet[0]
     version = (first_byte >> 3) & 0x07
@@ -18,17 +18,17 @@ def classify_action(packet: bytes) -> str:
     size = len(packet)
 
     if size < 48:
-        return f"malformed-v{version}-mode{mode}-len{size}"
+        return f"unauth-denied-malformed-v{version}-mode{mode}-len{size}"
 
     if mode == 6:
         opcode = packet[1] & 0x1F
-        return f"mode6-control-opcode-{opcode}"
+        return f"unauth-denied-mode6-control-opcode-{opcode}"
 
     if mode == 7:
         request_code = packet[3]
-        return f"mode7-private-request-{request_code}"
+        return f"unauth-denied-mode7-private-request-{request_code}"
 
-    return f"mode{mode}-request-v{version}"
+    return f"unauth-denied-mode{mode}-request-v{version}"
 
 
 def main() -> None:

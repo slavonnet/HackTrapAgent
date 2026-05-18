@@ -1,0 +1,4 @@
+[postgresql]
+enabled = true
+port = 5432
+logpath = /var/log/postgresql/postgresql.log

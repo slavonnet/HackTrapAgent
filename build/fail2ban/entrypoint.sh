@@ -57,6 +57,11 @@ if [[ ",${services_raw}," == *",ntp,"* ]]; then
   touch /var/log/ntp/ntp.log
 fi
 
+if [[ ",${services_raw}," == *",postgresql,"* ]]; then
+  mkdir -p /var/log/postgresql
+  touch /var/log/postgresql/postgresql.log
+fi
+
 if [[ ",${services_raw}," == *",bgp,"* ]]; then
   mkdir -p /var/log/bgp
   touch /var/log/bgp/bgp.log
