@@ -110,4 +110,9 @@ if [[ ",${services_raw}," == *",openvpn,"* ]]; then
   touch /var/log/openvpn/openvpn.log
 fi
 
+if [[ ",${services_raw}," == *",ad,"* ]]; then
+  mkdir -p /var/log/ad
+  touch /var/log/ad/log.smbd
+fi
+
 exec fail2ban-server -f -x -v

@@ -1,0 +1,5 @@
+[samba]
+enabled = true
+port = 445
+logpath = /var/log/ad/log.smbd
+backend = polling
