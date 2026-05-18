@@ -4,6 +4,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 
 ## Current capabilities
 
+- Starts an Asterisk honeypot (`localhost:5060/tcp+udp`, `localhost:4569/udp`, `localhost:5038`, `localhost:8088`) with IAX, PJSIP, AMI (Manager), and ARI enabled.
 - Starts an SSH honeypot (`localhost:2222`).
 - Starts a Telnet honeypot (`localhost:2323`).
 - Starts an FTP honeypot (`localhost:2121`).
@@ -37,7 +38,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn radius ad rabbitmq
+docker compose logs -f fail2ban asterisk ssh telnetd ftp ntp nfs postgresql mysql redis elasticsearch bgp l2tp ike2 imap pop3 smtp openvpn radius ad rabbitmq
 ```
 
 Stop:
@@ -59,6 +60,7 @@ Stop:
 
 - Development and local testing: `docs/development/README.md`
 - Advanced configuration: `docs/advanced/README.md`
+- Asterisk service implementation: `docs/services/asterisk.md`
 - SSH service implementation: `docs/services/ssh.md`
 - Telnet service implementation: `docs/services/telnetd.md`
 - FTP service implementation: `docs/services/ftp.md`

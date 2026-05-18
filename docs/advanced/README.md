@@ -5,6 +5,7 @@
 Files:
 
 - `fail2ban/common/fail2ban.local` — global fail2ban daemon settings.
+- `fail2ban/asterisk/jail.local` — Asterisk jail settings.
 - `fail2ban/ssh/jail.local` — SSH jail settings.
 - `fail2ban/ftp/jail.local` — FTP jail settings.
 - `fail2ban/ntp/jail.local` — NTP jail settings.

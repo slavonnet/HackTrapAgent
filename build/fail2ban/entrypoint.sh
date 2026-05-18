@@ -75,6 +75,11 @@ if [[ ",${services_raw}," == *",nfs,"* ]]; then
   touch /var/log/nfs/ganesha.log
 fi
 
+if [[ ",${services_raw}," == *",asterisk,"* ]]; then
+  mkdir -p /var/log/asterisk
+  touch /var/log/asterisk/messages
+fi
+
 if [[ ",${services_raw}," == *",postgresql,"* ]]; then
   mkdir -p /var/log/postgresql
   touch /var/log/postgresql/postgresql.log
