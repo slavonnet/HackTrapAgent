@@ -23,6 +23,7 @@ credentials_file="/run/hacktrap/rabbitmq_credentials.env"
 
 mkdir -p /run/hacktrap /var/log/rabbitmq
 touch /var/log/rabbitmq/rabbit.log
+chown -R rabbitmq:rabbitmq /var/log/rabbitmq
 chmod 0644 /var/log/rabbitmq/rabbit.log
 
 {
