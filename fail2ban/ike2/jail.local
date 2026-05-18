@@ -1,0 +1,9 @@
+[ike2]
+enabled = true
+port = 500,4500
+protocol = udp
+filter = ike2-hacktrap
+logpath = /var/log/ike2/ike2.log
+findtime = 60
+bantime = 600
+maxretry = 3

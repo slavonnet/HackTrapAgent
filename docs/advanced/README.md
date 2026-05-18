@@ -6,6 +6,9 @@ Files:
 
 - `fail2ban/common/fail2ban.local` — global fail2ban daemon settings.
 - `fail2ban/ssh/jail.local` — SSH jail settings.
+- `fail2ban/ftp/jail.local` — FTP jail settings.
+- `fail2ban/l2tp/jail.local` — L2TP jail settings.
+- `fail2ban/ike2/jail.local` — IKEv2 jail settings.
 - `config/services.env` — `FAIL2BAN_SERVICES` controls which jails are loaded.
 
 You can tune:

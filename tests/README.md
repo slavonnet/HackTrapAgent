@@ -17,18 +17,28 @@ Tests are split by service.
   - IP ban after repeated failed logins
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
+- `tests/l2tp/test_fail2ban_scope.sh` — validates L2TP + fail2ban:
+  - IP ban after repeated failed UDP auth-like probes
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
+- `tests/ike2/test_fail2ban_scope.sh` — validates IKEv2 + fail2ban:
+  - IP ban after repeated failed UDP auth-like probes
+  - firewall rule exists inside the fail2ban container scope
+  - matching rule is absent on the host
 
 ## Run one service
 
 ```bash
 ./tests/ssh/test_fail2ban_scope.sh
 ./tests/ftp/test_fail2ban_scope.sh
+./tests/l2tp/test_fail2ban_scope.sh
+./tests/ike2/test_fail2ban_scope.sh
 ```
 
 ## Run selected services
 
 ```bash
-./tests/run_service_tests.sh ssh ftp
+./tests/run_service_tests.sh ssh ftp l2tp ike2
 ```
 
 `run_service_tests.sh` runs service tests in parallel.

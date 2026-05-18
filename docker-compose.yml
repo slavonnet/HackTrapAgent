@@ -39,6 +39,45 @@ services:
       timeout: 3s
       retries: 10
 
+  l2tp:
+    profiles:
+      - l2tp
+    build:
+      context: .
+      dockerfile: build/l2tp/Dockerfile
+    environment:
+      HACKTRAP_USER: ${L2TP_RUNTIME_USER:-trap}
+    ports:
+      - "${L2TP_PUBLIC_PORT:-11701}:1701/udp"
+    volumes:
+      - l2tp_logs:/var/log/l2tp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x socat >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ike2:
+    profiles:
+      - ike2
+    build:
+      context: .
+      dockerfile: build/ike2/Dockerfile
+    environment:
+      HACKTRAP_USER: ${IKE2_RUNTIME_USER:-trap}
+    ports:
+      - "${IKE2_PUBLIC_PORT:-1500}:500/udp"
+      - "${IKE2_NATT_PUBLIC_PORT:-14500}:4500/udp"
+    volumes:
+      - ike2_logs:/var/log/ike2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -af 'UDP-RECVFROM:500' >/dev/null && pgrep -af 'UDP-RECVFROM:4500' >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   fail2ban:
     build:
       context: .
@@ -51,6 +90,8 @@ services:
     volumes:
       - ssh_logs:/var/log/ssh
       - ftp_logs:/var/log/ftp
+      - l2tp_logs:/var/log/l2tp
+      - ike2_logs:/var/log/ike2
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
@@ -69,3 +110,5 @@ services:
 volumes:
   ssh_logs:
   ftp_logs:
+  l2tp_logs:
+  ike2_logs:

@@ -1,0 +1,9 @@
+[l2tp]
+enabled = true
+port = 1701
+protocol = udp
+filter = l2tp-hacktrap
+logpath = /var/log/l2tp/l2tp.log
+findtime = 60
+bantime = 600
+maxretry = 3
