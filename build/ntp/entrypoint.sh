@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-config_file="/opt/hacktrap/etc/ntp/ntp-honeypot.conf"
-if [[ -f "$config_file" ]]; then
-  set -a
-  # shellcheck source=/dev/null
-  source "$config_file"
-  set +a
+ntp_conf="/opt/hacktrap/etc/ntp/ntp.conf"
+ntp_log_file="${NTP_LOG_FILE:-/var/log/ntp/ntp.log}"
+ntp_debug_level="${NTP_DEBUG_LEVEL:-3}"
+
+if [[ ! -f "$ntp_conf" ]]; then
+  echo "Missing ntp config: $ntp_conf"
+  exit 1
 fi
 
-: "${NTP_LISTEN_PORT:=123}"
-: "${NTP_LOG_FILE:=/var/log/ntp/ntp.log}"
+mkdir -p /var/log/ntp /var/lib/ntpsec
+touch "$ntp_log_file"
+chmod 0644 "$ntp_log_file"
 
-mkdir -p "$(dirname "$NTP_LOG_FILE")"
-touch "$NTP_LOG_FILE"
-chmod 0644 "$NTP_LOG_FILE"
-
-exec python3 /usr/local/bin/ntp-honeypot.py
+# Run real ntpd in foreground and persist verbose packet logs for fail2ban.
+exec /usr/sbin/ntpd -n -g -D "$ntp_debug_level" -c "$ntp_conf" >>"$ntp_log_file" 2>&1

@@ -46,15 +46,15 @@ services:
       context: .
       dockerfile: build/ntp/Dockerfile
     environment:
-      NTP_LISTEN_PORT: 123
       NTP_LOG_FILE: /var/log/ntp/ntp.log
+      NTP_DEBUG_LEVEL: 3
     ports:
       - "${NTP_PUBLIC_PORT:-2123}:123/udp"
     volumes:
       - ntp_logs:/var/log/ntp
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f ntp-honeypot.py >/dev/null"]
+      test: ["CMD-SHELL", "pgrep -x ntpd >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10

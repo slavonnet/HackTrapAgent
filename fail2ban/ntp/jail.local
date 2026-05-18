@@ -1,5 +1,5 @@
-[ntp-honeypot]
+[ntpd]
 enabled = true
 port = 123
-filter = ntp-honeypot
+filter = ntpd
 logpath = /var/log/ntp/ntp.log
