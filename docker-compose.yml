@@ -78,6 +78,25 @@ services:
       timeout: 3s
       retries: 10
 
+  bgp:
+    profiles:
+      - bgp
+    build:
+      context: .
+      dockerfile: build/bgp/Dockerfile
+    environment:
+      BGP_ALLOWED_PEERS: ${BGP_ALLOWED_PEERS:-}
+    ports:
+      - "${BGP_PUBLIC_PORT:-2179}:179"
+    volumes:
+      - bgp_logs:/var/log/bgp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 179), 2); s.close()\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   openvpn:
     profiles:
       - openvpn
@@ -111,6 +130,7 @@ services:
       - ftp_logs:/var/log/ftp
       - l2tp_logs:/var/log/l2tp
       - ike2_logs:/var/log/ike2
+      - bgp_logs:/var/log/bgp
       - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
     healthcheck:
@@ -132,4 +152,5 @@ volumes:
   ftp_logs:
   l2tp_logs:
   ike2_logs:
+  bgp_logs:
   openvpn_logs:
