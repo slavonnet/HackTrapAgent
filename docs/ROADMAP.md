@@ -28,6 +28,7 @@ Priority candidates:
 
 - [x] `ftp`
 - [x] `ntp`
+- [x] `bgp`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
