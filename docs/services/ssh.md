@@ -2,19 +2,19 @@
 
 ## Purpose
 
-SSH-сервис используется как источник событий для fail2ban (не как production SSH endpoint).
+The SSH service is used as an event source for fail2ban (not as a production SSH endpoint).
 
 ## Runtime model
 
-- Контейнер запускает `sshd` и `rsyslog`.
-- Логи `sshd` пишутся в `/var/log/ssh/auth.log`.
-- Этот файл монтируется в общий volume и читается fail2ban.
+- The container runs `sshd` and `rsyslog`.
+- `sshd` logs are written to `/var/log/ssh/auth.log`.
+- This file is mounted via a shared volume and read by fail2ban.
 
 ## Credentials policy
 
-- Статический пароль в репозитории отсутствует.
-- При каждом старте контейнера генерируется новый случайный пароль.
-- Текущие runtime credentials сохраняются в `/run/hacktrap/ssh_credentials.env` внутри контейнера.
+- No static password is stored in the repository.
+- A new random password is generated every time the container starts.
+- Current runtime credentials are written to `/run/hacktrap/ssh_credentials.env` inside the container.
 
 ## Paths
 

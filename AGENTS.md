@@ -65,3 +65,9 @@ All `docker` commands require `sudo` (the Cloud Agent user is not in the `docker
    - `fail2ban/<service>/`
    - `tests/<service>/`
    - `docs/services/<service>.md`
+
+6. **Language policy (temporary).**
+   - All repository Markdown files (`*.md`) must be written in English.
+   - When communicating with the user in chat, respond in Russian.
+   - For pull request or issue discussions, use the language in which the question/request was asked.
+   - If a discussion is mixed-language, default to English.

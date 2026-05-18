@@ -1,45 +1,45 @@
 # HackTrapAgent
 
-Легковесный honeypot на Docker Compose для сбора IP-адресов атакующих и их автоматической блокировки в контейнерном контуре.
+A lightweight Docker Compose honeypot for collecting attacker IP addresses and automatically blocking them in the container scope.
 
-## Что умеет сейчас
+## Current capabilities
 
-- Поднимает SSH honeypot (`localhost:2222`).
-- Сервис `fail2ban` отслеживает неуспешные авторизации и банит IP атакующего.
-- Бан применяется только в сетевом namespace контейнера сервиса (не на уровне хоста).
+- Starts an SSH honeypot (`localhost:2222`).
+- `fail2ban` monitors failed auth attempts and bans attacker IPs.
+- The ban is applied only in the service container network namespace (not on the host).
 
-## Быстрый старт
+## Quick start
 
 ```bash
 docker compose up -d --build ssh fail2ban
 ```
 
-Проверка статуса:
+Check status:
 
 ```bash
 docker compose ps
 docker compose logs -f fail2ban ssh
 ```
 
-Остановка:
+Stop:
 
 ```bash
 docker compose down -v
 ```
 
-## Структура проекта
+## Project structure
 
-- `build/<service>/` — Dockerfile и runtime entrypoint сервиса.
-- `etc/<service>/` — runtime-конфиги сервиса.
-- `fail2ban/<service>/` — fail2ban jail для конкретного сервиса.
-- `tests/<service>/` — отдельные интеграционные тесты сервиса.
-- `docs/services/<service>.md` — особенности реализации конкретного сервиса.
+- `build/<service>/` — service Dockerfile and runtime entrypoint.
+- `etc/<service>/` — service runtime configuration.
+- `fail2ban/<service>/` — fail2ban jail for a specific service.
+- `tests/<service>/` — service-specific integration tests.
+- `docs/services/<service>.md` — implementation details for a specific service.
 
-## Дополнительная документация
+## Additional documentation
 
-- Разработка и локальные тесты: `docs/development/README.md`
-- Advanced-конфигурация: `docs/advanced/README.md`
-- Реализация SSH-сервиса: `docs/services/ssh.md`
+- Development and local testing: `docs/development/README.md`
+- Advanced configuration: `docs/advanced/README.md`
+- SSH service implementation: `docs/services/ssh.md`
 
 ## License
 

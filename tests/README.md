@@ -1,13 +1,13 @@
 # Testing
 
-Тесты разделены по сервисам.
+Tests are split by service.
 
 ## Service tests
 
-- `tests/ssh/test_fail2ban_scope.sh` — проверяет SSH + fail2ban:
-  - бан IP после серии неуспешных логинов
-  - наличие firewall-правила в контейнере
-  - отсутствие этого правила на хосте
+- `tests/ssh/test_fail2ban_scope.sh` — validates SSH + fail2ban:
+  - IP ban after repeated failed logins
+  - firewall rule exists inside the container scope
+  - matching rule is absent on the host
 
 ## Run one service
 
@@ -21,4 +21,4 @@
 ./tests/run_service_tests.sh ssh
 ```
 
-`run_service_tests.sh` запускает тесты сервисов параллельно.
+`run_service_tests.sh` runs service tests in parallel.

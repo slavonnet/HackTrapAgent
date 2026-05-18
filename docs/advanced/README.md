@@ -2,19 +2,19 @@
 
 ## Fail2ban tuning
 
-Файлы:
+Files:
 
-- `fail2ban/common/fail2ban.local` — глобальные настройки fail2ban daemon.
-- `fail2ban/ssh/jail.local` — jail для SSH.
+- `fail2ban/common/fail2ban.local` — global fail2ban daemon settings.
+- `fail2ban/ssh/jail.local` — SSH jail settings.
 
-Можно настраивать:
+You can tune:
 
 - `maxretry`
 - `findtime`
 - `bantime`
-- используемый `banaction`
+- selected `banaction`
 
-После изменений пересоберите и перезапустите сервисы:
+After changes, rebuild and restart services:
 
 ```bash
 docker compose up -d --build fail2ban ssh
@@ -22,10 +22,10 @@ docker compose up -d --build fail2ban ssh
 
 ## SSH honeypot tuning
 
-Файлы:
+Files:
 
 - `etc/ssh/sshd_config`
 - `etc/ssh/rsyslog-sshd.conf`
 - `etc/ssh/users.conf`
 
-Важно: пароль в контейнере всегда генерируется динамически при старте и не задается статически в репозитории.
+Important: container password is always generated dynamically at startup and is never stored as a static value in the repository.

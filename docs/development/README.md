@@ -28,5 +28,5 @@
 
 ## Test model
 
-- Каждый сервис имеет собственный тест в `tests/<service>/...`.
-- CI запускает тесты по сервисам отдельными job через matrix для параллельности.
+- Each service must have its own test under `tests/<service>/...`.
+- CI runs service tests as separate matrix jobs for parallel execution.
