@@ -66,7 +66,8 @@ slapadd -f /etc/ldap/slapd.conf -l /tmp/bootstrap.ldif
 chown -R openldap:openldap /var/lib/ldap
 rm -f /tmp/bootstrap.ldif
 
-rsyslogd
+rm -f /run/rsyslogd.pid
+rsyslogd -i /run/rsyslogd.pid
 
 credentials_file="/run/hacktrap/ad_credentials.env"
 {
@@ -76,4 +77,14 @@ credentials_file="/run/hacktrap/ad_credentials.env"
 chmod 600 "$credentials_file"
 echo "Generated random LDAP credentials for runtime users."
 
-exec /usr/sbin/slapd -f /etc/ldap/slapd.conf -h "ldap://0.0.0.0:389/" -u openldap -g openldap
+/usr/sbin/slapd -f /etc/ldap/slapd.conf -h "ldap://0.0.0.0:389/" -u openldap -g openldap
+
+for _ in $(seq 1 10); do
+  if pgrep -x slapd >/dev/null 2>&1; then
+    exec tail -F /var/log/ad/slapd.log
+  fi
+  sleep 1
+done
+
+echo "slapd failed to start"
+exit 1
