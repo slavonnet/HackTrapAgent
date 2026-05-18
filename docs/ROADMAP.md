@@ -27,17 +27,21 @@ For each service, provide:
 Priority candidates:
 
 - [x] `ftp`
+- [x] `telnetd`
 - [x] `ntp`
 - [x] `smtp`
 - [x] `imap`
 - [x] `pop3`
 - [x] `bgp`
+- [x] `radius`
 - [ ] `sip`
 - [ ] `iax`
 - [ ] `dns`
 - [ ] `snmp`
 - [x] `mysql`
+- [x] `redis`
 - [x] `postgresql`
+- [x] `elasticsearch`
 - [x] `l2tp`
 - [x] `ipsec` (IKEv2)
 - [x] `openvpn`
