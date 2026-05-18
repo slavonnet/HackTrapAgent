@@ -31,6 +31,12 @@ This VM runs inside a Firecracker microVM. The following workarounds are already
 
 If you upgrade Docker to v29+, you may need to disable the `containerd-snapshotter` feature for `fuse-overlayfs` to keep working.
 
+### Stale iptables rules (DOCKER-ISOLATION-STAGE-2)
+
+**Do NOT manually patch iptables rules.** The update script handles this automatically.
+
+Between agent sessions the Docker daemon dies but kernel iptables rules persist. Stale `DOCKER-ISOLATION-STAGE-2` chains with dangling bridge references cause container startup failures with network errors. The update script flushes all iptables chains/rules and resets FORWARD policy to ACCEPT **before** starting `dockerd`, so Docker recreates clean rules from scratch.
+
 ### Enabling Docker memory accounting (cgroup v2)
 
 By default the Firecracker VM does not delegate the `memory` cgroup v2 controller to child cgroups, so `docker stats` shows `0B / 0B`. The update script fixes this automatically, but if you need to do it manually:
