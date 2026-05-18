@@ -28,10 +28,36 @@ if [[ -z "$attacker_ip" ]]; then
 fi
 
 compose exec -T attacker sh -lc '
-  mkdir -p /tmp/nfs-mount
+  # Send valid NFSv4 RPC NULL probes without requiring mount privileges.
+  # This keeps the test deterministic in restricted CI environments.
   for i in $(seq 1 6); do
-    timeout 3 mount -t nfs -o vers=4,nolock nfs:/export /tmp/nfs-mount >/dev/null 2>&1 || true
-    umount /tmp/nfs-mount >/dev/null 2>&1 || true
+    python3 - "$i" <<'"'"'PY'"'"' >/dev/null 2>&1 || true
+import socket
+import struct
+import sys
+
+xid = 0x12340000 + int(sys.argv[1])
+body = struct.pack(
+    ">10I",
+    xid,
+    0,      # CALL
+    2,      # RPC version
+    100003, # NFS program
+    4,      # NFS version
+    0,      # NULL procedure
+    0, 0,   # AUTH_NULL credentials
+    0, 0,   # AUTH_NULL verifier
+)
+record_mark = struct.pack(">I", 0x80000000 | len(body))
+
+with socket.create_connection(("nfs", 2049), timeout=2) as conn:
+    conn.sendall(record_mark + body)
+    conn.settimeout(2)
+    try:
+        conn.recv(1024)
+    except OSError:
+        pass
+PY
     sleep 1
   done
 '

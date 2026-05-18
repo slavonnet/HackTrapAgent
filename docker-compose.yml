@@ -317,7 +317,6 @@ services:
     command: ["sleep", "infinity"]
     cap_add:
       - NET_ADMIN
-      - SYS_ADMIN
     profiles:
       - test
 

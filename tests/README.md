@@ -24,7 +24,7 @@ Tests are split by service.
 - `tests/ntp/test_fail2ban_scope.sh` — validates NTP + fail2ban:
   - IP ban after repeated suspicious NTP mode 6/7 request probes
 - `tests/nfs/test_fail2ban_scope.sh` — validates NFS + fail2ban:
-  - IP ban after repeated NFSv4 `SETCLIENTID` probe requests
+  - IP ban after repeated valid NFSv4 RPC probe requests (`Program 100003`, function `0`/`1`)
   - firewall rule exists inside the fail2ban container scope
   - matching rule is absent on the host
 - `tests/imap/test_fail2ban_scope.sh` — validates IMAP + fail2ban:

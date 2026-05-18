@@ -10,6 +10,7 @@ RUN apk add --no-cache \
       nfs-utils \
       openldap-clients \
       openssh-client \
+      python3 \
       redis \
       strongswan \
       postgresql-client \

@@ -9,7 +9,7 @@ The NFS service provides a real NFSv4 endpoint that generates fail2ban signals f
 - The container runs `nfs-ganesha` in foreground mode on TCP port `2049`.
 - `nfs-ganesha` logs are written to `/var/log/nfs/ganesha.log`.
 - This log file is mounted via a shared volume and read by fail2ban.
-- NFSv4 `SETCLIENTID` request attempts are logged with source IPs and used as ban triggers.
+- NFSv4 RPC probe requests (including function `0`/`1`) are logged with source IPs and used as ban triggers.
 
 ## Anonymous access policy
 
