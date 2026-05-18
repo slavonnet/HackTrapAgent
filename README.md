@@ -16,6 +16,7 @@ A lightweight Docker Compose honeypot for collecting attacker IP addresses and f
 - Starts an IKEv2 honeypot (`localhost:1500/udp` and `localhost:14500/udp`).
 - Starts a PostgreSQL honeypot (`localhost:5432`).
 - Starts a MySQL honeypot (`localhost:3306`).
+- Starts a Memcached honeypot (`localhost:2112`) with auth-gated command flow logging.
 - Starts a MongoDB honeypot (`localhost:27017`).
 - Starts a Redis honeypot (`localhost:6379`).
 - Starts an Elasticsearch honeypot (`localhost:9200`).
@@ -42,7 +43,7 @@ Check status:
 
 ```bash
 docker compose ps
-docker compose logs -f fail2ban ssh telnetd ftp ntp nfs postgresql mysql mongodb redis elasticsearch clickhouse bgp l2tp ike2 imap pop3 smtp openvpn snmp snmptrap rdp radius ad rabbitmq
+docker compose logs -f fail2ban ssh telnetd ftp ntp nfs postgresql mysql memcached mongodb redis elasticsearch clickhouse bgp l2tp ike2 imap pop3 smtp openvpn snmp snmptrap rdp radius ad rabbitmq
 ```
 
 Stop:
@@ -76,6 +77,7 @@ Stop:
 - IKEv2 service implementation: `docs/services/ike2.md`
 - PostgreSQL service implementation: `docs/services/postgresql.md`
 - MySQL service implementation: `docs/services/mysql.md`
+- Memcached service implementation: `docs/services/memcached.md`
 - MongoDB service implementation: `docs/services/mongodb.md`
 - Redis service implementation: `docs/services/redis.md`
 - Elasticsearch service implementation: `docs/services/elasticsearch.md`
