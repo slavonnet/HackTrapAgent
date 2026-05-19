@@ -151,6 +151,7 @@ Use `config/services.env` as a single source of truth:
 
 - `ENABLED_SERVICES` — comma-separated enabled honeypot services.
 - `<SERVICE>_PUBLIC_PORT` — host port for each service.
+- `RESTART_INTERVAL_SECONDS` — interval for periodic stop/start of enabled honeypot services (`periodic-restart` helper container); `fail2ban` is excluded.
 
 ## 5-minute service resource benchmark
 

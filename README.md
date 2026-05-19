@@ -7,6 +7,7 @@ HackTrapAgent is a Docker Compose honeypot suite with service-specific container
 - Service enablement and default public ports are managed from one source: `config/services.env`.
 - Public ports are set to service-standard values in the default configuration.
 - Startup flow automatically resolves runtime port collisions by switching to alternative ports or disabling conflicting services.
+- Container healthchecks are disabled; a scheduler container periodically stop/starts only honeypot services from `ENABLED_SERVICES` (`RESTART_INTERVAL_SECONDS`, default `1800`), without touching `fail2ban`.
 - Service-level documentation is maintained under `docs/services/` (including `tftp`).
 
 ## Install & Quick start
