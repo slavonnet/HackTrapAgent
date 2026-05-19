@@ -21,6 +21,17 @@ compose --profile test up -d --build "$service_name" fail2ban attacker
 wait_for_exec_success "$service_name" "rabbitmq-diagnostics -q ping"
 wait_for_exec_success "fail2ban" "fail2ban-client ping"
 
+if compose exec -T "$service_name" rabbitmq-plugins list -e -m | grep -Fx "rabbitmq_management" >/dev/null; then
+  echo "rabbitmq_management plugin is enabled, expected low-CPU default mode."
+  exit 1
+fi
+
+if ! compose exec -T "$service_name" sh -lc \
+  "rabbitmq-diagnostics environment | grep -F '/dev/shm/rabbitmq/mnesia' >/dev/null"; then
+  echo "RabbitMQ mnesia directory is not in /dev/shm low-overhead mode."
+  exit 1
+fi
+
 attacker_ip="$(get_attacker_ip)"
 
 if [[ -z "$attacker_ip" ]]; then
