@@ -103,23 +103,21 @@ def parse_size_to_bytes(size_str: str) -> float:
     return value * multiplier
 
 
-def format_bytes(size_bytes: float) -> str:
-    value = float(size_bytes)
-    for unit in ("B", "KiB", "MiB", "GiB", "TiB"):
-        if value < 1024 or unit == "TiB":
-            if unit == "B":
-                return f"{int(value)} {unit}"
-            return f"{value:.2f} {unit}"
-        value /= 1024
-    return f"{value:.2f} TiB"
+def round_to_int(value: float) -> int:
+    """Round positive values to nearest integer (half up)."""
+    return int(float(value) + 0.5)
+
+
+def size_to_mib_rounded(size_bytes: float) -> int:
+    return round_to_int(float(size_bytes) / (1024**2))
 
 
 def format_gib(size_bytes: float) -> str:
-    return f"{(float(size_bytes) / (1024**3)):.2f} GiB"
+    return f"{round_to_int(float(size_bytes) / (1024**3))} GiB"
 
 
 def format_gb(size_bytes: float) -> str:
-    return f"{(float(size_bytes) / (1000**3)):.2f} GB"
+    return f"{round_to_int(float(size_bytes) / (1000**3))} GB"
 
 
 def parse_compose_ports(compose_config: Dict[str, object], services: Iterable[str]) -> Dict[str, str]:
@@ -317,7 +315,7 @@ def main() -> int:
             f"- Duration: {args.duration_seconds} seconds",
             f"- Sample interval: {args.sample_interval_seconds} seconds",
             "",
-            "| Port | Service (docs) | Image size | Peak memory | CPU time (core-seconds) |",
+            "| Port | Service (docs) | Image size (MiB) | Peak memory (MiB) | CPU time (core-seconds) |",
             "| --- | --- | --- | --- | --- |",
         ]
 
@@ -328,8 +326,9 @@ def main() -> int:
         for service in benchmark_services:
             metrics = metrics_by_service[service]
             ports = ports_by_service.get(service, "-")
+            image_size_mib = size_to_mib_rounded(metrics.image_size_bytes)
             if metrics.memory_accounting_available:
-                peak_memory_display = format_bytes(metrics.peak_memory_bytes)
+                peak_memory_display = str(size_to_mib_rounded(metrics.peak_memory_bytes))
                 peak_memory_csv = str(int(metrics.peak_memory_bytes))
             else:
                 peak_memory_display = "n/a"
@@ -337,7 +336,7 @@ def main() -> int:
                 missing_memory_accounting = True
             lines.append(
                 f"| {ports} | {service_doc_link(project_root, service)} | "
-                f"{format_bytes(metrics.image_size_bytes)} | "
+                f"{image_size_mib} | "
                 f"{peak_memory_display} | "
                 f"{metrics.cpu_core_seconds:.2f} |"
             )
