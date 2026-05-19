@@ -46,7 +46,6 @@ HackTrapAgent is a Docker Compose honeypot suite with service-specific container
 
 The table below is based on the 5-minute benchmark format (`Port`, service docs link, image size, peak memory, CPU time), includes `fail2ban` (without public port), and has a `TOTAL` block with aggregate metrics.
 Peak memory can still be `n/a` when Docker memory accounting is unavailable on the host.
-L2TP and IKEv2 are combined in one `ipsec` service, so both modes run together on default UDP ports `500` and `4500`.
 
 | Port | Service (docs) | Image size | Peak memory | CPU time (core-seconds) |
 | --- | --- | --- | --- | --- |
