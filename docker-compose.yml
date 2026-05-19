@@ -426,18 +426,6 @@ services:
       - ad_logs:/var/log/ad
     restart: unless-stopped
 
-  periodic-restart:
-    image: docker:28-cli
-    environment:
-      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-hacktrapagent}
-      RESTART_INTERVAL_SECONDS: ${RESTART_INTERVAL_SECONDS:-1800}
-      ENABLED_SERVICES: ${ENABLED_SERVICES:-}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./scripts/periodic_restart.sh:/usr/local/bin/periodic_restart.sh:ro
-    command: ["/bin/sh", "/usr/local/bin/periodic_restart.sh"]
-    restart: unless-stopped
-
   attacker:
     build:
       context: .

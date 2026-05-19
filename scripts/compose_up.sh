@@ -39,7 +39,7 @@ python3 "${project_root}/scripts/prepare_runtime_env.py" \
 enabled_services="$(awk -F= '/^ENABLED_SERVICES=/{print $2}' "$runtime_env_file" | tr -d '[:space:]')"
 IFS=',' read -ra service_list <<< "$enabled_services"
 
-startup_services=("fail2ban" "periodic-restart")
+startup_services=("fail2ban")
 for service in "${service_list[@]}"; do
   [[ -z "$service" ]] && continue
   startup_services+=("$service")
