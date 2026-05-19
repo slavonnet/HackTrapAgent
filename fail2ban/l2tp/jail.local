@@ -1,9 +1,0 @@
-[l2tp]
-enabled = true
-port = 500,4500
-protocol = udp
-filter = strongswan_ikev1
-logpath = /var/log/l2tp/charon.log
-findtime = 600
-bantime = 3600
-maxretry = 3

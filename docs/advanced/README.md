@@ -16,10 +16,9 @@ Files:
 - `fail2ban/smtp/jail.local` — SMTP jail settings.
 - `fail2ban/rdp/jail.local` — RDP jail settings.
 - `fail2ban/rdp/filter.d/xrdp-sesman.conf` — RDP failregex for `AUTHFAIL` events.
-- `fail2ban/l2tp/jail.local` — L2TP jail settings.
-- `fail2ban/ike2/jail.local` — IKEv2 jail settings.
-- `fail2ban/l2tp/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.
-- `fail2ban/ike2/filter.d/strongswan_ikev2.conf` — strongSwan IKEv2 filter template.
+- `fail2ban/ipsec/jail.local` — IPsec jail settings for L2TP and IKEv2 modes.
+- `fail2ban/ipsec/filter.d/strongswan_ikev1.conf` — strongSwan IKEv1 filter template.
+- `fail2ban/ipsec/filter.d/strongswan_ikev2.conf` — strongSwan IKEv2 filter template.
 - `fail2ban/postgresql/jail.local` — PostgreSQL jail settings.
 - `fail2ban/postgresql/filter.conf` — PostgreSQL failregex rules.
 - `fail2ban/mysql/jail.local` — MySQL jail settings.

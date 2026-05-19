@@ -103,22 +103,24 @@ services:
       - nfs_logs:/var/log/nfs
     restart: unless-stopped
 
-  l2tp:
+  ipsec:
     profiles:
-      - l2tp
+      - ipsec
     build:
       context: .
-      dockerfile: build/l2tp/Dockerfile
+      dockerfile: build/ipsec/Dockerfile
     environment:
-      HACKTRAP_USER: ${L2TP_RUNTIME_USER:-trap}
+      HACKTRAP_USER: ${IPSEC_RUNTIME_USER:-trap}
+      IPSEC_ENABLE_L2TP: ${IPSEC_ENABLE_L2TP:-true}
+      IPSEC_ENABLE_IKEV2: ${IPSEC_ENABLE_IKEV2:-true}
     ports:
-      - "${L2TP_PUBLIC_PORT:-11701}:1701/udp"
-      - "${L2TP_IKE_PUBLIC_PORT:-15100}:500/udp"
-      - "${L2TP_NATT_PUBLIC_PORT:-14501}:4500/udp"
+      - "${IPSEC_L2TP_PUBLIC_PORT:-1701}:1701/udp"
+      - "${IPSEC_IKE_PUBLIC_PORT:-500}:500/udp"
+      - "${IPSEC_NATT_PUBLIC_PORT:-4500}:4500/udp"
     cap_add:
       - NET_ADMIN
     volumes:
-      - l2tp_logs:/var/log/l2tp
+      - ipsec_logs:/var/log/ipsec
     restart: unless-stopped
 
   postgresql:
@@ -133,23 +135,6 @@ services:
       - "${POSTGRESQL_PUBLIC_PORT:-5432}:5432"
     volumes:
       - postgresql_logs:/var/log/postgresql
-    restart: unless-stopped
-
-  ike2:
-    profiles:
-      - ike2
-    build:
-      context: .
-      dockerfile: build/ike2/Dockerfile
-    environment:
-      HACKTRAP_USER: ${IKE2_RUNTIME_USER:-trap}
-    ports:
-      - "${IKE2_PUBLIC_PORT:-1500}:500/udp"
-      - "${IKE2_NATT_PUBLIC_PORT:-14500}:4500/udp"
-    cap_add:
-      - NET_ADMIN
-    volumes:
-      - ike2_logs:/var/log/ike2
     restart: unless-stopped
 
   mysql:
@@ -390,7 +375,7 @@ services:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,tftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,smb,kafka,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,tftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,smb,kafka,ipsec,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -405,8 +390,7 @@ services:
       - imap_logs:/var/log/imap
       - pop3_logs:/var/log/pop3
       - smtp_logs:/var/log/smtp
-      - l2tp_logs:/var/log/l2tp
-      - ike2_logs:/var/log/ike2
+      - ipsec_logs:/var/log/ipsec
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
       - memcached_logs:/var/log/memcached
@@ -489,8 +473,7 @@ volumes:
   imap_logs:
   pop3_logs:
   smtp_logs:
-  l2tp_logs:
-  ike2_logs:
+  ipsec_logs:
   postgresql_logs:
   mysql_logs:
   memcached_logs:

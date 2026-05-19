@@ -1,9 +1,0 @@
-[ike2]
-enabled = true
-port = 500,4500
-protocol = udp
-filter = strongswan_ikev2
-logpath = /var/log/ike2/charon.log
-findtime = 600
-bantime = 3600
-maxretry = 3
