@@ -53,5 +53,5 @@ Priority candidates:
 ## Phase 4 — Production hardening
 
 - [ ] Support multiple backend targets
-- [ ] Healthchecks and auto-restart strategy for all services
+- [x] Healthchecks removed and periodic auto-restart strategy applied for all services
 - [ ] Metrics and observability
