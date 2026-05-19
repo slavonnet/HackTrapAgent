@@ -151,6 +151,7 @@ Use `config/services.env` as a single source of truth:
 
 - `ENABLED_SERVICES` — comma-separated enabled honeypot services.
 - `<SERVICE>_PUBLIC_PORT` — host port for each service.
+- Service containers use internal periodic self-termination every 1800 seconds; Docker restart policy relaunches them without any host-level Docker control loops.
 
 ## 5-minute service resource benchmark
 
