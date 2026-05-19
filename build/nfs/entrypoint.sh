@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
+restart_interval="${RESTART_INTERVAL_SECONDS:-1800}"
+if [[ ! "$restart_interval" =~ ^[0-9]+$ ]] || [[ "$restart_interval" -lt 1 ]]; then
+  restart_interval=1800
+fi
+
+(
+  while true; do
+    sleep "$restart_interval"
+    kill -TERM 1 2>/dev/null || exit 0
+  done
+) &
+
 export_path="${NFS_EXPORT_PATH:-/srv/nfs/export}"
 pseudo_path="${NFS_PSEUDO_PATH:-/export}"
 allowed_clients="${NFS_ALLOWED_CLIENTS:-127.0.0.1/32}"

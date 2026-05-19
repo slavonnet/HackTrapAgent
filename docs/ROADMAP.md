@@ -46,13 +46,12 @@ Priority candidates:
 - [x] `redis`
 - [x] `postgresql`
 - [x] `elasticsearch`
-- [x] `l2tp`
-- [x] `ipsec` (IKEv2)
+- [x] `ipsec` (L2TP + IKEv2)
 - [x] `openvpn`
 - [x] `rdp`
 
 ## Phase 4 — Production hardening
 
 - [ ] Support multiple backend targets
-- [ ] Healthchecks and auto-restart strategy for all services
+- [x] Healthchecks removed and periodic auto-restart strategy applied for all services
 - [ ] Metrics and observability

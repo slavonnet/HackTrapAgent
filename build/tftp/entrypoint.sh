@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
+restart_interval="${RESTART_INTERVAL_SECONDS:-1800}"
+if [[ ! "$restart_interval" =~ ^[0-9]+$ ]] || [[ "$restart_interval" -lt 1 ]]; then
+  restart_interval=1800
+fi
+
+(
+  while true; do
+    sleep "$restart_interval"
+    kill -TERM 1 2>/dev/null || exit 0
+  done
+) &
+
 args_file="/opt/hacktrap/etc/tftp/tftpd.args"
 log_file="/var/log/tftp/tftpd.log"
 tftp_root="/srv/tftp"

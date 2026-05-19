@@ -18,11 +18,6 @@ services:
     volumes:
       - asterisk_logs:/var/log/asterisk
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "asterisk -rx 'core show version' >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   ssh:
     profiles:
@@ -37,11 +32,6 @@ services:
     volumes:
       - ssh_logs:/var/log/ssh
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x sshd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   telnetd:
     profiles:
@@ -56,11 +46,6 @@ services:
     volumes:
       - telnetd_logs:/var/log/telnet
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "bash -lc ': >/dev/tcp/127.0.0.1/23'"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   ftp:
     profiles:
@@ -75,11 +60,6 @@ services:
     volumes:
       - ftp_logs:/var/log/ftp
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x vsftpd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   tftp:
     profiles:
@@ -92,11 +72,6 @@ services:
     volumes:
       - tftp_logs:/var/log/tftp
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -f in.tftpd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   ntp:
     profiles:
@@ -112,11 +87,6 @@ services:
     volumes:
       - ntp_logs:/var/log/ntp
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x ntpd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   nfs:
     profiles:
@@ -132,34 +102,26 @@ services:
     volumes:
       - nfs_logs:/var/log/nfs
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -f ganesha.nfsd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
-  l2tp:
+  ipsec:
     profiles:
-      - l2tp
+      - ipsec
     build:
       context: .
-      dockerfile: build/l2tp/Dockerfile
+      dockerfile: build/ipsec/Dockerfile
     environment:
-      HACKTRAP_USER: ${L2TP_RUNTIME_USER:-trap}
+      HACKTRAP_USER: ${IPSEC_RUNTIME_USER:-trap}
+      IPSEC_ENABLE_L2TP: ${IPSEC_ENABLE_L2TP:-true}
+      IPSEC_ENABLE_IKEV2: ${IPSEC_ENABLE_IKEV2:-true}
     ports:
-      - "${L2TP_PUBLIC_PORT:-11701}:1701/udp"
-      - "${L2TP_IKE_PUBLIC_PORT:-15100}:500/udp"
-      - "${L2TP_NATT_PUBLIC_PORT:-14501}:4500/udp"
+      - "${IPSEC_L2TP_PUBLIC_PORT:-1701}:1701/udp"
+      - "${IPSEC_IKE_PUBLIC_PORT:-500}:500/udp"
+      - "${IPSEC_NATT_PUBLIC_PORT:-4500}:4500/udp"
     cap_add:
       - NET_ADMIN
     volumes:
-      - l2tp_logs:/var/log/l2tp
+      - ipsec_logs:/var/log/ipsec
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x charon >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   postgresql:
     profiles:
@@ -174,33 +136,6 @@ services:
     volumes:
       - postgresql_logs:/var/log/postgresql
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "runuser -u postgres -- pg_isready -h /var/run/postgresql -U postgres >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-  ike2:
-    profiles:
-      - ike2
-    build:
-      context: .
-      dockerfile: build/ike2/Dockerfile
-    environment:
-      HACKTRAP_USER: ${IKE2_RUNTIME_USER:-trap}
-    ports:
-      - "${IKE2_PUBLIC_PORT:-1500}:500/udp"
-      - "${IKE2_NATT_PUBLIC_PORT:-14500}:4500/udp"
-    cap_add:
-      - NET_ADMIN
-    volumes:
-      - ike2_logs:/var/log/ike2
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x charon >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   mysql:
     profiles:
@@ -215,11 +150,6 @@ services:
     volumes:
       - mysql_logs:/var/log/mysql
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x mariadbd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   memcached:
     profiles:
@@ -234,8 +164,6 @@ services:
     volumes:
       - memcached_logs:/var/log/memcached
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 11211), 2); s.sendall(b'auth invalid invalid\\r\\n'); s.recv(64); s.close()\""]
 
   mongodb:
     profiles:
@@ -250,11 +178,6 @@ services:
     volumes:
       - mongodb_logs:/var/log/mongodb
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x mongod >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   redis:
     profiles:
@@ -269,11 +192,6 @@ services:
     volumes:
       - redis_logs:/var/log/redis
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p 6379 --no-auth-warning PING | grep -Eq 'PONG|NOAUTH'"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   elasticsearch:
     profiles:
@@ -288,11 +206,6 @@ services:
     volumes:
       - elasticsearch_logs:/var/log/elasticsearch
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import socket; s=socket.create_connection(('127.0.0.1', 9200), 2); s.close()\""]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   clickhouse:
     profiles:
@@ -308,11 +221,6 @@ services:
     volumes:
       - clickhouse_logs:/var/log/clickhouse-server
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x clickhouse-server >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   bgp:
     profiles:
@@ -330,11 +238,6 @@ services:
     volumes:
       - bgp_logs:/var/log/bgp
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "ss -ltn sport = :179 | grep -q ':179'"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   openvpn:
     profiles:
@@ -349,11 +252,6 @@ services:
     volumes:
       - openvpn_logs:/var/log/openvpn
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "ss -lun | grep -q ':1194'"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   smb:
     profiles:
@@ -368,11 +266,6 @@ services:
     volumes:
       - smb_logs:/var/log/smb
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x smbd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   kafka:
     profiles:
@@ -387,11 +280,6 @@ services:
     volumes:
       - kafka_logs:/var/log/kafka
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "ss -ltn | grep -q ':9092'"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   snmp:
     profiles:
@@ -406,11 +294,6 @@ services:
     volumes:
       - snmp_logs:/var/log/snmp
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x snmpd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   rdp:
     profiles:
@@ -425,11 +308,6 @@ services:
     volumes:
       - rdp_logs:/var/log/rdp
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x xrdp >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   snmptrap:
     profiles:
@@ -444,11 +322,6 @@ services:
     volumes:
       - snmptrap_logs:/var/log/snmptrap
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x snmptrapd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   rabbitmq:
     profiles:
@@ -468,11 +341,6 @@ services:
     volumes:
       - rabbitmq_logs:/var/log/rabbitmq
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x beam.smp >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   radius:
     profiles:
@@ -487,11 +355,6 @@ services:
     volumes:
       - radius_logs:/var/log/radius
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x freeradius >/dev/null || pgrep -x radiusd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   ad:
     profiles:
@@ -506,18 +369,13 @@ services:
     volumes:
       - ad_logs:/var/log/ad
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pidof slapd >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   fail2ban:
     build:
       context: .
       dockerfile: build/fail2ban/Dockerfile
     environment:
-      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,tftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,smb,kafka,l2tp,ike2,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
+      FAIL2BAN_SERVICES: ${FAIL2BAN_SERVICES:-asterisk,ssh,telnetd,ftp,tftp,ntp,nfs,postgresql,mysql,memcached,mongodb,redis,bgp,openvpn,smb,kafka,ipsec,imap,pop3,smtp,elasticsearch,clickhouse,ad,radius,rabbitmq,rdp,snmp,snmptrap}
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -532,8 +390,7 @@ services:
       - imap_logs:/var/log/imap
       - pop3_logs:/var/log/pop3
       - smtp_logs:/var/log/smtp
-      - l2tp_logs:/var/log/l2tp
-      - ike2_logs:/var/log/ike2
+      - ipsec_logs:/var/log/ipsec
       - postgresql_logs:/var/log/postgresql
       - mysql_logs:/var/log/mysql
       - memcached_logs:/var/log/memcached
@@ -552,11 +409,6 @@ services:
       - radius_logs:/var/log/radius
       - ad_logs:/var/log/ad
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "fail2ban-client ping | grep -q 'Server replied'"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   attacker:
     build:
@@ -581,11 +433,6 @@ services:
     volumes:
       - imap_logs:/var/log/imap
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   pop3:
     profiles:
@@ -600,11 +447,6 @@ services:
     volumes:
       - pop3_logs:/var/log/pop3
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x dovecot >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   smtp:
     profiles:
@@ -619,11 +461,6 @@ services:
     volumes:
       - smtp_logs:/var/log/smtp
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -x master >/dev/null"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
 volumes:
   asterisk_logs:
@@ -636,8 +473,7 @@ volumes:
   imap_logs:
   pop3_logs:
   smtp_logs:
-  l2tp_logs:
-  ike2_logs:
+  ipsec_logs:
   postgresql_logs:
   mysql_logs:
   memcached_logs:

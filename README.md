@@ -7,6 +7,7 @@ HackTrapAgent is a Docker Compose honeypot suite with service-specific container
 - Service enablement and default public ports are managed from one source: `config/services.env`.
 - Public ports are set to service-standard values in the default configuration.
 - Startup flow automatically resolves runtime port collisions by switching to alternative ports or disabling conflicting services.
+- Container healthchecks are disabled; each honeypot container self-terminates every 1800 seconds and is relaunched by Docker restart policy to reset compromised state.
 - Service-level documentation is maintained under `docs/services/` (including `tftp`).
 
 ## Install & Quick start
@@ -46,7 +47,6 @@ HackTrapAgent is a Docker Compose honeypot suite with service-specific container
 
 The table below is based on the 5-minute benchmark format (`Port`, service docs link, `Image size (MiB)`, `Peak memory (MiB)`, CPU time), includes `fail2ban` (without public port), and has a `TOTAL` block with aggregate metrics.
 Peak memory can still be `n/a` when Docker memory accounting is unavailable on the host.
-Because L2TP and IKEv2 share default UDP ports `500` and `4500`, runtime conflict resolver keeps L2TP on defaults and moves IKEv2 to free alternatives.
 
 | Port | Service (docs) | Image size (MiB) | Peak memory (MiB) | CPU time (core-seconds) |
 | --- | --- | --- | --- | --- |
@@ -67,8 +67,7 @@ Because L2TP and IKEv2 share default UDP ports `500` and `4500`, runtime conflic
 | 1194/udp | [openvpn](docs/services/openvpn.md) | 88 | 6 | 0.56 |
 | 445/tcp | [smb](docs/services/smb.md) | 226 | 28 | 0.54 |
 | 9092/tcp | [kafka](docs/services/kafka.md) | 88 | 6 | 0.58 |
-| 1701/udp, 500/udp, 4500/udp | [l2tp](docs/services/l2tp.md) | 93 | 12 | 0.55 |
-| 10500/udp, 14500/udp | [ike2](docs/services/ike2.md) | 93 | 11 | 0.55 |
+| 1701/udp, 500/udp, 4500/udp | [ipsec](docs/services/ipsec.md) | 93 | 13 | 0.58 |
 | 143/tcp | [imap](docs/services/imap.md) | 131 | 12 | 0.57 |
 | 110/tcp | [pop3](docs/services/pop3.md) | 131 | 13 | 0.55 |
 | 25/tcp | [smtp](docs/services/smtp.md) | 170 | 19 | 0.53 |

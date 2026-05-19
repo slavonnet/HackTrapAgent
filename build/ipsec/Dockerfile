@@ -4,6 +4,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
       bash \
       strongswan \
+      strongswan-pki \
       xl2tpd \
       ppp \
       procps \
@@ -12,13 +13,13 @@ RUN apt-get update \
       openssl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /var/log/l2tp /opt/hacktrap/etc/l2tp /run/hacktrap
+RUN mkdir -p /var/log/ipsec /opt/hacktrap/etc/ipsec /run/hacktrap
 
-COPY etc/l2tp/ /opt/hacktrap/etc/l2tp/
-COPY build/l2tp/entrypoint.sh /usr/local/bin/l2tp-entrypoint.sh
+COPY etc/ipsec/ /opt/hacktrap/etc/ipsec/
+COPY build/ipsec/entrypoint.sh /usr/local/bin/ipsec-entrypoint.sh
 
-RUN chmod +x /usr/local/bin/l2tp-entrypoint.sh
+RUN chmod +x /usr/local/bin/ipsec-entrypoint.sh
 
 EXPOSE 1701/udp 500/udp 4500/udp
 
-ENTRYPOINT ["/usr/local/bin/l2tp-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/ipsec-entrypoint.sh"]
