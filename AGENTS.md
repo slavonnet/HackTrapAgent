@@ -15,11 +15,17 @@ Current baseline is SSH + fail2ban with service-oriented folders and tests.
 
 ### Starting Docker in the Cloud Agent VM
 
-The Docker daemon does **not** auto-start. You must start it manually before running any `docker` or `docker compose` commands:
+The update script handles Docker startup automatically. **Do NOT start dockerd manually** — the update script kills stale Docker processes, flushes iptables, fixes cgroups, and starts a fresh daemon.
+
+If you need to restart Docker mid-session:
 
 ```bash
+# SIGKILL — no graceful shutdown (graceful can hang 5+ min on zombie shims)
+for pid in $(pgrep -x dockerd 2>/dev/null); do sudo kill -9 "$pid" 2>/dev/null || true; done
+sleep 1
+sudo rm -f /var/run/docker.pid /var/run/docker.sock
 sudo dockerd &> /tmp/dockerd.log &
-sleep 3  # wait for daemon to initialise
+sleep 3
 ```
 
 ### Docker-in-Docker caveats
@@ -31,11 +37,16 @@ This VM runs inside a Firecracker microVM. The following workarounds are already
 
 If you upgrade Docker to v29+, you may need to disable the `containerd-snapshotter` feature for `fuse-overlayfs` to keep working.
 
-### Stale iptables rules (DOCKER-ISOLATION-STAGE-2)
+### Post-snapshot recovery (iptables + zombie processes)
 
-**Do NOT manually patch iptables rules.** The update script handles this automatically.
+**Do NOT manually patch iptables rules or try graceful Docker shutdown.** The update script handles this automatically.
 
-Between agent sessions the Docker daemon dies but kernel iptables rules persist. Stale `DOCKER-ISOLATION-STAGE-2` chains with dangling bridge references cause container startup failures with network errors. The update script flushes all iptables chains/rules and resets FORWARD policy to ACCEPT **before** starting `dockerd`, so Docker recreates clean rules from scratch.
+After snapshot restore, Docker processes become broken: `containerd-shim` turns into zombies, stale `DOCKER-ISOLATION-STAGE-2` iptables chains block traffic, and `dockerd` holds lock files. The update script:
+
+1. **SIGKILL** (not SIGTERM) all Docker processes — avoids 5+ minute hang on graceful shutdown of zombie shims.
+2. Removes stale `.pid`/`.sock` files so new dockerd can start.
+3. Flushes all iptables chains/rules and resets FORWARD to ACCEPT.
+4. Starts a fresh `dockerd`.
 
 ### Enabling Docker memory accounting (cgroup v2)
 
