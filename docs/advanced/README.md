@@ -171,17 +171,17 @@ Generated markdown table columns:
 
 - `Port`
 - `Service (docs)` (links to `docs/services/<service>.md`)
-- `Image size`
-- `Peak memory`
+- `Image size (MiB)` (rounded integer values)
+- `Peak memory (MiB)` (rounded integer values)
 - `CPU time (core-seconds)`
 
 The report also includes:
 
 - `fail2ban` row (without public port, shown as `-`),
 - `TOTAL` block under the table:
-  - total image size in GB and GiB,
+  - total image size in rounded integer GB and GiB,
   - total CPU time in core-seconds,
-  - peak memory for the whole container group (GB and GiB).
+  - peak memory for the whole container group in rounded integer GB and GiB.
 
 `CPU time (core-seconds)` is computed as an integral of sampled CPU usage:
 `sum(CPU% / 100 * sample_interval_seconds)`.
