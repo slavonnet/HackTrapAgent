@@ -459,6 +459,9 @@ services:
     environment:
       HACKTRAP_USER: ${RABBITMQ_RUNTIME_USER:-trap}
       RABBITMQ_LOGS: /var/log/rabbitmq/rabbit.log
+      RABBITMQ_ENABLE_MANAGEMENT: ${RABBITMQ_ENABLE_MANAGEMENT:-false}
+      RABBITMQ_UNSAFE_RAM_STORAGE: ${RABBITMQ_UNSAFE_RAM_STORAGE:-true}
+      RABBITMQ_LOW_CPU_ERL_ARGS: "${RABBITMQ_LOW_CPU_ERL_ARGS:-+S 1:1 +A 2 +sbwt none +sbwtdcpu none +sbwtdio none}"
     ports:
       - "${RABBITMQ_PUBLIC_PORT:-5672}:5672"
       - "${RABBITMQ_MANAGEMENT_PUBLIC_PORT:-15672}:15672"
@@ -466,7 +469,7 @@ services:
       - rabbitmq_logs:/var/log/rabbitmq
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      test: ["CMD-SHELL", "pgrep -x beam.smp >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
