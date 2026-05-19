@@ -46,8 +46,7 @@ Priority candidates:
 - [x] `redis`
 - [x] `postgresql`
 - [x] `elasticsearch`
-- [x] `l2tp`
-- [x] `ipsec` (IKEv2)
+- [x] `ipsec` (L2TP + IKEv2)
 - [x] `openvpn`
 - [x] `rdp`
 

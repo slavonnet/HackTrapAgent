@@ -39,14 +39,10 @@ SERVICE_PORT_SPECS: Dict[str, List[PortSpec]] = {
     "openvpn": [PortSpec("OPENVPN_PUBLIC_PORT", ("udp",))],
     "smb": [PortSpec("SMB_PUBLIC_PORT", ("tcp",))],
     "kafka": [PortSpec("KAFKA_PUBLIC_PORT", ("tcp",))],
-    "l2tp": [
-        PortSpec("L2TP_PUBLIC_PORT", ("udp",)),
-        PortSpec("L2TP_IKE_PUBLIC_PORT", ("udp",)),
-        PortSpec("L2TP_NATT_PUBLIC_PORT", ("udp",)),
-    ],
-    "ike2": [
-        PortSpec("IKE2_PUBLIC_PORT", ("udp",)),
-        PortSpec("IKE2_NATT_PUBLIC_PORT", ("udp",)),
+    "ipsec": [
+        PortSpec("IPSEC_L2TP_PUBLIC_PORT", ("udp",)),
+        PortSpec("IPSEC_IKE_PUBLIC_PORT", ("udp",)),
+        PortSpec("IPSEC_NATT_PUBLIC_PORT", ("udp",)),
     ],
     "imap": [PortSpec("IMAP_PUBLIC_PORT", ("tcp",))],
     "pop3": [PortSpec("POP3_PUBLIC_PORT", ("tcp",))],

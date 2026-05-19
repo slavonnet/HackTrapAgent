@@ -114,14 +114,9 @@ if [[ ",${services_raw}," == *",mongodb,"* ]]; then
   touch /var/log/mongodb/mongodb.log
 fi
 
-if [[ ",${services_raw}," == *",l2tp,"* ]]; then
-  mkdir -p /var/log/l2tp
-  touch /var/log/l2tp/charon.log
-fi
-
-if [[ ",${services_raw}," == *",ike2,"* ]]; then
-  mkdir -p /var/log/ike2
-  touch /var/log/ike2/charon.log
+if [[ ",${services_raw}," == *",ipsec,"* ]]; then
+  mkdir -p /var/log/ipsec
+  touch /var/log/ipsec/charon.log
 fi
 
 if [[ ",${services_raw}," == *",imap,"* ]]; then

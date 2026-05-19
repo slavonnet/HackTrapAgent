@@ -46,7 +46,7 @@ HackTrapAgent is a Docker Compose honeypot suite with service-specific container
 
 The table below is based on the 5-minute benchmark format (`Port`, service docs link, image size, peak memory, CPU time), includes `fail2ban` (without public port), and has a `TOTAL` block with aggregate metrics.
 Peak memory can still be `n/a` when Docker memory accounting is unavailable on the host.
-Because L2TP and IKEv2 share default UDP ports `500` and `4500`, runtime conflict resolver keeps L2TP on defaults and moves IKEv2 to free alternatives.
+L2TP and IKEv2 are combined in one `ipsec` service, so both modes run together on default UDP ports `500` and `4500`.
 
 | Port | Service (docs) | Image size | Peak memory | CPU time (core-seconds) |
 | --- | --- | --- | --- | --- |
@@ -67,8 +67,7 @@ Because L2TP and IKEv2 share default UDP ports `500` and `4500`, runtime conflic
 | 1194/udp | [openvpn](docs/services/openvpn.md) | 88.16 MiB | 5.56 MiB | 0.55 |
 | 445/tcp | [smb](docs/services/smb.md) | 225.86 MiB | 29.79 MiB | 0.55 |
 | 9092/tcp | [kafka](docs/services/kafka.md) | 88.16 MiB | 5.52 MiB | 0.53 |
-| 1701/udp, 500/udp, 4500/udp | [l2tp](docs/services/l2tp.md) | 93.29 MiB | 12.76 MiB | 0.58 |
-| 10500/udp, 14500/udp | [ike2](docs/services/ike2.md) | 92.80 MiB | 9.90 MiB | 0.52 |
+| 1701/udp, 500/udp, 4500/udp | [ipsec](docs/services/ipsec.md) | 93.29 MiB | 12.76 MiB | 0.58 |
 | 143/tcp | [imap](docs/services/imap.md) | 131.15 MiB | 14.66 MiB | 0.54 |
 | 110/tcp | [pop3](docs/services/pop3.md) | 130.66 MiB | 14.00 MiB | 0.53 |
 | 25/tcp | [smtp](docs/services/smtp.md) | 169.55 MiB | 19.38 MiB | 0.56 |
